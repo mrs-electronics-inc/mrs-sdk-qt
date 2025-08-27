@@ -44,13 +44,13 @@ The MRS Electronic Qt SDK is designed to streamline the development process for 
 - Comprehensive documentation and API reference
 - Demo applications
 
-<!-- TODO: add demo applications in demos directory -->
+<!-- TODO(#7): add demo applications in demos directory -->
 
 ## Prerequisites
 
 Coming soon!
 
-<!-- TODO: add prequisites -->
+<!-- TODO(#5): add prequisites -->
 
 
 ## Installation
@@ -71,19 +71,19 @@ Coming soon!
 3. Build the SDK:
    TBD
 
-<!-- TODO: Add build instructions once we have them -->
+<!-- TODO(#5): Add build instructions once we have them -->
 
 
 ## Getting Started
 
 Coming soon!
-<!-- TODO: add getting started info, with basic example code blocks -->
+<!-- TODO(#4): add getting started info, with basic example code blocks -->
 
 ## Documentation
 
 Comprehensive documentation is coming soon in the `docs` directory.
 
-<!-- TODO: add docs as astro site in the docs directory and host them on GitHub pages -->
+<!-- TODO(#3): add docs as astro site in the docs directory and host them on GitHub pages -->
 
 
 ## License
