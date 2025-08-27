@@ -1,6 +1,6 @@
-# MRS Electronics, Inc. Qt SDK
+# MRS Qt SDK
 
-Welcome to the official repository for the MRS Electronics, Inc. Qt Software Development Kit (SDK). This SDK provides developers with the tools, libraries, and documentation needed to create applications for MRS Electronics products using the Qt framework.
+Welcome to the official repository for the MRS Electronic Qt Software Development Kit! This SDK provides developers with the tools, libraries, and documentation needed to create applications for MRS Electronics products using the Qt framework.
 
 ## Table of Contents
 
@@ -10,36 +10,46 @@ Welcome to the official repository for the MRS Electronics, Inc. Qt Software Dev
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Documentation](#documentation)
-- [Examples](#examples)
-- [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 
 ## Overview
 
-The MRS Electronics Qt SDK is designed to streamline the development process for applications targeting MRS Electronics hardware platforms. It includes pre-built Qt modules, device-specific plugins, and utilities that simplify integration with MRS Electronics products.
+The MRS Electronic Qt SDK is designed to streamline the development process for applications targeting MRS Electronic hardware platforms. It includes pre-built Qt modules, device-specific plugins, and utilities that simplify integration with MRS Electronic products.
+
+
+**NOTE** - This project is a work-in-progress. Many of the features listed below are in the planning stages, and have not been implemented yet. Check back regularly for updates!
+
+## Roadmap
+
+- [ ] Set up the Qt project
+- [ ] Integrate with the [Spoke.Zone OTA API](https://docs.spoke.zone/developers/device-integration/ota-file-downloads/)
+- [ ] Add documentation site
+- [ ] MQTT utilities
+- [ ] Integrate with the [Spoke.Zone Data Files API](https://docs.spoke.zone/developers/device-integration/data-file-uploads/)
+- [ ] CAN bus utilities
+- [ ] Add demo application for [NeuralPlex](https://neuralplex.dev)
+- [ ] Add demo application for [MConn](https://mconn.dev)
+- [ ] Integrate with Spoke.Zone Alerts
+- [ ] Other hardware abstractions (GPIO, co-processor, modem, etc.)
+- [ ] Integrate with Spoke.Zone Geo-fencing
 
 ## Features
 
 - Cross-platform development support
-- Device-specific Qt modules and plugins
-- Hardware abstraction layer for MRS Electronics products
+- Hardware abstraction layer for MRS Electronic products
+- Easy integration with the [Spoke.Zone](https://spoke.zone) cloud platform
 - Comprehensive documentation and API reference
-- Example applications and tutorials
-- Integration with popular development environments
+- Demo applications
+
+<!-- TODO: add demo applications in demos directory -->
 
 ## Prerequisites
 
-Before installing the MRS Electronics Qt SDK, ensure your system meets the following requirements:
+Coming soon!
 
-- Qt 6.x or later
-- C++17 compatible compiler
-- CMake 3.16 or later
-- Python 3.8 or later (for some tools)
-- Platform-specific dependencies:
-  - **Windows**: Visual Studio 2019 or later
-  - **Linux**: GCC 9 or later
-  - **macOS**: Xcode 12 or later
+<!-- TODO: add prequisites -->
+
 
 ## Installation
 
@@ -57,65 +67,26 @@ Before installing the MRS Electronics Qt SDK, ensure your system meets the follo
    ```
 
 3. Build the SDK:
-   ```bash
-   mkdir build && cd build
-   cmake ..
-   cmake --build .
-   ```
+   TBD
 
-4. Install the SDK (optional):
-   ```bash
-   cmake --install .
-   ```
+<!-- TODO: Add build instructions once we have them -->
 
-### Pre-built Packages
-
-Pre-built packages are available for supported platforms. Visit the [MRS Electronics Developer Portal](https://developers.mrselectronics.com) to download the appropriate package for your platform.
 
 ## Getting Started
 
-To create your first application with the MRS Electronics Qt SDK:
-
-1. Create a new CMake project with the following `CMakeLists.txt`:
-   ```cmake
-   cmake_minimum_required(VERSION 3.16)
-   project(MyApp)
-
-   find_package(MRSQtSDK REQUIRED)
-
-   add_executable(MyApp main.cpp)
-   target_link_libraries(MyApp PRIVATE MRSQtSDK::Core)
-   ```
-
-2. Create a simple `main.cpp`:
-   ```cpp
-   #include <MRSQt/Core/Application>
-   #include <MRSQt/Core/DeviceManager>
-   
-   int main(int argc, char *argv[])
-   {
-       MRSQt::Application app(argc, argv);
-       
-       // Initialize device manager
-       MRSQt::DeviceManager manager;
-       
-       // Your application logic here
-       
-       return app.exec();
-   }
-   ```
-
-3. Build and run your application:
-   ```bash
-   mkdir build && cd build
-   cmake ..
-   make
-   ./MyApp
-   ```
+<!-- TODO: add getting started info, with basic example code blocks -->
 
 ## Documentation
 
-Comprehensive documentation is available in the `docs` directory and online at the [MRS Electronics Qt SDK Documentation Portal](https://docs.mrselectronics.com/qt-sdk).
+Comprehensive documentation is coming soon in the `docs` directory.
 
-To generate the documentation locally:
+<!-- TODO: add docs as astro site in the docs directory and host them on GitHub pages -->
 
+
+## License
+
+This project is MIT licensed. See the [LICENSE](./LICENSE) file for more details.
+
+## Contact
+
+Feel free to reach out by emailing us at info@mrs-electronics.com, or by creating a new post in the [discussion boards](https://github.com/mrs-electronics-inc/mrs-sdk-qt/discussions).
