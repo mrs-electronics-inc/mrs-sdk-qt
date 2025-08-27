@@ -5,6 +5,7 @@ Welcome to the official repository for the MRS Electronic Qt Software Developmen
 ## Table of Contents
 
 - [Overview](#overview)
+- [Roadmap](#roadmap)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -17,19 +18,20 @@ Welcome to the official repository for the MRS Electronic Qt Software Developmen
 
 The MRS Electronic Qt SDK is designed to streamline the development process for applications targeting MRS Electronic hardware platforms. It includes pre-built Qt modules, device-specific plugins, and utilities that simplify integration with MRS Electronic products.
 
-
-**NOTE** - This project is a work-in-progress. Many of the features listed below are in the planning stages, and have not been implemented yet. Check back regularly for updates!
+> [!WARNING]
+> ⚠️⚠️⚠️
+> This project is a work-in-progress. Many of the features listed below are in the planning stages, and have not been implemented yet. Check back regularly for updates!
 
 ## Roadmap
 
 - [ ] Set up the Qt project
 - [ ] Integrate with the [Spoke.Zone OTA API](https://docs.spoke.zone/developers/device-integration/ota-file-downloads/)
 - [ ] Add documentation site
-- [ ] MQTT utilities
-- [ ] Integrate with the [Spoke.Zone Data Files API](https://docs.spoke.zone/developers/device-integration/data-file-uploads/)
 - [ ] CAN bus utilities
 - [ ] Add demo application for [NeuralPlex](https://neuralplex.dev)
 - [ ] Add demo application for [MConn](https://mconn.dev)
+- [ ] MQTT utilities
+- [ ] Integrate with the [Spoke.Zone Data Files API](https://docs.spoke.zone/developers/device-integration/data-file-uploads/)
 - [ ] Integrate with Spoke.Zone Alerts
 - [ ] Other hardware abstractions (GPIO, co-processor, modem, etc.)
 - [ ] Integrate with Spoke.Zone Geo-fencing
@@ -74,6 +76,7 @@ Coming soon!
 
 ## Getting Started
 
+Coming soon!
 <!-- TODO: add getting started info, with basic example code blocks -->
 
 ## Documentation
