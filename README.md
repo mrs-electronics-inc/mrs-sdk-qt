@@ -20,7 +20,9 @@ The MRS Electronic Qt SDK is designed to streamline the development process for 
 
 > [!WARNING]
 > ⚠️⚠️⚠️
-> This project is a work-in-progress. Many of the features listed below are in the planning stages, and have not been implemented yet. Check back regularly for updates!
+> 
+> This project is a work-in-progress. Many of the features listed below are in the planning stages, and have not been implemented yet.
+> Check back regularly for updates!
 
 ## Roadmap
 
