@@ -16,7 +16,7 @@ Welcome to the official repository for the MRS Electronic Qt Software Developmen
 
 ## Overview
 
-The MRS Electronic Qt SDK is designed to streamline the development process for applications targeting MRS Electronic hardware platforms. It includes pre-built Qt modules, device-specific plugins, and utilities that simplify integration with MRS Electronic products.
+The MRS Electronic Qt SDK is designed to streamline the development process for applications targeting MRS Electronic hardware platforms. It includes a variety of pre-built Qt-based utilities that provide drop-in functionality for such tasks as interfacing with GPIO and CAN, communicating with the co-processor and modem, and integrating with the Spoke.Zone feature set.
 
 > [!WARNING]
 > ⚠️⚠️⚠️
