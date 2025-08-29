@@ -33,6 +33,7 @@ The MRS Electronic Qt SDK is designed to streamline the development process for 
 - [ ] CAN bus utilities
 - [ ] Add demo application for [NeuralPlex](https://neuralplex.dev)
 - [ ] Add demo application for [MConn](https://mconn.dev)
+- [ ] Add tool for generating IPK from user application
 - [ ] MQTT utilities
 - [ ] Integrate with the [Spoke.Zone Data Files API](https://docs.spoke.zone/developers/device-integration/data-file-uploads/)
 - [ ] Integrate with Spoke.Zone Alerts
