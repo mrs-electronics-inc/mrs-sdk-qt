@@ -21,14 +21,17 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  # This is the location of the Astro site.
   BUILD_PATH: "docs"
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-22.04
+    # This image is custom-built for Starlight deployments.
     container:
       image: ghcr.io/${{ github.repository }}/astro-pages-deploy:latest
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,13 +49,14 @@ jobs:
         with:
           path: ${{ env.BUILD_PATH }}/dist
 
+  # This job is the standard setup for GitHub Pages deployment.
   deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     needs: build
-    runs-on: ubuntu-22.04
-    name: Deploy
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
