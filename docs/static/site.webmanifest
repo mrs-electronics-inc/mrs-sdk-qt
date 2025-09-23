@@ -1,6 +1,6 @@
 {
-  "name": "MRS Electronics - Developer Hub",
-  "short_name": "Dev Hub",
+  "name": "MRS Qt SDK Documentation",
+  "short_name": "MRS Qt SDK",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
