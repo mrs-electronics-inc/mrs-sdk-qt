@@ -49,6 +49,8 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.BUILD_PATH }}/public
 
   # This job is the standard setup for GitHub Pages deployment.
   deploy:
