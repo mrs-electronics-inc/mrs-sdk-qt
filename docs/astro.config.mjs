@@ -6,6 +6,8 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	site: 'https://qt.mrs-electronics.dev',
 	base: '/',
+	outDir: './dist',
+	publicDir: './public',
 	integrations: [
 		starlight({
 			title: 'MRS Qt SDK Docs',
