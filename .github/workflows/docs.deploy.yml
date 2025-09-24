@@ -3,10 +3,10 @@ name: Deploy docs site to GitHub Pages
 on:
   push:
     branches: [ main ]
-    paths: [ 'docs/**', '.github/workflows/docs.build-deploy-github-pages.yml' ]
+    paths: [ 'docs/**', '.github/workflows/docs.deploy.yml' ]
   pull_request:
     branches: [ main ]
-    paths: [ 'docs/**', '.github/workflows/docs.build-deploy-github-pages.yml' ]
+    paths: [ 'docs/**', '.github/workflows/docs.deploy.yml' ]
 
   # Allows for running this workflow manually from the Actions tab
   # workflow_dispatch:
@@ -47,7 +47,7 @@ jobs:
       - name: Build with Astro
         run: |
           npm run build \
-            -- --site "${{ steps.pages.outputs.origin }}" \
+            --site "${{ steps.pages.outputs.origin }}" \
             --base "${{ steps.pages.outputs.base_path }}"
         working-directory: ${{ env.BUILD_PATH }}
       - name: Upload artifact
