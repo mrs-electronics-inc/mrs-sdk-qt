@@ -85,10 +85,7 @@ Coming soon!
 
 ## Documentation
 
-Comprehensive documentation is coming soon in the `docs` directory.
-
-<!-- TODO(#3): add docs as astro site in the docs directory and host them on GitHub pages -->
-
+Comprehensive documentation can be found at https://qt.mrs-electronics.dev.
 
 ## License
 
