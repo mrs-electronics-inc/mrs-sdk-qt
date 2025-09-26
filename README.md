@@ -20,15 +20,16 @@ The MRS Electronic SDK for Qt is designed to streamline the development process 
 
 > [!WARNING]
 > ⚠️⚠️⚠️
-> 
+>
 > This project is a work-in-progress. Many of the features listed below are in the planning stages, and have not been implemented yet.
 > Check back regularly for updates!
 
 ## Roadmap
 
+- [x] Add documentation site
+- [ ] Add design documents
 - [ ] Set up the Qt project
 - [ ] Integrate with the [Spoke.Zone OTA API](https://docs.spoke.zone/developers/device-integration/ota-file-downloads/)
-- [ ] Add documentation site
 - [ ] Add auto-generated API docs
 - [ ] CAN bus utilities
 - [ ] Add demo application for [NeuralPlex](https://neuralplex.dev)
@@ -56,18 +57,19 @@ Coming soon!
 
 <!-- TODO(#5): add prequisites -->
 
-
 ## Installation
 
 ### From Source
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/MRSElectronics/qt-sdk.git
    cd qt-sdk
    ```
 
 2. Initialize submodules:
+
    ```bash
    git submodule update --init --recursive
    ```
@@ -77,10 +79,10 @@ Coming soon!
 
 <!-- TODO(#5): Add build instructions once we have them -->
 
-
 ## Getting Started
 
 Coming soon!
+
 <!-- TODO(#4): add getting started info, with basic example code blocks -->
 
 ## Documentation
