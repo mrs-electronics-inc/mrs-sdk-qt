@@ -10,7 +10,7 @@ export default defineConfig({
 	publicDir: './public',
 	integrations: [
 		starlight({
-			title: 'MRS Qt SDK Docs',
+			title: 'MRS Qt SDK',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/mrs-electronics-inc/mrs-sdk-qt' }],
 			sidebar: [
 				{
