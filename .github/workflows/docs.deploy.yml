@@ -1,0 +1,66 @@
+name: Deploy docs site to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'docs/**', '.github/workflows/docs.deploy.yml' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ 'docs/**', '.github/workflows/docs.deploy.yml' ]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  # This is the location of the Astro site in the repo.
+  BUILD_PATH: "docs"
+
+jobs:
+  # This job builds the site. It is run on every PR to ensure the site builds before merging.
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ env.BUILD_PATH }}
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Build with Astro
+        run: npm run build
+        working-directory: ${{ env.BUILD_PATH }}
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # This is the output directory for the site build.
+          path: ${{ env.BUILD_PATH }}/dist
+
+  # This job is the standard setup for GitHub Pages deployment.
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    name: Deploy
+    runs-on: ubuntu-22.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
