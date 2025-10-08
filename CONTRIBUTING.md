@@ -4,11 +4,21 @@ Contributions from others are more than welcome here! This is an open-source pro
 
 ## Getting Started
 
-### Project Setup
+Follow these instructions to install the necessary components on your system for development of the SDK.
 
-Follow these steps to install the necessary pre-reqs on your system.
+### Install Qt
 
-1. **Install Qt.** Refer to [this page](https://qt.mrs-electronics.dev/guides/installation) on how to do it.
+Refer to [this page](https://qt.mrs-electronics.dev/guides/installation) on how to do it. You'll need the cross-compiler toolchains for our Buildroot and Yocto operating systems, so it's not just a vanilla Qt installation.
+
+### Set Up Repo
+
+```bash
+# Clone repo.
+git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt.git
+cd mrs-sdk-qt
+# Set up submodules.
+git submodule update --init --recursive
+```
 
 ## Issue Workflow
 
