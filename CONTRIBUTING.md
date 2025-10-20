@@ -177,8 +177,50 @@ Before marking a PR as `ready`, verify the following:
 - The PR title follows conventional commit formatting
 - Summary of changes and list of test steps are provided in the PR description
 
+Do not assign the PR to a GitHub project. Those are meant for issues only.
+
 Once your PR is marked `ready`, assign a maintainer to review it. More details on the code review process are found in the next section.
 
-## Code Review Expectations
+## Code Review Guidelines
 
-This section outlines the general process for code review in this project. We have some ground rules for how interactions between assignees and reviewers should take place.
+This section outlines the general process for code review in this project. We have some ground rules for how interactions between authors and reviewers should take place.
+
+### Reviewing Others' Code
+
+When someone else requests your review on a PR, try to **do so in a timely manner**. The longer PRs stay open, the more likely they are to have merge conflicts, and it also prevents the author from moving on to other issues.
+
+Here are the steps for reviewing code:
+
+1. Go through the test steps in the PR description.
+2. If any of the tests fail, then submit your review with changes requested and a comment indicating which test failed and what exactly went wrong.
+    - Be as specific as possible about what failed. Include the exact steps you took and any relevant debug output.
+    - Mark the PR as `draft` so that it cannot be accidentally merged.
+3. Do your best to test scenarios that may not be explicitly listed in the PR description.
+4. If all testing passes, then move to reviewing the implementation.
+    - Keep in mind, you are only reviewing the test cases in the PR description. Do not request changes if a PR does not meet the acceptance criteria in the issue. It's possible that the dev plans to implement those changes in another PR.
+4. Make comments/suggestions on any places in the code where you have concerns or see room for improvement.
+    - Use the **Start a review** button to add comments so that none of them are published until you submit your review.
+5. Once you have finished reviewing the code, submit your review.
+    - If there are things that need changed, then summarize what needs changed and request changes. Mark the PR as `draft` after doing so.
+    - If everything looks good, then approve the PR.
+
+If you requested changes, then wait for the author to re-request your review and mark the PR as `ready` again. Once they do that, repeat these steps. This cycle should continue as many times as needed until the PR is ready for merge.
+
+### Change Requests on Your Code
+
+Once you have submitted your code for review, there is nothing else that needs done on your end until the reviewer finishes their review.
+
+Here are the steps for responding to change requests on your code:
+
+1. If the reviewer found bugs or failed tests, go through the steps they provided for reproducing each bug. Resolve those problems first.
+2. If the reviewer requested code improvements, and they were not made obselete by bugfixes, then implement the requests.
+3. Mark the PR as `ready` and re-request review so that the reviewer knows the code is ready for a second round of review.
+
+### Merging PRs
+
+Once a PR has all of the necessary approvals (and all Actions checks are passing) then it is ready to be merged. All merges should be done by the reviewers/project maintainers.
+
+All PRs should be merged via squash-merging, and the feature branch should be deleted after it is merged.
+
+After your PR is merged, then the issue can be [updated appropriately](#completing-an-issue).
+
