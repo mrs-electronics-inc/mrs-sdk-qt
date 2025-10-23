@@ -1,6 +1,6 @@
 # Contributor Manual
 
-Contributions from others are more than welcome here! This is an open-source project, after all. While we do use this product for commercial purposes, we also want it to be a helpful resource to the open-source community!
+Contributions from others are more than welcome here! This project is open-source in order to facilitate integration, customization, and improvement of our SDK for you and your hardware setup.
 
 ## Getting Started
 
@@ -69,17 +69,6 @@ In this project, each milestone corresponds to an upcoming release. All issues d
 
 The project managers will take care of assigning issues to the correct milestones. DO NOT change an issue to another milestone yourself.
 
-### Choosing an Issue to Work
-
-**Do NOT work on any issues that are not assigned to you.** If you have no issues assigned to you, communicate that to a project manager. Do not assign yourself to issues without a PM's approval.
-
-Once you have a few issues assigned to you that are ready for work, prioritize them as follows:
-
-1. If the issue has a due date, MAKE SURE it is done by that date. Issues are not required to have a due date so there must be a pretty good reason for it to have one.
-2. Work on higher-priority issues before lower-priority issues. If you have an issues marked as 'Hot Fix' then it should be worked ASAP.
-3. Work on issues assigned to the next upcoming milestone before working on issues for future milestones.
-4. Work on "heavier" (higher weight) issues before "lighter" (lower weight) issues. These "heavier" issues are typically more important, and it is good to start on them sooner rather than later because of the longer development time.
-
 ### Beginning Work on an Issue
 
 Before working on an issue that is assigned to you, make sure that the following things have all been completed:
@@ -122,14 +111,14 @@ This section outlines the general process for development of new code in this pr
 
 ### Git Branching
 
-As of now, all repos in this project utilize the trunk-based branching strategy. The `main` branch is the default branch, and all other branches are created from `main`.
+This repo utilizes the trunk-based branching strategy. The `main` branch is the default branch, and all other branches are created from `main`.
 
 When you begin work on an issue, create a branch off of `main`. The branch name should follow the pattern `<issue-num>-<issue-title>`.
 
 ```bash
 git checkout main
 git pull origin main
-# Example branchname from an old issue
+# Example: check out a branch for issue #3
 git checkout -b 3-docs-astro-site
 ```
 
