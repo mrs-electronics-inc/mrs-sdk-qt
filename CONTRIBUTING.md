@@ -28,7 +28,7 @@ We have some conventions for the issue workflow in this project that we expect a
 
 All issues in the SDK project are managed from [this GitHub project](https://github.com/orgs/mrs-electronics-inc/projects/4/views/1).
 
-All new SDK issues should be assigned to this project. The defaults should be `Planning` for status and `Normal` for priority. The project managers will look at the new issue and triage it appropriately.
+All new SDK issues should be assigned to this project. The defaults should be `Planning` for status and `Normal` for priority. The maintainers will look at the new issue and triage it appropriately.
 
 **This GitHub project is the single source of truth for project status.** So, we expect all contributors to update their issues as work progresses to ensure that the GitHub project is always up-to-date.
 
@@ -67,7 +67,7 @@ If an issue's weight is greater than or equal to `4`, or 2 days' worth of work, 
 
 In this project, each milestone corresponds to an upcoming release. All issues desired for a release should be assigned to its milestone.
 
-The project managers will take care of assigning issues to the correct milestones. DO NOT change an issue to another milestone yourself.
+The maintainers will take care of assigning issues to the correct milestones. DO NOT change an issue to another milestone yourself.
 
 ### Beginning Work on an Issue
 
@@ -91,7 +91,7 @@ If all of these things are done, then move the issue to the `In Progress` status
 
 An issue should stay in status `In Progress` until you have a pull request that is ready for review.
 
-If you discover that something in the issue description needs changed/updated, feel free to do so, but make sure that large revisions are vetted by a project manager before you continue development. This helps avoid scope creep. You can get a PM's input by tagging them in a comment on the issue.
+If you discover that something in the issue description needs changed/updated, feel free to do so, but make sure that large revisions are vetted by a maintainer before you continue development. This helps avoid scope creep. You can get a PM's input by tagging them in a comment on the issue.
 
 As you develop code for each item in the proposal checklist, check that item off of the list so that maintainers can see how you're progressing.
 
