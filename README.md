@@ -13,6 +13,7 @@ Welcome to the official repository for the MRS Electronic Software Development K
 - [Documentation](#documentation)
 - [License](#license)
 - [Contact](#contact)
+- [Contributing](#contributing)
 
 ## Overview
 
@@ -64,8 +65,8 @@ Coming soon!
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/MRSElectronics/qt-sdk.git
-   cd qt-sdk
+   git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt.git
+   cd mrs-sdk-qt
    ```
 
 2. Initialize submodules:
@@ -96,3 +97,7 @@ This project is MIT licensed. See the [LICENSE](./LICENSE) file for more details
 ## Contact
 
 Feel free to reach out by emailing us at info@mrs-electronics.com, or by creating a new post in the [discussion boards](https://github.com/mrs-electronics-inc/mrs-sdk-qt/discussions).
+
+## Contributing
+
+**Contributors are welcome!!** Refer to our [contributing guide](./CONTRIBUTING.md) to get started.
