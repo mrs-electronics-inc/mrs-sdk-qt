@@ -49,7 +49,6 @@ body:
     render: markdown
   validations:
     required: false
-- type: 
 - type: textarea
   id: logs
   attributes:
