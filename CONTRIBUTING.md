@@ -137,7 +137,7 @@ bool MyClass::myFunction()
 {
     // This guard clause makes initial checks on some potential security vulnerabilities.
     // See #206 for more information.
-    if (... extremely complicated guard clause)
+    if (someComplicatedGuardExpression)
     {
         return false;
     }
