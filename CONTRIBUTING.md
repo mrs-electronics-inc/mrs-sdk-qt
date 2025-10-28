@@ -78,7 +78,7 @@ Before working on an issue that is assigned to you, make sure that the following
 - Issue is assigned to the `MRS SDK` GitHub project, and has a status, priority, weight, and (optional) deadline
 - Issue has a properly fleshed out description:
   - Background info, benefits of the change: how did this issue come about? Why do we need to implement it?
-  - *For bugs only*: steps to reproduce the issue, relevant environment/context info (if applicable)
+  - _For bugs only_: steps to reproduce the issue, relevant environment/context info (if applicable)
   - Proposal (checklist): what things in the code need to change in order to complete this issue?
   - Acceptance criteria (checklist): what criteria must be met from a user's standpoint for this issue to be completed?
     - This is useful for QA testing prior to releases
@@ -133,18 +133,18 @@ If you notice something else in the codebase that needs refactored or represents
 This code snippet provides an example of how to include issue numbers:
 
 ```cpp
-bool MyClass::myFunction() 
+bool MyClass::myFunction()
 {
     // This guard clause makes initial checks on some potential security vulnerabilities.
     // See #206 for more information.
-    if (... extremely complicated guard clause) 
+    if (... extremely complicated guard clause)
     {
         return false;
     }
 
     // Open the network configuration files and read the parameters for SSH connections.
     // TODO(#507): verify that the files exist before trying to open them.
-    ... rest of function
+    // ... rest of function
     return true;
 }
 ```
@@ -182,16 +182,16 @@ Here are the steps for reviewing code:
 
 1. Go through the test steps in the PR description.
 2. If any of the tests fail, then submit your review with changes requested and a comment indicating which test failed and what exactly went wrong.
-    - Be as specific as possible about what failed. Include the exact steps you took and any relevant debug output.
-    - Mark the PR as `draft` so that it cannot be accidentally merged.
+   - Be as specific as possible about what failed. Include the exact steps you took and any relevant debug output.
+   - Mark the PR as `draft` so that it cannot be accidentally merged.
 3. Do your best to test scenarios that may not be explicitly listed in the PR description.
 4. If all testing passes, then move to reviewing the implementation.
-    - Keep in mind, you are only reviewing the test cases in the PR description. Do not request changes if a PR does not meet the acceptance criteria in the issue. It's possible that the dev plans to implement those changes in another PR.
-4. Make comments/suggestions on any places in the code where you have concerns or see room for improvement.
-    - Use the **Start a review** button to add comments so that none of them are published until you submit your review.
-5. Once you have finished reviewing the code, submit your review.
-    - If there are things that need changed, then summarize what needs changed and request changes. Mark the PR as `draft` after doing so.
-    - If everything looks good, then approve the PR.
+   - Keep in mind, you are only reviewing the test cases in the PR description. Do not request changes if a PR does not meet the acceptance criteria in the issue. It's possible that the dev plans to implement those changes in another PR.
+5. Make comments/suggestions on any places in the code where you have concerns or see room for improvement.
+   - Use the **Start a review** button to add comments so that none of them are published until you submit your review.
+6. Once you have finished reviewing the code, submit your review.
+   - If there are things that need changed, then summarize what needs changed and request changes. Mark the PR as `draft` after doing so.
+   - If everything looks good, then approve the PR.
 
 If you requested changes, then wait for the author to re-request your review and mark the PR as `ready` again. Once they do that, repeat these steps. This cycle should continue as many times as needed until the PR is ready for merge.
 
@@ -212,4 +212,3 @@ Once a PR has all of the necessary approvals (and all Actions checks are passing
 All PRs should be merged via squash-merging, and the feature branch should be deleted after it is merged.
 
 After your PR is merged, then the issue can be [updated appropriately](#completing-an-issue).
-
