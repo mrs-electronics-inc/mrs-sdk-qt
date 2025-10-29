@@ -8,14 +8,14 @@ type: Task
 body:
 - type: textarea
   attributes:
-  label: Background
-    description: A concise description of what is needed.
+    label: Description
+    description: A concise description of the task.
   validations:
     required: true
 - type: textarea
   attributes:
     label: Proposal
-    description: A checklist of how to accomplish it.
+    description: The implementation checklist.
   validations:
     required: false
 - type: checkboxes
