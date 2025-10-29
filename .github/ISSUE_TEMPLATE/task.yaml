@@ -1,0 +1,28 @@
+name: Task
+description: Record a chore that needs done.
+title: "chore: "
+projects: ["mrs-electronics-inc/4"]
+assignees:
+- pertempto
+type: Task
+body:
+- type: textarea
+  attributes:
+  label: Background
+    description: A concise description of what is needed.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Proposal
+    description: A checklist of how to accomplish it.
+  validations:
+    required: false
+- type: checkboxes
+  id: terms
+  attributes:
+    label: Contributing
+    description: By submitting this issue, you agree to follow our [contributor manual](https://github.com/mrs-electronics-inc/mrs-sdk-qt/blob/main/CONTRIBUTING.md).
+    options:
+      - label: I agree to follow this project's contributor manual
+        required: true
