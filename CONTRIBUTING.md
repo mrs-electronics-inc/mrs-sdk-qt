@@ -39,12 +39,7 @@ Creating new issues is highly encouraged, whether it's feature ideas, newly disc
 When you create an issue, try your best to do the following:
 
 - Give it a properly formatted title according to the [conventional commit standard](https://github.com/pvdlg/conventional-commit-types?tab=readme-ov-file#commit-types)
-- Set the issue type based on the title's prefix
-- Flesh out the different parts of the description
-
-MAKE SURE you assign the issue to the `MRS SDK` GitHub project.
-
-Once you have created the issue, tag a maintainer to let them know it was created so that they can triage the new issue appropriately.
+- Fill in the issue form.
 
 #### Issue Priorities
 

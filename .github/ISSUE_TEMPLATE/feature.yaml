@@ -1,0 +1,28 @@
+name: Feature
+description: Add a feature request.
+title: "feat: "
+projects: ["mrs-electronics-inc/4"]
+assignees:
+- bambam955
+type: Feature
+body:
+- type: textarea
+  attributes:
+    label: Description
+    description: A concise description of the feature.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Proposal
+    description: The implementation checklist.
+  validations:
+    required: false
+- type: checkboxes
+  id: terms
+  attributes:
+    label: Contributing
+    description: By submitting this issue, you agree to follow our [contributor manual](https://github.com/mrs-electronics-inc/mrs-sdk-qt/blob/main/CONTRIBUTING.md).
+    options:
+      - label: I agree to follow this project's contributor manual
+        required: true
