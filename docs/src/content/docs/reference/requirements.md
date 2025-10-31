@@ -13,56 +13,150 @@ This document outlines the benefits, goals, and general technical requirements f
 
 </details>
 
-## Benefits
+## 1 Benefits
 
 This SDK will greatly simplify the development process for software/firmware applications that target MRS Electronics hardware platforms.
 
 New and existing customers for any and all of our products will be able to quickly get started developing their own custom applications with well-built Qt-based utilities that provide drop-in functionality for such tasks as GPIO and CAN interfaces, Spoke.Zone/MQTT integration, and management of connected CAN modules.
 
-## Goals
+## 2 Goals
 
 This section defines the major goals for the SDK.
 
-- Supports the following MRS products:
-  - NeuralPlex
-  - MConn
-  - FUSION
-- Supports the following OS architectures:
-  - Yocto
-  - Buildroot
+### 2.1 Supported Environments
 
-## Features
+The SDK must be compatible with a variety of products, OS architectures, and compilation toolchains.
 
-### General
+- **MRS Products:** NeuralPlex, MConn, FUSION
+- **OS Architectures:** Yocto, Buildroot
+- **Qt Versions:**
+  - *5.9.1:* MConn/FUSION Buildroot toolchain
+  - *5.12.9:* MConn/FUSION Yocto toolchain
+  - *5.15.0:* Qt5 desktop toolchain
+  - *6.8.1* Neuralplex toolchain
 
-### Spoke.Zone Client
+### 2.2 Documentation
 
-#### MQTT Connectivity
+The SDK will need to be documented at an in-depth level to enable its effective use by developers.
 
-#### Spoke.Zone API Client
+Documentation will come in 2 forms:
 
-##### Data File Uploads
+- Extensive comments in the header files in the code to explain what the code does on a function-by-function basis
+- Detailed pages in the external documentation site for reference outside the code
 
-##### OTA Release Downloads
+If possible, the documentation in the website will contain auto-generated web versions of the comments in the code.
 
-##### Device Token Management
+## 3 Features
 
-#### Alerts
+### 3.1 Build System
 
-### CAN Bus
+The SDK must support a wide range of different [environments](#supported-environments). To accomplish this, a custom build system will be required.
 
-### Digital I/O
+This system needs to be compatible with both qmake and CMake. However, use of CMake will be encouraged, especially for NeuralPlex projects that use Qt6.
 
-### CAN Module Flasher
+The build system should be easy to configure from the developer side, and provide the following:
 
-### Utilities
+- Macros for dynamic compilation to different environments
+  - Example: an `MRS_NEURALPLEX` macro to enable NeuralPlex-specific code
+- Automatic configuration of build targets
+  - Example: MConn Yocto requires app executables to follow the naming format `normal.app.<short-name>` or `early.app.<short-name>`
 
-Threading helpers, general Qt helpers...
+### 3.2 Spoke.Zone Client
 
-### Tooling
+The SDK will include a full-featured client for the [Spoke.Zone](https://spoke.zone/) platform.
 
-maybe?
+Connected devices interact with Spoke.Zone in a variety of ways. Here are a few:
 
-### Future Features
+- Sending live dashboard data via MQTT
+- Uploading various forms of data files
+- OTA software updates
+- Triggering alerts
 
-for after MVP (?): modem, GPS, IMU, trace files, network management, co-processor interface, PWM, QTimer alternative
+The SDK's client will provide APIs for all of these features.
+
+See https://docs.spoke.zone/ for more information about the platform.
+
+#### 3.2.1 MQTT Connectivity
+
+The SDK will implement an MQTT client using the [`mosquitto`](https://mosquitto.org/api/files/mosquitto-h.html) library.
+
+Necessary features:
+
+- Simple API for applications to connect, disconnect, and reconnect the client
+- Simple but comprehensive configuration of the client: host, port, keepalive, username/password, etc
+- Simple API for publishing MQTT messages
+  - Only require QOS of `0` for now, but higher levels may be supported in the future
+- Ability for apps to monitor the current status of the client
+  - Apps should be able to dynamically receive status updates via Qt signal-slot connections
+
+The MQTT implementation must support both statically and dynamically linked `mosquitto` libraries according to the environment defined in the [build system](#build-system).
+
+#### 3.2.2 Spoke.Zone API Client
+
+The SDK will also provide a robust client for the Spoke.Zone devices API. This client will be accessible to applications and implemented in a way that minimizes the amount of boilerplate required by apps while still providing full functionality.
+
+##### 3.2.2.1 Data File Uploads
+
+Devices can upload data files of various types to Spoke.Zone using the process documented [here](https://docs.spoke.zone/developers/device-integration/data-file-uploads/).
+
+This process is somewhat complicated, simply because of the asynchronous back-and-forth that goes on between the device and Spoke.Zone. Because of this, the SDK's Spoke.Zone client will aim to abstract as much of the process as possible to make things simpler for applications.
+
+The client will include code that handles all of the sequential API requests and processing of responses required for the data file upload process. Its API should only require applications to specify the path of the file to be uploaded and then do the rest of the work with no more input from the app.
+
+Applications should be able to dynamically configure the following:
+
+- Delay time between upload attempts
+- Number of attempts to make on each file before failing and moving to another file
+
+The client should provide status updates to applications; specifically, it should provided detailed error information if an error is encountered.
+
+##### 3.2.2.2 OTA Release Downloads
+
+##### 3.2.2.3 Device Token Management
+
+Devices are authenticated with the Spoke.Zone platform via [access tokens](https://docs.spoke.zone/developers/device-integration/device-token-renewal/).
+
+The SDK's Spoke.Zone client will manage the device's access token without requiring any interaction from the main application.
+
+- Read the current token from the configuration file stored on the device
+- Determine its expiration date via the JWT-encoded payload
+- Refresh the token as the device gets closer to the expiration date via an API request
+  - Requires determining the device's CPU ID, which will need to work with all supported MRS products
+- Store the new token in the config file
+
+#### 3.2.3 Alerts
+
+The client will provide full support for the [Spoke.Zone alerts feature](https://docs.spoke.zone/reference/alert/).
+
+- Parse and save a device's alerts configuration based on MQTT message from Spoke.Zone
+- Cache all MQTT messages during runtime
+- Use message cache to monitor the status of each alert, and trigger an alert when all of its conditions are met
+  - Should support all condition configurations
+- Send alerts to S.Z via MQTT
+- Notify apps that an alert was triggered
+
+The monitoring of alerts is a somewhat intensive process, since each alert must be checked every time a new MQTT message is sent. The algorithm's implementation should be as streamlined as possible. If necessary, the alerts algorithm should be moved to its own worker thread to avoid blocking the main application.
+
+### 3.3 CAN Bus
+
+The CAN protocol is a core focus of MRS products, and thus it will be a core feature of the SDK.
+
+Qt provides a [basic API for CAN](https://doc.qt.io/qt-6/qtcanbus-backends.html)
+
+### 3.4 Digital I/O
+
+### 3.5 CAN Module Flasher
+
+### 3.6 Utilities
+
+Threading helpers, singletons, display brightness control, general Qt helpers...
+
+### 3.7 Tooling
+
+Package generation (IPK, DEB)
+
+CAN code generator?
+
+### 3.8 Future Features
+
+for after MVP (?): modem, GPS, IMU, trace files, network management, co-processor interface, PWM, QTimer alternative, modular compilation targets
