@@ -141,11 +141,27 @@ The monitoring of alerts is a somewhat intensive process, since each alert must 
 
 The CAN protocol is a core focus of MRS products, and thus it will be a core feature of the SDK.
 
-Qt provides a [basic API for CAN](https://doc.qt.io/qt-6/qtcanbus-backends.html)
+Qt provides a [basic API for CAN](https://doc.qt.io/qt-6/qtcanbus-backends.html) that will be used as the backbone of the SDK's CAN API.
+
+The SDK will implement a proxy interface for CAN buses...
 
 ### 3.4 Digital I/O
 
 ### 3.5 CAN Module Flasher
+
+The SDK will implement MRS's proprietary protocol for flashing connected CAN modules.
+
+The flasher implementation will require integration with a CAN bus proxy interface via Qt signal-slot connections.
+
+The flasher API will be simple:
+
+- The `scan` method will scan the connected CAN bus for MRS modules
+  - Results will be returned as a list of objects containing all the relevant data about the modules
+- The `select` method will tell one of the selected modules to prepare for flashing
+- The `flash` method will read the given S19 package file and flash it to the module
+  - Download progress will be incrementally reported back to the app
+
+The flasher will be responsible for notifying the app of the results of each operation and providing robust error handling and output for any issues that occur.
 
 ### 3.6 Utilities
 
