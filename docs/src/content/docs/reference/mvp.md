@@ -1,6 +1,6 @@
 ---
-title: MVP Requirements
-description: This page documents all of the features required for the MVP of the Qt SDK.
+title: MVP Overview
+description: This page outlines the benefits, goals, and features required for the MVP.
 ---
 
 This document outlines the benefits, goals, and general technical requirements for the Minimum Viable Product (MVP) of the MRS Qt SDK.
@@ -50,9 +50,9 @@ If possible, the documentation in the website will contain auto-generated web ve
 
 ### 3.1 Build System
 
-The SDK must support a wide range of different [environments](#supported-environments). To accomplish this, a custom build system will be required.
+The SDK must support a wide range of different [environments](#supported-environments). To accomplish this, a small custom build system will be required.
 
-This system needs to be compatible with both qmake and CMake. However, use of CMake will be encouraged, especially for NeuralPlex projects that use Qt6.
+This system needs to be compatible with both QMake and CMake. However, use of CMake will be encouraged, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
 The build system should be easy to configure from the developer side, and provide the following:
 
@@ -68,11 +68,11 @@ The SDK will include a full-featured client for the [Spoke.Zone](https://spoke.z
 Connected devices interact with Spoke.Zone in a variety of ways. Here are a few:
 
 - Sending live dashboard data via MQTT
-- Uploading various forms of data files
+- Uploading various types of data files
 - OTA software updates
 - Triggering alerts
 
-The SDK's client will provide APIs for all of these features.
+The SDK's client will provide a convenient interface for all of these features.
 
 See https://docs.spoke.zone/ for more information about the platform.
 
@@ -93,7 +93,7 @@ The MQTT implementation must support both statically and dynamically linked `mos
 
 #### 3.2.2 Spoke.Zone API Client
 
-The SDK will also provide a robust client for the Spoke.Zone devices API. This client will be accessible to applications and implemented in a way that minimizes the amount of boilerplate required by apps while still providing full functionality.
+The SDK will also provide a robust client for integrating with the Spoke.Zone API. This client will be accessible to applications and implemented in a way that minimizes the amount of boilerplate required by apps while still providing full functionality.
 
 ##### 3.2.2.1 Data File Uploads
 
@@ -106,7 +106,7 @@ The client will include code that handles all of the sequential API requests and
 Applications should be able to dynamically configure the following:
 
 - Delay time between upload attempts
-- Number of attempts to make on each file before failing and moving to another file
+- Number of attempts to make for each file before failing and moving to another file
 
 The client should provide status updates to applications; specifically, it should provided detailed error information if an error is encountered.
 
