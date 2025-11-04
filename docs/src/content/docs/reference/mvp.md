@@ -108,7 +108,7 @@ Applications should be able to dynamically configure the following:
 - Delay time between upload attempts
 - Number of attempts to make for each file before failing and moving to another file
 
-The client should provide status updates to applications; specifically, it should provided detailed error information if an error is encountered.
+The client should provide status updates to applications; specifically, it should provide detailed error information if an error is encountered.
 
 ##### 3.2.2.2 OTA Release Downloads
 
