@@ -52,7 +52,7 @@ If possible, the documentation in the website will contain auto-generated web ve
 
 The SDK must support a wide range of different [environments](#supported-environments). To accomplish this, a small custom build system will be required.
 
-This system needs to be compatible with both QMake and CMake. However, use of CMake will be encouraged, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
+This system needs to be compatible with both QMake and CMake. However, we encourage using CMake, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
 The build system should be easy to configure from the developer side, and provide the following:
 
