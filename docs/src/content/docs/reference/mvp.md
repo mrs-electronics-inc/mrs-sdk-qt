@@ -9,7 +9,7 @@ This document outlines the benefits, goals, and general technical requirements f
 
 | Version | Date | Author | Comments |
 | --- | --- | --- | --- |
-| 1.0 | 10/30/2025 | Bennett Moore | Initial version |
+| 1.0 | ??? | Bennett Moore | Initial version |
 
 </details>
 
@@ -37,7 +37,7 @@ The SDK must be compatible with a variety of products, OS architectures, and com
 
 ### 2.2 Documentation
 
-The SDK will need to be documented at an in-depth level to enable its effective use by developers.
+The SDK will be documented at an in-depth level to enable its effective use by developers.
 
 Documentation will come in 2 forms:
 
@@ -149,9 +149,9 @@ The SDK will implement a proxy interface for CAN buses...
 
 ### 3.5 CAN Module Flasher
 
-The SDK will implement MRS's proprietary protocol for flashing connected CAN modules.
+The SDK will include a closed-source implementation of MRS's proprietary protocol for flashing connected CAN modules.
 
-The flasher implementation will require integration with a CAN bus proxy interface via Qt signal-slot connections.
+Using the flasher will require integration with a CAN bus proxy interface via Qt signal-slot connections.
 
 The flasher API will be simple:
 
@@ -169,10 +169,26 @@ Threading helpers, singletons, display brightness control, general Qt helpers...
 
 ### 3.7 Tooling
 
-Package generation (IPK, DEB)
+In addition to the source code itself, the Qt SDK will provide some useful tools to assist developers with various processes, such as generating boilerplate code and creating new releases.
 
-CAN code generator?
+#### Package Generation
+
+The standard way of deploying your Qt applications to devices is to bundle them into packages that can be installed by the package manager programs on the display. The process for doing so has quite a few steps and can be tedious to do over and over, so the SDK will include specialized tools for generating these packages.
+
+Buildroot and Yocto operating systems require different package structures because they have different package manager programs: Buildroot includes `opkg` and Yocto includes `dpkg`. The SDK needs to support both.
+
+There will be two scripts, one for IPKs (`opkg`) and another for Debian packages (`dpkg`). Each will include the following:
+
+- User inputs/arguments:
+  - Package version number
+  - Any desired overrides to static config
+- Static configuration file:
+  - Location of app executable
+  - Location of maintainer scripts (optional)
+  - Location of any other files that need included in the package besides the app executable
+    - Example: default config files, utility scripts
+  - Control file info: package name, organization name, targeted architectures, etc
 
 ### 3.8 Future Features
 
-for after MVP (?): modem, GPS, IMU, trace files, network management, co-processor interface, PWM, QTimer alternative, modular compilation targets
+for after MVP (?): modem, GPS, IMU, trace files, network management, co-processor interface, PWM, QTimer alternative, modular compilation targets, CAN code generator
