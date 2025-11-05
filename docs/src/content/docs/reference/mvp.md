@@ -46,6 +46,14 @@ Documentation will come in 2 forms:
 
 If possible, the documentation in the website will contain auto-generated web versions of the comments in the code.
 
+### 2.3 Automated Testing
+
+A detailed suite of unit tests will be implemented for the SDK to make the codebase as stable as possible.
+
+Full test coverage is not necessary for MVP; however, that should be a long-term goal, and the MVP must get as close to full coverage as reasonably possible.
+
+The unit tests will be run automatically using CI/CD jobs.
+
 ## 3 Features
 
 ### 3.1 Build System
@@ -54,12 +62,13 @@ The SDK must support a wide range of different [environments](#supported-environ
 
 This system needs to be compatible with both QMake and CMake. However, we encourage using CMake, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
-The build system should be easy to configure from the developer side, and provide the following:
+The build system will be easy to configure from the developer side and provide the following:
 
 - Macros for dynamic compilation to different environments
-  - Example: an `MRS_NEURALPLEX` macro to enable NeuralPlex-specific code
+  - Example: an `MRS_DEVICE_NEURALPLEX` macro to enable NeuralPlex-specific code
 - Automatic configuration of build targets
   - Example: MConn Yocto requires app executables to follow the naming format `normal.app.<short-name>` or `early.app.<short-name>`
+- Out-of-the-box support for linking the `mosquitto` and CAN flasher libraries when required by parts of the SDK
 
 ### 3.2 Spoke.Zone Client
 
@@ -76,43 +85,20 @@ The SDK's client will provide a convenient interface for all of these features.
 
 See https://docs.spoke.zone/ for more information about the platform.
 
-#### 3.2.1 MQTT Connectivity
-
-The SDK will implement an MQTT client using the [`mosquitto`](https://mosquitto.org/api/files/mosquitto-h.html) library.
-
-Necessary features:
-
-- Simple API for applications to connect, disconnect, and reconnect the client
-- Simple but comprehensive configuration of the client: host, port, keepalive, username/password, etc
-- Simple API for publishing MQTT messages
-  - Only require QOS of `0` for now, but higher levels may be supported in the future
-- Ability for apps to monitor the current status of the client
-  - Apps should be able to dynamically receive status updates via Qt signal-slot connections
-
-The MQTT implementation must support both statically and dynamically linked `mosquitto` libraries according to the environment defined in the [build system](#build-system).
-
-#### 3.2.2 Spoke.Zone API Client
+#### 3.2.1 Spoke.Zone API Client
 
 The SDK will also provide a robust client for integrating with the Spoke.Zone API. This client will be accessible to applications and implemented in a way that minimizes the amount of boilerplate required by apps while still providing full functionality.
 
-##### 3.2.2.1 Data File Uploads
+The methods for making all API requests will use the following general signature:
 
-Devices can upload data files of various types to Spoke.Zone using the process documented [here](https://docs.spoke.zone/developers/device-integration/data-file-uploads/).
+```cpp
+template<typename T = QObject>
+bool apiMethod(..., T* receiver, void (T::*callback)(const ApiResponse&), int timeoutSec);
+```
 
-This process is somewhat complicated, simply because of the asynchronous back-and-forth that goes on between the device and Spoke.Zone. Because of this, the SDK's Spoke.Zone client will aim to abstract as much of the process as possible to make things simpler for applications.
+In other words, since all API requests are asynchronous, the methods for making requests will require the app to specify a callback to be executed when the response is returned.
 
-The client will include code that handles all of the sequential API requests and processing of responses required for the data file upload process. Its API should only require applications to specify the path of the file to be uploaded and then do the rest of the work with no more input from the app.
-
-Applications should be able to dynamically configure the following:
-
-- Delay time between upload attempts
-- Number of attempts to make for each file before failing and moving to another file
-
-The client should provide status updates to applications; specifically, it should provide detailed error information if an error is encountered.
-
-##### 3.2.2.2 OTA Release Downloads
-
-##### 3.2.2.3 Device Token Management
+##### 3.2.1.1 Device Token Management
 
 Devices are authenticated with the Spoke.Zone platform via [access tokens](https://docs.spoke.zone/developers/device-integration/device-token-renewal/).
 
@@ -124,6 +110,47 @@ The SDK's Spoke.Zone client will manage the device's access token without requir
   - Requires determining the device's CPU ID, which will need to work with all supported MRS products
 - Store the new token in the config file
 
+##### 3.2.1.2 Data File Uploads
+
+Devices can upload data files of various types to Spoke.Zone using the process documented [here](https://docs.spoke.zone/developers/device-integration/data-file-uploads/).
+
+This process is somewhat complicated, simply because of the asynchronous back-and-forth that goes on between the device and Spoke.Zone. Because of this, the SDK's Spoke.Zone client will aim to abstract as much of the process as possible to make things simpler for applications.
+
+The client will include code that handles all of the sequential API requests and processing of responses required for the data file upload process. Its API will only require applications to specify the path of the file to be uploaded and then do the rest of the work with no more input from the app.
+
+Applications will be able to dynamically configure the following:
+
+- Delay time between upload attempts
+- Number of attempts to make for each file before failing and moving to another file
+
+The client will provide status updates to applications; specifically, it will provide detailed error information if an error is encountered.
+
+##### 3.2.1.3 OTA Release Downloads
+
+Devices can fetch OTA releases from Spoke.Zone using the process documented [here](https://docs.spoke.zone/developers/device-integration/ota-file-downloads/).
+
+The client will take care of most of the process. Its API will provide simple methods to fetch the list of available OTA files; programmatically review the response to choose the desired release; and download the binary file associated with the release from Spoke.Zone.
+
+Applications will be able to filter the available releases list using the options documented [here](https://api.spoke.zone/api-docs/#/ota-files/getOtaFiles).
+
+Downloading an OTA release binary from Spoke.Zone will likely take longer than an average API request; to mitigate the effects of this, binaries will be downloaded in a separate worker thread.
+
+#### 3.2.2 MQTT Connectivity
+
+The SDK will implement an MQTT client using the [`mosquitto`](https://mosquitto.org/api/files/mosquitto-h.html) library.
+
+Necessary features:
+
+- Simple API for applications to connect, disconnect, and reconnect the client
+- Simple but comprehensive configuration of the client: host, port, keepalive, username/password, etc
+- Simple API for publishing MQTT messages
+  - Only require QOS of `0` for now, but higher levels may be supported in the future
+- Ability for apps to monitor the current status of the client
+  - Apps will be able to dynamically receive status updates via Qt signal-slot connections
+- Simple API for listening to a specific MQTT command or set of commands
+
+The MQTT implementation must support both statically and dynamically linked `mosquitto` libraries according to the environment defined in the [build system](#build-system).
+
 #### 3.2.3 Alerts
 
 The client will provide full support for the [Spoke.Zone alerts feature](https://docs.spoke.zone/reference/alert/).
@@ -131,7 +158,7 @@ The client will provide full support for the [Spoke.Zone alerts feature](https:/
 - Parse and save a device's alerts configuration based on MQTT message from Spoke.Zone
 - Cache all MQTT messages during runtime
 - Use message cache to monitor the status of each alert, and trigger an alert when all of its conditions are met
-  - Should support all condition configurations
+  - Will support all condition configurations
 - Send alerts to S.Z via MQTT
 - Notify apps that an alert was triggered
 
@@ -144,8 +171,23 @@ The CAN protocol is a core focus of MRS products, and thus it will be a core fea
 Qt provides a [basic API for CAN](https://doc.qt.io/qt-6/qtcanbus-backends.html) that will be used as the backbone of the SDK's CAN API.
 
 The SDK will implement a proxy interface for CAN buses...
+<!-- TODO -->
 
-### 3.4 Digital I/O
+### 3.4 Digital GPIOs
+
+MRS products all include a variety of GPIO pins. The SDK must provide an easy interface for setting up, reading from, and writing to these pins.
+
+Reading and writing to and from pins must be fully synchronous and as error-free as possible.
+
+#### 3.4.1 Device-Specific Pin Configurations
+
+The SDK will be designed with support for multiple [MRS products](#supported-environments), each of which has its own GPIO configuration. To fully support all devices, the SDK must leverage the [build system](#build-system) to know which GPIO pins to make available to applications in different environments.
+
+#### 3.4.2 Digital GPIO Listeners
+
+The SDK will provide a convenient API for applications to "listen" to a certain GPIO pin. For these pins, the SDK will take care of polling the pin values and notifying the application when a value changes.
+
+When the application registers a listener for a specific pin, the pin will be added to a list of polled pins, and the SDK will read the values at a specified time interval. Applications will be able to configure the length of this polling interval.
 
 ### 3.5 CAN Module Flasher
 
@@ -159,19 +201,47 @@ The flasher API will be simple:
   - Results will be returned as a list of objects containing all the relevant data about the modules
 - The `select` method will tell one of the selected modules to prepare for flashing
 - The `flash` method will read the given S19 package file and flash it to the module
-  - Download progress will be incrementally reported back to the app
+  - Download progress will be incrementally reported back to the app as the S19 is flashed
 
 The flasher will be responsible for notifying the app of the results of each operation and providing robust error handling and output for any issues that occur.
 
-### 3.6 Utilities
+#### 3.5.1 Closed-Source Proprietary Flashing Protocol
 
-Threading helpers, singletons, display brightness control, general Qt helpers...
+MRS's protocol for flashing connected CAN modules is proprietary, and thus the implementation of the protocol cannot be entirely open-source.
+
+We recognize that this somewhat undermines the open-source goals of the SDK; however, we decided it would be better to provide a closed-source implementation for use in the SDK than no implementation at all.
+
+So, the CAN flasher library will be precompiled and the binary stored in the SDK repository. Then, during compilation, the library will be statically linked to the rest of the SDK. This is similar to the pattern we use for the `mosquitto` MQTT library in the Spoke.Zone client implementation.
+
+### 3.6 General Utilities
+
+The following small features and code utilities will be provided in addition to the features previously listed.
+
+#### 3.6.1 Display Brightness Control
+
+The SDK will provide a simple API for applications to manage the brightness of the device's LCD display, if it has one.
+
+Applications will be able to:
+
+- Set the brightness to an arbitrary value (range from `0-100`)
+- Configure "awake" and "asleep" brightness values
+- Call `sleep` and `wake` functions to send the brightness to those configured values
+
+The SDK will leverage the [build system](#build-system) to make this API available only on devices that have an LCD display.
+
+#### 3.6.2 Threading
+
+The SDK will provide a class used for running functions in worker threads. This will be the class used in other parts of the SDK for running heavy operations in separate threads.
+
+#### 3.6.3 Singletons
+
+The SDK will provide a template for using the singleton/service pattern with a class. This template will be used internally for various classes.
 
 ### 3.7 Tooling
 
-In addition to the source code itself, the Qt SDK will provide some useful tools to assist developers with various processes, such as generating boilerplate code and creating new releases.
+In addition to the source code itself, the Qt SDK will provide some useful tools to assist developers with various processes, such as generating boilerplate code (eventually) and creating new releases.
 
-#### Package Generation
+#### 3.7.1 Package Generation
 
 The standard way of deploying your Qt applications to devices is to bundle them into packages that can be installed by the package manager programs on the display. The process for doing so has quite a few steps and can be tedious to do over and over, so the SDK will include specialized tools for generating these packages.
 
@@ -188,6 +258,10 @@ There will be two scripts, one for IPKs (`opkg`) and another for Debian packages
   - Location of any other files that need included in the package besides the app executable
     - Example: default config files, utility scripts
   - Control file info: package name, organization name, targeted architectures, etc
+- Automated steps to generate packages from all of the files specified by the user
+- Move the package to wherever the user wants it in their filesystem
+- Clean up all leftover files from the packaging process
+  - Remove generated control files
 
 ### 3.8 Future Features
 
