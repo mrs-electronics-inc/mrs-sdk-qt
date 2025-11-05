@@ -265,4 +265,4 @@ There will be two scripts, one for IPKs (`opkg`) and another for Debian packages
 
 ### 3.8 Future Features
 
-for after MVP (?): modem, GPS, IMU, trace files, network management, co-processor interface, PWM, QTimer alternative, modular compilation targets, CAN code generator
+See our plans for post-MVP features on [this page](/reference/roadmap)!
