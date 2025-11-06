@@ -9,7 +9,7 @@ This document outlines the benefits, goals, and general technical requirements f
 
 | Version | Date | Author | Comments |
 | --- | --- | --- | --- |
-| 1.0 | 11/06/2025 | Bennett Moore | Initial version |
+| 1.0 | 2025-11-06 | @bambam955 | Initial version (#32) |
 
 </details>
 
@@ -169,13 +169,13 @@ The CAN protocol is a core focus of MRS products, and thus it will be a core fea
 
 Qt provides a [basic API for CAN interfaces](https://doc.qt.io/qt-6/qtcanbus-backends.html) that will be used as the backbone of the SDK's CAN API.
 
-The SDK will implement a proxy interface for CAN buses using `socketcan`. Applications will be able to create new CAN proxies via a factory API in the SDK.
+The SDK will implement a **proxy interface for CAN buses using `socketcan`**. This will be the only supported CAN backend because it's what is used on MRS devices. Applications will be able to create new CAN proxies via a factory API in the SDK.
 
 The necessary features for the proxy will be somewhat similar to the MQTT client, with a few added things:
 
 - **Connect and disconnect** the proxy from the bus
 - Methods to quickly disable sending/receiving without disconnecting
-- **Write messages** to the bus
+- **Send messages** on the bus
 - **Receive messages** from the bus via Qt signal-slot connections
 - Simple API for consumers to **listen to specific CAN IDs** from a particular bus
   - Wrapper over receiver to do the filtering work automatically
