@@ -58,7 +58,7 @@ The unit tests will be **run automatically using CI/CD jobs**.
 
 ### 3.1 Build System
 
-The SDK must support a wide range of different [environments](#supported-environments). To accomplish this, a small **custom build system** will be required.
+The SDK must support a wide range of different [environments](#21-supported-environments). To accomplish this, a small **custom build system** will be required.
 
 This system needs to be **compatible with both QMake and CMake**. However, we encourage using CMake, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
@@ -148,7 +148,7 @@ Necessary features:
   - Apps will be able to dynamically receive status updates via Qt signal-slot connections
 - Simple API for **listening to a specific MQTT command** or set of commands
 
-The MQTT implementation must support both statically and dynamically linked `mosquitto` libraries according to the environment defined in the [build system](#build-system).
+The MQTT implementation must support both statically and dynamically linked `mosquitto` libraries according to the environment defined in the [build system](#31-build-system).
 
 #### 3.2.3 Alerts
 
@@ -167,28 +167,28 @@ The monitoring of alerts is a somewhat intensive process, since each alert must 
 
 The CAN protocol is a core focus of MRS products, and thus it will be a core feature of the SDK.
 
-Qt provides a [basic API for CAN](https://doc.qt.io/qt-6/qtcanbus-backends.html) that will be used as the backbone of the SDK's CAN API.
+Qt provides a [basic API for CAN interfaces](https://doc.qt.io/qt-6/qtcanbus-backends.html) that will be used as the backbone of the SDK's CAN API.
 
-The SDK will implement a proxy interface for CAN buses...
-<!-- TODO -->
+The SDK will implement a proxy interface for CAN buses using `socketcan`. Applications will be able to create new CAN proxies via a factory API in the SDK.
 
-### 3.4 Digital GPIOs
+The necessary features for the proxy will be somewhat similar to the MQTT client, with a few added things:
 
-MRS products all include a variety of GPIO pins. The SDK must provide an easy **interface for setting up, reading from, and writing to GPIO pins**.
+- Connect and disconnect the proxy from the bus
+- Methods to quickly disable sending/receiving without disconnecting
+- Write messages to the bus
+- Receive messages from the bus via Qt signal-slot connections
+- Simple API for consumers to listen to specific CAN IDs from a particular bus
+  - Wrapper over receiver to do the filtering work automatically
+- Ability to set the `tx` queue length for a bus
+- Activity monitor to notify applications if no messages have come over the bus in a specific period of time
+  - The timeout length will be configurable by the app
+- Notify apps when connection status changes
 
-Reading and writing to and from pins must be fully synchronous and as error-free as possible.
+Any errors of any kind will be gracefully handled and reported to the app.
 
-#### 3.4.1 Device-Specific Pin Configurations
+Additionally, the SDK must provide a simple method for connecting a CAN proxy to a [CAN module flasher](#34-can-module-flasher) object.
 
-The SDK will be designed with support for multiple [MRS products](#supported-environments), each of which has its own GPIO configuration. To fully support all devices, the SDK must **leverage the [build system](#build-system) to know which GPIO pins to make available** to applications in different environments.
-
-#### 3.4.2 Digital GPIO Listeners
-
-The SDK will provide a convenient API for applications to "listen" to a certain GPIO pin. For these pins, the SDK will take care of polling the pin values and notifying the application when a value changes.
-
-When the application registers a listener for a specific pin, the pin will be added to a list of polled pins, and the SDK will read the values at a specified time interval. Applications will be able to configure the length of this polling interval.
-
-### 3.5 CAN Module Flasher
+### 3.4 CAN Module Flasher
 
 The SDK will include a closed-source implementation of MRS's proprietary protocol for **flashing connected CAN modules**.
 
@@ -204,13 +204,29 @@ The flasher API will be simple:
 
 The flasher will be responsible for notifying the app of the results of each operation and providing **robust error handling** and output for any issues that occur.
 
-#### 3.5.1 Closed-Source Proprietary Flashing Protocol
+#### 3.4.1 Closed-Source Proprietary Flashing Protocol
 
 MRS's protocol for flashing connected CAN modules is proprietary, and thus the implementation of the protocol cannot be entirely open-source.
 
 We recognize that this somewhat undermines the open-source goals of the SDK; however, we decided it would be better to provide a closed-source implementation for use in the SDK than no implementation at all.
 
 So, the CAN flasher library will be precompiled and the binary stored in the SDK repository. Then, during compilation, the library will be statically linked to the rest of the SDK. This is similar to the pattern we use for the `mosquitto` MQTT library in the Spoke.Zone client implementation.
+
+### 3.5 Digital GPIOs
+
+MRS products all include a variety of GPIO pins. The SDK must provide an easy **interface for setting up, reading from, and writing to GPIO pins**.
+
+Reading and writing to and from pins must be fully synchronous and as error-free as possible.
+
+#### 3.5.1 Device-Specific Pin Configurations
+
+The SDK will be designed with support for multiple [MRS products](#21-supported-environments), each of which has its own GPIO configuration. To fully support all devices, the SDK must **leverage the [build system](#31-build-system) to know which GPIO pins to make available** to applications in different environments.
+
+#### 3.5.2 Digital GPIO Listeners
+
+The SDK will provide a convenient API for applications to "listen" to a certain GPIO pin. For these pins, the SDK will take care of polling the pin values and notifying the application when a value changes.
+
+When the application registers a listener for a specific pin, the pin will be added to a list of polled pins, and the SDK will read the values at a specified time interval. Applications will be able to configure the length of this polling interval.
 
 ### 3.6 General Utilities
 
@@ -226,7 +242,7 @@ Applications will be able to:
 - Configure "awake" and "asleep" brightness values
 - Call `sleep` and `wake` functions to send the brightness to those configured values
 
-The SDK will leverage the [build system](#build-system) to make this API available only on devices that have an display.
+The SDK will leverage the [build system](#31-build-system) to make this API available only on devices that have an display.
 
 #### 3.6.2 Threading
 
