@@ -173,20 +173,20 @@ The SDK will implement a proxy interface for CAN buses using `socketcan`. Applic
 
 The necessary features for the proxy will be somewhat similar to the MQTT client, with a few added things:
 
-- Connect and disconnect the proxy from the bus
+- **Connect and disconnect** the proxy from the bus
 - Methods to quickly disable sending/receiving without disconnecting
-- Write messages to the bus
-- Receive messages from the bus via Qt signal-slot connections
-- Simple API for consumers to listen to specific CAN IDs from a particular bus
+- **Write messages** to the bus
+- **Receive messages** from the bus via Qt signal-slot connections
+- Simple API for consumers to **listen to specific CAN IDs** from a particular bus
   - Wrapper over receiver to do the filtering work automatically
 - Ability to set the `tx` queue length for a bus
-- Activity monitor to notify applications if no messages have come over the bus in a specific period of time
+- **Activity monitor** to notify applications if no messages have come over the bus in a specific period of time
   - The timeout length will be configurable by the app
 - Notify apps when connection status changes
 
 Any errors of any kind will be gracefully handled and reported to the app.
 
-Additionally, the SDK must provide a simple method for connecting a CAN proxy to a [CAN module flasher](#34-can-module-flasher) object.
+Additionally, the SDK must provide a convenient **interface for connecting a CAN proxy to a [CAN module flasher](#34-can-module-flasher)** object.
 
 ### 3.4 CAN Module Flasher
 
