@@ -212,6 +212,19 @@ We recognize that this somewhat undermines the open-source goals of the SDK; how
 
 So, the CAN flasher library will be precompiled and the binary stored in the SDK repository. Then, during compilation, the library will be statically linked to the rest of the SDK. This is similar to the pattern we use for the `mosquitto` MQTT library in the Spoke.Zone client implementation.
 
+The process for updating the binaries, including who is allowed to do so, must be well-documented.
+
+In the future, we should come up with a better system for integrating the closed-source flasher. Options:
+
+- Move the binaries to a private repo and import as a Git submodule to keep this repo clean
+  - Allows for easier verification in the other repo
+- Store the binaries with Git LFS
+  - Add CI job that verifies a checksum on each build
+- Implement system that publishes the binaries as release artifacts and then fetches them before compilation/linking
+  - Separate Linux package containing the shared libraries?
+
+However, for now, we will just include the binaries directly to get a basic working implementation going.
+
 ### 3.5 Digital GPIOs
 
 MRS products all include a variety of GPIO pins. The SDK must provide an easy **interface for setting up, reading from, and writing to GPIO pins**.

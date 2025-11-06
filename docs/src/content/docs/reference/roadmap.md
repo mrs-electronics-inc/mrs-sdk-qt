@@ -30,4 +30,5 @@ This page outlines the roadmap for the long-term vision of the SDK.
 | Other hardware abstractions (co-processor, modem, GPS, IMU, PWM) |  |
 | CAN/MQTT trace file support |  |
 | Modular compilation targets |  |
+| More robust system for integration of CAN flasher and `mosquitto` libs |  |
 | Integrate with Spoke.Zone geo-fencing |  |
