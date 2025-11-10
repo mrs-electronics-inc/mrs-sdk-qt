@@ -104,7 +104,9 @@ The unit tests will be **run automatically using CI/CD jobs**.
 
 The SDK must support a wide range of different [environments](#23-supported-environments). To accomplish this, a small **custom build system** will be required.
 
-This system needs to be **compatible with both QMake and CMake**. However, we encourage using CMake, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
+This system will be **compatible with both QMake and CMake**. 
+
+> We encourage you to use CMake in any new projects, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
 The build system will be easy to configure from the developer side and provide the following:
 
