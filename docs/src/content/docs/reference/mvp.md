@@ -258,7 +258,7 @@ MRS's protocol for flashing connected CAN modules is proprietary, and thus the i
 
 We recognize that this somewhat undermines the open-source goals of the SDK; however, we decided it would be better to provide a closed-source implementation for use in the SDK than no implementation at all.
 
-So, the CAN flasher library will be precompiled and the binary stored in the SDK repository. Then, during compilation, the library will be statically linked to the rest of the SDK. This is similar to the pattern we use for the `mosquitto` MQTT library in the Spoke.Zone client implementation.
+If a customer needs to use the CAN flasher library in their application, they can request the precompiled binaries from MRS and put them into a specific location inside the directory structure of the SDK.  Then, during compilation, the library will be statically linked to the rest of the SDK. This is similar to the pattern we use for the `mosquitto` MQTT library in the Spoke.Zone client implementation.
 
 The process for updating the binaries, including who is allowed to do so, must be well-documented.
 
