@@ -33,7 +33,7 @@ High-level overview of features included in the SDK:
 
 Customers will be able to find **in-depth documentation** about how to use the code provided in the SDK--something that is not currently available in any form--and
 
-The development team will also provide **timely technical support** for the SDK. If a customer finds an issue, they wll be able to [report it](#13-centralized-issue-tracking) and have full confidence that we will address it. If the issue is simply a result of incorrect usage of some feature of the SDK, we will **add new documentation** explaining the proper usage; however, if there is a legitimate issue with the implementation, **fixes will be included in the next release**.
+The development team will also provide **timely technical support** for the SDK. If a customer finds an issue, they will be able to [report it](#13-centralized-issue-tracking) and have full confidence that we will address it. If the issue is simply a result of incorrect usage of some feature of the SDK, we will **add new documentation** explaining the proper usage; however, if there is a legitimate issue with the implementation, **fixes will be included in the next release**.
 
 ### 1.3 Centralized Issue Tracking
 
@@ -301,7 +301,7 @@ Applications will be able to:
 - Configure "awake" and "asleep" brightness values
 - Call `sleep` and `wake` functions to send the brightness to those configured values
 
-The SDK will leverage the [build system](#31-build-system) to make this API available only on devices that have an display.
+The SDK will leverage the [build system](#31-build-system) to make this API available only on devices that have a display.
 
 #### 3.6.2 Threading
 
