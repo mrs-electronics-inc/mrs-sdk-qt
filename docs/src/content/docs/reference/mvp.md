@@ -9,13 +9,13 @@ This document outlines the benefits, goals, and general technical requirements f
 
 | Version | Date | Author | Comments |
 | --- | --- | --- | --- |
-| 1.0 | 2025-11-06 | @bambam955 | Initial version (#32) |
+| 1.0 | 2025-11-06 | Bennett Moore | Initial version ([#32](https://github.com/mrs-electronics-inc/mrs-sdk-qt/pull/32)) |
 
 </details>
 
 ## 1 Benefits
 
-This SDK will greatly simplify the development process for software/firmware applications that target MRS Electronics hardware platforms.
+This SDK will greatly simplify the development process for Qt applications that target MRS Electronics hardware platforms.
 
 New and existing customers for any and all of our products will be able to quickly get started developing their own custom applications with well-built Qt-based utilities that provide **drop-in functionality** for such tasks as **GPIO and CAN interfaces, Spoke.Zone API/MQTT integration, and management of connected CAN modules.**
 
@@ -95,7 +95,7 @@ The methods for making all API requests should have the same general signature:
 - Arguments for a callback function to be executed when the response is returned
   - Necessary because API requests are asynchronous
 - Argument to specify the timeout length on the request
-- Method immediately returns the success of the initial request
+- Method immediately returns whether the request was made successfully
 
 ##### 3.2.1.1 Device Token Management
 
@@ -108,6 +108,8 @@ The SDK's Spoke.Zone client will **manage the device's access token** without re
 - **Refresh the token** as the device gets closer to the expiration date via an API request
   - Requires determining the device's CPU ID, which will need to work with all supported MRS products
 - **Store the new token** in the config file
+
+Applications will be have the ability to manually attempt a token refresh, but ideally this will never be needed.
 
 ##### 3.2.1.2 Data File Uploads
 
@@ -227,7 +229,7 @@ However, for now, we will just include the binaries directly to get a basic work
 
 ### 3.5 Digital GPIOs
 
-MRS products all include a variety of GPIO pins. The SDK must provide an easy **interface for setting up, reading from, and writing to GPIO pins**.
+All MRS products include a variety of GPIO pins. The SDK must provide an **easy interface for setting up, reading from, and writing to GPIO pins**.
 
 Reading and writing to and from pins must be fully synchronous and as error-free as possible.
 
