@@ -17,13 +17,55 @@ This document outlines the benefits, goals, and general technical requirements f
 
 This SDK will greatly simplify the development process for Qt applications that target MRS Electronics hardware platforms.
 
-New and existing customers for any and all of our products will be able to quickly get started developing their own custom applications with well-built Qt-based utilities that provide **drop-in functionality** for such tasks as **GPIO and CAN interfaces, Spoke.Zone API/MQTT integration, and management of connected CAN modules.**
+This section outlines some of the benefits the SDK will provide to customers.
+
+### 1.1 Time/Effort Savings
+
+The SDK will **dramatically reduce the time and effort required to get started on any new project** that targets MRS hardware projects. Customers and developers will be able to build on top of a rich set of base features instead of trying to develop everything from scratch.
+
+High-level overview of features included in the SDK:
+
+- GPIO and CAN interfaces
+- Spoke.Zone API/MQTT integration
+- Management of connected CAN modules
+
+### 1.2 Documentation and Support
+
+Customers will be able to find **in-depth documentation** about how to use the code provided in the SDK--something that is not currently available in any form--and
+
+The development team will also provide **timely technical support** for the SDK. If a customer finds an issue, they wll be able to [report it](#13-centralized-issue-tracking) and have full confidence that we will address it. If the issue is simply a result of incorrect usage of some feature of the SDK, we will **add new documentation** explaining the proper usage; however, if there is a legitimate issue with the implementation, **fixes will be included in the next release**.
+
+### 1.3 Centralized Issue Tracking
+
+Another major benefit of this SDK is that it will provide a **natural place for managing development of new code**.
+
+Customers, developers, and other contributors will have a default place to **suggest new features or report newly discovered bugs**. Additionally, since this project and its issues will be public and open-source, everyone will be able to see how those feature/fix requests are progressing and provide more context/answer questions about their requests as they are raised by the development team.
 
 ## 2 Goals
 
 This section defines the major goals for the SDK.
 
-### 2.1 Supported Environments
+### 2.1 Elimination of Duplicate Code
+
+One of the biggest goals and driving forces for the development of the SDK is to **eliminate duplicate code**. The functionality provided by the SDK will be useful in a wide range of projects, both internally and externally developed.
+
+Our current solution when a new application requires the [basic components](#3-features) outlined in this document is to copy the code from an existing app to the new app, which results in many clones of the same code across a multitude of projects.
+
+The SDK neatly resolves this problem by providing a **centralized codebase that can be imported into any project** that needs it. All features and documentation will be in one place; the SDK will serve as the central standard and source of truth for how to develop applications for MRS products.
+
+Not only will new projects be able to easily pull in the basic components of the SDK, but both old and new projects will be able to easily integrate any new code that is developed.
+
+### 2.2 Centralized Development
+
+Another major goal for the SDK is to provide a **central place for developing bugfixes and new features**. 
+
+Currently, we have no true standard place for implementing new features and bugfixes in the base MRS code; and, even if we did, any new code introduced in that copy would have to be propagated to all the other copies. As a result, most fixes and improvements that are needed are either not developed at all or developed only in one project and not copied to the other projects, which significantly reduces our motivation to continue development.
+
+With this SDK, **any new features and bugfixes that we implement can be easily integrated into any existing project** by simply pulling the latest version of the code. This dramatically increases the value of new code: instead of only getting used in one project, it will be used in lots of projects.
+
+This dovetails with the need for [centralized issue tracking](#13-centralized-issue-tracking).
+
+### 2.3 Supported Environments
 
 The SDK must be compatible with a variety of MRS products, OS architectures, and cross-compilation toolchains.
 
@@ -35,7 +77,7 @@ The SDK must be compatible with a variety of MRS products, OS architectures, and
   - *5.15.0:* Qt5 desktop toolchain
   - *6.8.1:* Neuralplex toolchain
 
-### 2.2 Documentation
+### 2.4 Documentation
 
 The SDK will be documented at an in-depth level to enable its effective use by developers.
 
@@ -46,7 +88,9 @@ Documentation will come in 2 forms:
 
 If possible, the documentation in the website will contain auto-generated web versions of the comments in the code.
 
-### 2.3 Automated Testing
+This will solve the need for [solid documentation](#12-documentation-and-support).
+
+### 2.5 Automated Testing
 
 A detailed suite of **unit tests** will be implemented for the SDK to make the codebase as stable as possible.
 
@@ -58,7 +102,7 @@ The unit tests will be **run automatically using CI/CD jobs**.
 
 ### 3.1 Build System
 
-The SDK must support a wide range of different [environments](#21-supported-environments). To accomplish this, a small **custom build system** will be required.
+The SDK must support a wide range of different [environments](#23-supported-environments). To accomplish this, a small **custom build system** will be required.
 
 This system needs to be **compatible with both QMake and CMake**. However, we encourage using CMake, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
@@ -235,7 +279,7 @@ Reading and writing to and from pins must be fully synchronous and as error-free
 
 #### 3.5.1 Device-Specific Pin Configurations
 
-The SDK will be designed with support for multiple [MRS products](#21-supported-environments), each of which has its own GPIO configuration. To fully support all devices, the SDK must **leverage the [build system](#31-build-system) to know which GPIO pins to make available** to applications in different environments.
+The SDK will be designed with support for multiple [MRS products](#23-supported-environments), each of which has its own GPIO configuration. To fully support all devices, the SDK must **leverage the [build system](#31-build-system) to know which GPIO pins to make available** to applications in different environments.
 
 #### 3.5.2 Digital GPIO Listeners
 
