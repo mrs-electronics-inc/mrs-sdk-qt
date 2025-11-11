@@ -262,16 +262,7 @@ If a customer needs to use the CAN flasher library in their application, they ca
 
 The process for updating the binaries, including who is allowed to do so, must be well-documented.
 
-In the future, we should come up with a better system for integrating the closed-source flasher. Options:
-
-- Move the binaries to a private repo and import as a Git submodule to keep this repo clean
-  - Allows for easier verification in the other repo
-- Store the binaries with Git LFS
-  - Add CI job that verifies a checksum on each build
-- Implement system that publishes the binaries as release artifacts and then fetches them before compilation/linking
-  - Separate Linux package containing the shared libraries?
-
-However, for now, we will just include the binaries directly to get a basic working implementation going.
+In the future, we should come up with a better system for distributing the closed-source flasher to customers. One option would be to create a separate, easily installable Linux package containing the shared libraries.
 
 ### 3.5 Digital GPIOs
 
