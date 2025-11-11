@@ -27,20 +27,7 @@ The MRS Electronic SDK for Qt is designed to streamline the development process 
 
 ## Roadmap
 
-- [x] Add documentation site
-- [ ] Add design documents
-- [ ] Set up the Qt project
-- [ ] Integrate with the [Spoke.Zone OTA API](https://docs.spoke.zone/developers/device-integration/ota-file-downloads/)
-- [ ] Add auto-generated API docs
-- [ ] CAN bus utilities
-- [ ] Add demo application for [NeuralPlex](https://neuralplex.dev)
-- [ ] Add demo application for [MConn](https://mconn.dev)
-- [ ] Add tool for generating IPK from user application
-- [ ] MQTT utilities
-- [ ] Integrate with the [Spoke.Zone Data Files API](https://docs.spoke.zone/developers/device-integration/data-file-uploads/)
-- [ ] Integrate with Spoke.Zone Alerts
-- [ ] Other hardware abstractions (GPIO, co-processor, modem, etc.)
-- [ ] Integrate with Spoke.Zone Geo-fencing
+You can view the SDK development roadmap here: https://qt.mrs-electronics.dev/reference/roadmap.
 
 ## Features
 
