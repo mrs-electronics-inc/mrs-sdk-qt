@@ -64,3 +64,7 @@ set_target_properties(mrs-sdk-qt PROPERTIES
 message(NOTICE "Library version: ${GIT_TAG}")
 # Make the library version number available in the SDK sources.
 add_compile_definitions(MRS_SDK_LIB_VERSION=\"${GIT_TAG}\")
+
+# The following define makes the compiler emit warnings if you use any feature of Qt which as been marked deprecated (the exact warnings
+# depend on your compiler). Please consult the documentation of the deprecated API in order to know how to port your code away from it.
+add_compile_definitions(QT_DEPRECATED_WARNINGS)

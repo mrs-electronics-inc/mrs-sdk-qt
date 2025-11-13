@@ -13,7 +13,7 @@ MOC_DIR = generated_files
 RCC_DIR = generated_files
 
 # Import all Qt modules necessary for compilation of the SDK.
-QT += core
+QT = core
 
 # All .hpp files in this project are added as headers, and all .cpp files as sources.
 # This is much quicker than manually listing each file.
