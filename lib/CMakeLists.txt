@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # These settings are required for Qt compilation.
-# QMake handles this internally.
+# QMake handles these internally.
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -21,9 +21,16 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
 file(GLOB_RECURSE MRS_SDK_HEADERS "*.hpp")
 file(GLOB_RECURSE MRS_SDK_SOURCES "*.cpp")
 
-# Configure the build target.
+# Create the build target.
 add_library(mrs-sdk-qt STATIC
-  ${MRS_SDK_SOURCES}
+    ${MRS_SDK_SOURCES}
+)
+
+# Define the directories to use for generated build files and final compiled artifacts.
+set_target_properties(mrs-sdk-qt PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/artifacts"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/artifacts"
+    AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated_files"
 )
 
 # Link the imported Qt modules into this library.
@@ -37,3 +44,23 @@ target_include_directories(mrs-sdk-qt PUBLIC include)
 # Things are split this way because those configurations need to be available to applications using the SDK,
 # not just during compilation.
 include(mrs-sdk-qt.cmake)
+
+# Define library version from the most recent Git tag. 
+# Default to "0.0.0" if Git doesn't have a version number.
+execute_process(
+    COMMAND git describe --tags --abbrev=0 --dirty
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_TAG
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if (NOT GIT_TAG)
+    set(GIT_TAG "0.0.0")
+endif()
+set_target_properties(mrs-sdk-qt PROPERTIES
+    VERSION ${GIT_TAG}
+)
+# Output the library version number.
+message(NOTICE "Library version: ${GIT_TAG}")
+# Make the library version number available in the SDK sources.
+add_compile_definitions(MRS_SDK_LIB_VERSION=\"${GIT_TAG}\")
