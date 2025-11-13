@@ -3,10 +3,11 @@
 
 # Everything in this block is only applied in the context of applications using the SDK.
 contains(TEMPLATE, app) {
-    # Add the SDK's include paths and compiled libraries.
+    # Add the SDK's compiled libraries and include paths.
+    # We can do this automatically to reduce boilerplate in applications' QMake configurations.
+    LIBS += -L$$(HOME)/MRS-SDK-Qt/lib -lmrs-sdk-qt
     INCLUDEPATH += $$(HOME)/MRS-SDK-Qt/include
     DEPENDPATH += $$(HOME)/MRS-SDK-Qt/include
-    LIBS += -L$$(HOME)/MRS-SDK-Qt/lib -lmrs-sdk-qt
 }
 
 # Define macros.
