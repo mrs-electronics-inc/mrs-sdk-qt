@@ -1,12 +1,16 @@
-# All paths in this file are predicated upon the assumption that the SDK is installed at
-# the path $HOME/MRS-SDK-Qt.
+# The paths in this file are dependent on the MRS_SDK_QT_ROOT variable.
+# This can be configured from the downstream project. If not configured,
+# the default will be $HOME/MRS-SDK-Qt.
+if(NOT DEFINED MRS_SDK_QT_ROOT)
+    set(MRS_SDK_QT_ROOT "$ENV{HOME}/MRS-SDK-Qt" CACHE PATH "Installation root directory of the MRS SDK Qt")
+endif()
 
 # Everything in this block is only applied in the context of applications using the SDK.
 if(NOT CMAKE_PROJECT_NAME STREQUAL "mrs-sdk-qt")
     # Set the SDK's compiled libraries and include paths.
-    set(MRS_SDK_QT_LIBRARY_DIRS "$ENV{HOME}/MRS-SDK-Qt/lib")
+    set(MRS_SDK_QT_LIBRARY_DIRS "${MRS_SDK_QT_ROOT}/lib")
     set(MRS_SDK_QT_LIB_NAME mrs-sdk-qt)
-    set(MRS_SDK_QT_INCLUDE_DIRS "$ENV{HOME}/MRS-SDK-Qt/include")
+    set(MRS_SDK_QT_INCLUDE_DIRS "${MRS_SDK_QT_ROOT}/include")
 
     # Try to automatically link the SDK's compiled libraries, if there is an app target.
     # This helps reduce boilerplate in applications' CMake configurations.
@@ -22,6 +26,7 @@ if(NOT CMAKE_PROJECT_NAME STREQUAL "mrs-sdk-qt")
         endif()
     endif()
 endif()
+
 
 # Define macros.
 # Note that these are available both during compilation and for applications using the SDK.
