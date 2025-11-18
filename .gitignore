@@ -83,3 +83,10 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+
+# CMake stuff
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+generated_files/
