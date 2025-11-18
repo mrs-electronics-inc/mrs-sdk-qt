@@ -19,7 +19,9 @@ add_executable(spoke-zone-fake
 
 target_link_libraries(spoke-zone-fake PRIVATE Qt5::Core)
 
-include("$ENV{HOME}/MRS-SDK-Qt/builder/mrs-sdk-qt.cmake")
+set(MRS_SDK_QT_ROOT "$ENV{HOME}/MRS-SDK-Qt")
+set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-fake")
+include("${MRS_SDK_QT_ROOT}/builder/mrs-sdk-qt.cmake")
 
 include(GNUInstallDirs)
 install(TARGETS spoke-zone-fake

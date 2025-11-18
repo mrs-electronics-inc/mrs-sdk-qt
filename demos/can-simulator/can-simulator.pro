@@ -4,7 +4,8 @@ CONFIG += c++11 console
 
 QT = core
 
-include("$$(HOME)/MRS-SDK-Qt/builder/mrs-sdk-qt.pri")
+MRS_SDK_QT_ROOT = "$$(HOME)/MRS-SDK-Qt"
+include("$$MRS_SDK_QT_ROOT/builder/mrs-sdk-qt.pri")
 
 SOURCES += $$files(*.cpp, true)
 

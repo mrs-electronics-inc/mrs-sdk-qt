@@ -8,5 +8,7 @@ class Application
 public:
     Application();
 
+#ifdef MRS_SDK_QT_TEST_MACRO
     void announce() const;
+#endif
 };

@@ -6,6 +6,9 @@
     MRS_SDK_QT_ROOT = $$(HOME)/MRS-SDK-Qt
 }
 
+# Define macros. These will be available both during SDK compilation and for consumers.
+DEFINES += MRS_SDK_QT_TEST_MACRO
+
 # Everything in this block is only applied in the context of applications using the SDK.
 contains(TEMPLATE, app) {
     # Add the SDK's compiled libraries and include paths.
@@ -14,7 +17,3 @@ contains(TEMPLATE, app) {
     INCLUDEPATH += $$(MRS_SDK_QT_ROOT)/include
     DEPENDPATH += $$(MRS_SDK_QT_ROOT)/include
 }
-
-# Define macros.
-# Note that these are available both during compilation and for applications using the SDK.
-DEFINES += MRS_SDK_QT_TEST_MACRO
