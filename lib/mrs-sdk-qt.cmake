@@ -5,6 +5,9 @@ if(NOT DEFINED MRS_SDK_QT_ROOT)
     set(MRS_SDK_QT_ROOT "$ENV{HOME}/MRS-SDK-Qt" CACHE PATH "Installation root directory of the MRS SDK Qt")
 endif()
 
+# Define macros. These will be available both during SDK compilation and for consumers.
+target_compile_definitions(mrs-sdk-qt PUBLIC MRS_SDK_QT_TEST_MACRO)
+
 # Everything in this block is only applied in the context of applications using the SDK.
 if(NOT CMAKE_PROJECT_NAME STREQUAL "mrs-sdk-qt")
     # Set the SDK's compiled libraries and include paths.
@@ -26,8 +29,3 @@ if(NOT CMAKE_PROJECT_NAME STREQUAL "mrs-sdk-qt")
         endif()
     endif()
 endif()
-
-
-# Define macros.
-# Note that these are available both during compilation and for applications using the SDK.
-add_definitions(-DMRS_SDK_QT_TEST_MACRO)
