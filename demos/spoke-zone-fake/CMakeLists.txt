@@ -11,7 +11,9 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
-file(GLOB_RECURSE SPOKE_ZONE_FAKE_SOURCES "*.cpp")
+set(SPOKE_ZONE_FAKE_SOURCES
+    main.cpp
+)
 
 add_executable(spoke-zone-fake
     ${SPOKE_ZONE_FAKE_SOURCES}

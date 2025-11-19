@@ -16,10 +16,13 @@ set(CMAKE_AUTORCC ON)
 # Import all Qt modules necessary for compilation of the SDK.
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
-# All .hpp files in this project are added as headers, and all .cpp files as sources.
-# This is much quicker than manually listing each file.
-file(GLOB_RECURSE MRS_SDK_HEADERS "*.hpp")
-file(GLOB_RECURSE MRS_SDK_SOURCES "*.cpp")
+# Define the lists of header and source files.
+set(MRS_SDK_HEADERS
+    include/Application.hpp
+)
+set(MRS_SDK_SOURCES
+    Application.cpp
+)
 
 # Create the build target.
 add_library(mrs-sdk-qt STATIC
@@ -46,7 +49,7 @@ target_include_directories(mrs-sdk-qt PUBLIC include)
 # not just during compilation.
 include(mrs-sdk-qt.cmake)
 
-# Define library version from the most recent Git tag. 
+# Define library version from the most recent Git tag.
 # Default to "0.0.0" if Git doesn't have a version number.
 execute_process(
     COMMAND git describe --tags --abbrev=0 --dirty
