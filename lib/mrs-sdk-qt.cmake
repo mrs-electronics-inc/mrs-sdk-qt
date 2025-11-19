@@ -1,8 +1,8 @@
 # The paths in this file are dependent on the MRS_SDK_QT_ROOT variable.
 # This can be configured from the downstream project. If not configured,
-# the default will be $HOME/MRS-SDK-Qt.
+# the default will be $HOME/mrs-sdk-qt.
 if(NOT DEFINED MRS_SDK_QT_ROOT)
-    set(MRS_SDK_QT_ROOT "$ENV{HOME}/MRS-SDK-Qt" CACHE PATH "Installation root directory of the MRS SDK Qt")
+    set(MRS_SDK_QT_ROOT "$ENV{HOME}/mrs-sdk-qt" CACHE PATH "Installation root directory of the MRS SDK Qt")
 endif()
 
 # Export the list of definitions that the SDK target and its consumers share.
@@ -20,7 +20,7 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     set(MRS_SDK_QT_INCLUDE_DIRS "${MRS_SDK_QT_ROOT}/include")
 
     if(TARGET ${MRS_SDK_QT_CONSUMER_TARGET})
-        find_library(MRS_SDK_QT_LIBS 
+        find_library(MRS_SDK_QT_LIBS
             NAMES ${MRS_SDK_QT_LIB_NAME}
             PATHS ${MRS_SDK_QT_LIBRARY_DIRS}
             NO_DEFAULT_PATH

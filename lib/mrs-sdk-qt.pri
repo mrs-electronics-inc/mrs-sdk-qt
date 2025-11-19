@@ -1,9 +1,9 @@
 # The paths in this file are dependent on the MRS_SDK_QT_ROOT variable.
 # This can be configured from the downstream project. If not configured,
-# the default will be $HOME/MRS-SDK-Qt.
+# the default will be $HOME/mrs-sdk-qt.
 
 !defined(MRS_SDK_QT_ROOT) {
-    MRS_SDK_QT_ROOT = $$(HOME)/MRS-SDK-Qt
+    MRS_SDK_QT_ROOT = $$(HOME)/mrs-sdk-qt
 }
 
 # Define macros. These will be available both during SDK compilation and for consumers.

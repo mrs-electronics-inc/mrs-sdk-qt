@@ -10,9 +10,9 @@ NOTE: You will need to have Qt5 installed before you can compile.
 
 ```
 HOME/
-└── MRS-SDK-Qt/
+└── mrs-sdk-qt/
     ├── lib/                    # Compiled static library
-    |   └── libmrs-sdk-qt.a     
+    |   └── libmrs-sdk-qt.a
     ├── include/                # Header files
     |   └── Application.hpp
     └── builder/                # CMake and QMake configurations
