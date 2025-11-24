@@ -39,15 +39,15 @@ set_target_properties(mrs-sdk-qt PROPERTIES
 
 # Link the imported Qt modules into this library.
 # QMake handles this internally.
-target_link_libraries(mrs-sdk-qt PRIVATE Qt5::Core)
+target_link_libraries(mrs-sdk-qt PUBLIC Qt5::Core)
 
 # Configure the include directories.
 target_include_directories(mrs-sdk-qt PUBLIC include)
 
-# The .cmake file is where environment-specific macros and other necessary configurations are determined.
+# The main mrs-sdk-qt.cmake file is where environment-specific macros and other necessary configurations are determined.
 # Things are split this way because those configurations need to be available to applications using the SDK,
 # not just during compilation.
-include(mrs-sdk-qt.cmake)
+include(cmake/mrs-sdk-qt.cmake)
 
 # Define library version from the most recent Git tag.
 # Default to "0.0.0" if Git doesn't have a version number.
