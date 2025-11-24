@@ -48,6 +48,12 @@ target_include_directories(mrs-sdk-qt PUBLIC include)
 # Things are split this way because those configurations need to be available to applications using the SDK,
 # not just during compilation.
 include(cmake/mrs-sdk-qt.cmake)
+# Set the library output name to be "mrs-sdk-qt-<device>".
+# This allows for selecting the proper built library based on device type in downstream applications.
+string(TOLOWER "${MRS_SDK_QT_TARGET_DEVICE}" _mrs_sdk_qt_target_device)
+set_target_properties(mrs-sdk-qt PROPERTIES
+    OUTPUT_NAME "mrs-sdk-qt-${_mrs_sdk_qt_target_device}"
+)
 
 # Define library version from the most recent Git tag.
 # Default to "0.0.0" if Git doesn't have a version number.

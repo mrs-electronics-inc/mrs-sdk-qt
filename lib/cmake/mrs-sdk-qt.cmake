@@ -23,6 +23,9 @@ set(MRS_SDK_QT_CONSUMER_ONLY_DEFINES "")
 # These environment variables come from dedicated toolchain files.
 string(TOLOWER "${MRS_SDK_QT_TARGET_DEVICE}" _mrs_sdk_qt_target_device)
 string(TOLOWER "${MRS_SDK_QT_TARGET_OS}" _mrs_sdk_qt_target_os)
+set(MRS_SDK_QT_DEVICE_NEURALPLEX FALSE CACHE BOOL "Target device identifier" FORCE)
+set(MRS_SDK_QT_DEVICE_MCONN FALSE CACHE BOOL "Target device identifier" FORCE)
+set(MRS_SDK_QT_DEVICE_FUSION FALSE CACHE BOOL "Target device identifier" FORCE)
 if(_mrs_sdk_qt_target_device STREQUAL "neuralplex")
     if (_mrs_sdk_qt_target_os STREQUAL "buildroot")
         message(FATAL_ERROR "ERROR: invalid device target: cannot run Buildroot OS on NeuralPlex device.")
@@ -85,11 +88,11 @@ endif()
 # Add all of the definitions taken from the toolchains.
 list(APPEND MRS_SDK_QT_SHARED_DEFINES
     "MRS_SDK_QT_QT_VERSION=\"${_mrs_sdk_qt_qt_version}\""
-    "MRS_SDK_QT_TARGET_DEVICE=\"${MRS_SDK_QT_TARGET_DEVICE}\""
+    "MRS_SDK_QT_TARGET_DEVICE=\"${_mrs_sdk_qt_target_device}\""
     "MRS_SDK_QT_DEVICE_NEURALPLEX=${MRS_SDK_QT_DEVICE_NEURALPLEX}"
     "MRS_SDK_QT_DEVICE_MCONN=${MRS_SDK_QT_DEVICE_MCONN}"
     "MRS_SDK_QT_DEVICE_FUSION=${MRS_SDK_QT_DEVICE_FUSION}"
-    "MRS_SDK_QT_TARGET_OS=\"${MRS_SDK_QT_TARGET_OS}\""
+    "MRS_SDK_QT_TARGET_OS=\"${_mrs_sdk_qt_target_os}\""
     "MRS_SDK_QT_OS_YOCTO=${MRS_SDK_QT_OS_YOCTO}"
     "MRS_SDK_QT_OS_BUILDROOT=${MRS_SDK_QT_OS_BUILDROOT}"
     "MRS_SDK_QT_OS_LOCAL=${MRS_SDK_QT_OS_LOCAL}"
@@ -109,8 +112,8 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     if(TARGET ${MRS_SDK_QT_CONSUMER_TARGET})
         message(NOTICE "Configuring MRS SDK for target ${MRS_SDK_QT_CONSUMER_TARGET}...")
         find_library(MRS_SDK_QT_LIBS
-            NAMES ${MRS_SDK_QT_LIB_NAME}
-            PATHS ${MRS_SDK_QT_LIBRARY_DIRS}
+            NAMES "${MRS_SDK_QT_LIB_NAME}-${_mrs_sdk_qt_target_device}"
+            PATHS "${MRS_SDK_QT_LIBRARY_DIRS}/${_mrs_sdk_qt_target_os}"
             NO_DEFAULT_PATH
             NO_CMAKE_FIND_ROOT_PATH
             REQUIRED

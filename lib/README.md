@@ -11,7 +11,21 @@ NOTE: You will need to have Qt5 installed before you can compile.
 ```
 HOME/
 └── mrs-sdk-qt/
-    ├── lib/                    # Compiled static library
+    ├── lib/                    # Compiled static libraries
+    |   ├── buildroot/
+    |   |   ├── libmrs-sdk-qt-fusion.a
+    |   |   └── libmrs-sdk-qt-mconn.a
+    |   ├── local-qt5/
+    |   |   ├── libmrs-sdk-qt-fusion.a
+    |   |   ├── libmrs-sdk-qt-mconn.a
+    |   ├── local-qt6/
+    |   |   └── libmrs-sdk-qt-neuralplex.a
+    |   ├── yocto-qt5/
+    |   |   ├── libmrs-sdk-qt-fusion.a
+    |   |   └── libmrs-sdk-qt-mconn.a
+    |   ├── yocto-qt6/
+    |   |   └── libmrs-sdk-qt-neuralplex.a
+    |   ├──
     |   └── libmrs-sdk-qt.a
     ├── include/                # Header files
     |   └── Application.hpp
