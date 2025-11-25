@@ -53,33 +53,12 @@ For detailed build instructions, see the [VM README](/repo/vm/README.md).
 
 ## Importing the VM
 
-### VirtualBox
+Import the OVA file using your preferred virtualization platform:
 
-1. Open VirtualBox
-2. Go to **File** → **Import Appliance**
-3. Select the `mrs-sdk-qt-*.ova` file
-4. Configure settings (memory, CPU, disk allocation)
-   - Recommended: 4GB RAM, 2 CPUs, 60GB disk
-5. Click **Import**
-6. Once complete, select the VM and click **Start**
-
-### VMware
-
-1. Open VMware (Workstation, Fusion, or Player)
-2. Go to **File** → **Open**
-3. Select the `mrs-sdk-qt-*.ova` file
-4. Follow the import wizard
-5. Adjust resource allocation as desired
-6. Start the VM
-
-### GNOME Boxes
-
-1. Open GNOME Boxes
-2. Click the **+** button to create a new machine
-3. Select **Import from file**
-4. Choose the `mrs-sdk-qt-*.ova` file
-5. Configure VM settings
-6. Click **Create** and start
+1. Open your virtualization software
+2. Import the `mrs-sdk-qt-*.ova` file
+3. Configure settings (recommended: 4GB RAM, 2 CPUs, 60GB disk)
+4. Start the VM
 
 ## First Login
 
@@ -153,21 +132,12 @@ The VM includes common development tools:
 
 ### File Transfer
 
-Transfer files to/from the host system:
-
-**VirtualBox:**
-- Use **Shared Folders** (Devices → Shared Folders)
-- Or use SSH: `scp file ubuntu@<vm-ip>:/path/to/destination`
-
-**VMware:**
-- Drag and drop (if supported)
-- Or use SSH file transfer
-
-**GNOME Boxes:**
-- Use SSH file transfer
+Transfer files using SSH:
+```bash
+scp file ubuntu@<vm-ip>:/path/to/destination
+```
 
 Get the VM's IP address:
-
 ```bash
 ip addr show
 ```
@@ -215,17 +185,7 @@ sudo apt-get install qt5<module-name>
 
 ## Snapshots and Backups
 
-Create VM snapshots before making significant changes:
-
-**VirtualBox:**
-- Machine → **Take Snapshot**
-- Restore from Snapshots menu
-
-**VMware:**
-- VM → **Snapshot** → **Take Snapshot**
-
-**GNOME Boxes:**
-- Right-click VM → **Take a screenshot** (limited functionality)
+Create VM snapshots before making significant changes using your virtualization platform's snapshot feature.
 
 ## Troubleshooting
 
