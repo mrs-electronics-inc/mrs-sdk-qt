@@ -23,15 +23,15 @@ variable "disk_size" {
 }
 
 variable "iso_url" {
-  type        = string
-  default     = "https://releases.ubuntu.com/24.04/ubuntu-24.04.1-live-server-amd64.iso"
-  description = "URL to Ubuntu 24.04 LTS ISO"
+   type        = string
+   default     = "https://releases.ubuntu.com/24.04/ubuntu-24.04.3-live-server-amd64.iso"
+   description = "URL to Ubuntu 24.04 LTS ISO"
 }
 
 variable "iso_checksum" {
-  type        = string
-  default     = "file:https://releases.ubuntu.com/24.04/SHA256SUMS"
-  description = "Checksum for ISO verification"
+   type        = string
+   default     = "sha256:c3514bf0056180d09376462a7a1b4f213c1d6e8ea67fae5c25099c6fd3d8274b"
+   description = "Checksum for ISO verification"
 }
 
 variable "output_directory" {
