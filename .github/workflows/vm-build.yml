@@ -1,0 +1,193 @@
+name: Build MRS SDK Qt VM Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_date:
+        description: "Build date in YYYYMMDD format (leave empty for auto)"
+        required: false
+        default: ""
+      
+  push:
+    tags:
+      - "v*.*.*"
+
+concurrency:
+  group: vm-build
+  cancel-in-progress: false
+
+jobs:
+  build-vm:
+    name: Build OVA Image
+    runs-on: ubuntu-latest
+    
+    # High resource requirements for VM building
+    # Standard GitHub runners have 4 CPUs and 16GB RAM
+    
+    permissions:
+      contents: read
+      artifacts: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up build variables
+        id: vars
+        run: |
+          if [ -z "${{ github.event.inputs.build_date }}" ]; then
+            BUILD_DATE=$(date +%Y%m%d)
+          else
+            BUILD_DATE="${{ github.event.inputs.build_date }}"
+          fi
+          
+          # Determine output filename
+          OUTPUT_FILENAME="mrs-sdk-qt-${BUILD_DATE}.ova"
+          
+          echo "build_date=${BUILD_DATE}" >> $GITHUB_OUTPUT
+          echo "output_filename=${OUTPUT_FILENAME}" >> $GITHUB_OUTPUT
+          
+          # Extract version tag if this is a tagged release
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION="${{ github.ref }}" 
+            VERSION="${VERSION#refs/tags/}"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Packer
+        run: |
+          echo "Installing Packer..."
+          
+          # Download latest Packer version
+          PACKER_VERSION="1.11.1"
+          DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"
+          
+          mkdir -p "${HOME}/packer"
+          cd "${HOME}/packer"
+          
+          wget -q "$DOWNLOAD_URL" -O packer.zip
+          unzip -q packer.zip
+          rm packer.zip
+          
+          echo "${HOME}/packer" >> $GITHUB_PATH
+          
+          # Verify installation
+          packer version
+
+      - name: Install VirtualBox
+        run: |
+          echo "Installing VirtualBox and dependencies..."
+          
+          sudo apt-get update
+          sudo apt-get install -y \
+            virtualbox \
+            virtualbox-dkms \
+            virtualbox-ext-pack \
+            libvirt-dev
+
+      - name: Initialize Packer
+        working-directory: vm
+        run: |
+          echo "Initializing Packer configuration..."
+          packer init .
+
+      - name: Format and validate Packer configuration
+        working-directory: vm
+        run: |
+          echo "Validating Packer configuration..."
+          packer fmt -check .
+          packer validate .
+
+      - name: Build OVA image
+        working-directory: vm
+        run: |
+          echo "Building OVA image..."
+          
+          packer build \
+            -var "build_date=${{ steps.vars.outputs.build_date }}" \
+            -color=false \
+            -timestamp-ui \
+            .
+        timeout-minutes: 120
+
+      - name: List build artifacts
+        if: always()
+        run: |
+          echo "Build artifacts:"
+          find . -name "*.ova" -o -name "manifest.json" | head -20
+
+      - name: Upload OVA artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrs-sdk-qt-ova
+          path: output/
+          retention-days: 30
+          compression-level: 0
+
+      - name: Generate build summary
+        if: success()
+        run: |
+          cat > build-summary.txt <<EOF
+          MRS SDK Qt VM Build Summary
+          ============================
+          
+          Build Date: ${{ steps.vars.outputs.build_date }}
+          Filename: ${{ steps.vars.outputs.output_filename }}
+          Version: ${{ steps.vars.outputs.version || 'N/A' }}
+          Triggered by: ${{ github.event_name }}
+          
+          Build includes:
+          - Ubuntu 24.04 LTS base
+          - Qt Creator
+          - Qt 5 desktop kit
+          - Qt 6 desktop kit
+          
+          The OVA file is compatible with:
+          - VirtualBox
+          - VMware
+          - GNOME Boxes
+          
+          Download from artifacts and import into your virtualization platform.
+          EOF
+          cat build-summary.txt
+
+      - name: Upload build summary
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-summary
+          path: build-summary.txt
+          retention-days: 30
+
+      - name: Create GitHub Release (on tag)
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: output/*.ova
+          draft: false
+          prerelease: ${{ contains(steps.vars.outputs.version, 'rc') || contains(steps.vars.outputs.version, 'beta') || contains(steps.vars.outputs.version, 'alpha') }}
+          body: |
+            ## MRS SDK Qt VM Image
+            
+            Ready-to-use virtual machine image with:
+            - Ubuntu 24.04 LTS
+            - Qt Creator
+            - Qt 5 & 6 desktop kits
+            
+            **Installation:** Download the OVA file and import it into VirtualBox, VMware, or GNOME Boxes.
+            
+            **Default credentials:** 
+            - Username: ubuntu
+            - Password: ubuntu (change on first login)
+            
+            For documentation, visit: https://qt.mrs-electronics.dev/guides/vm-setup
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "⚠️  VM build failed!"
+          echo "Check the workflow logs for details."
+          exit 1
