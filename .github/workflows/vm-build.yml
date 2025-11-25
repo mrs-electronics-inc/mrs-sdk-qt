@@ -48,33 +48,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y virtualbox
 
-      - name: Initialize Packer
-        working-directory: vm
-        run: |
-          echo "Initializing Packer configuration..."
-          packer init .
-
-      - name: Validate Packer configuration
-        working-directory: vm
-        run: packer validate .
-
       - name: Build OVA image
         working-directory: vm
         run: |
-          echo "Building OVA image..."
+          chmod +x scripts/build-vm.sh
 
-          BUILD_ARGS=(-var "build_date=${{ steps.vars.outputs.build_date }}")
+          BUILD_ARGS=(-d "${{ steps.vars.outputs.build_date }}" --non-interactive)
 
           # Add version tag if this is a tagged release
           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
             BUILD_ARGS+=(-var "version=${{ steps.vars.outputs.version }}")
           fi
 
-          packer build \
-            "${BUILD_ARGS[@]}" \
-            -color=false \
-            -timestamp-ui \
-            .
+          ./scripts/build-vm.sh "${BUILD_ARGS[@]}"
         timeout-minutes: 120
 
       - name: Upload OVA artifact
