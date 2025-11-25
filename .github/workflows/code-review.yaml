@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+concurrency:
+  group: code-review
+  cancel-in-progress: true
+
 jobs:
   run_code_review_bot:
     runs-on: ubuntu-latest
