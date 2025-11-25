@@ -41,15 +41,7 @@ variable "output_directory" {
 }
 
 variable "build_date" {
-  type        = string
-  default     = ""
-  description = "Build date in YYYYMMDD format (auto-generated if empty)"
-}
-
-locals {
-  # Auto-generate build date if not provided
-  build_date = var.build_date != "" ? var.build_date : formatdate("YYYYMMDD", timestamp())
-
-  # Generate OVA filename with date
-  output_filename = "${var.vm_name}-${local.build_date}.ova"
+   type        = string
+   default     = ""
+   description = "Build date in YYYYMMDD format (optional, for tracking purposes)"
 }

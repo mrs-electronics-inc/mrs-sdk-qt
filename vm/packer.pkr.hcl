@@ -89,13 +89,9 @@ build {
     ]
   }
 
-  # Generate output OVA with date-based naming
-  post-processor "manifest" {
-    output     = "manifest.json"
-    strip_path = true
-    custom_data = {
-      build_date = local.build_date
-      output_ova = local.output_filename
-    }
-  }
+   # Generate manifest with build metadata
+   post-processor "manifest" {
+     output     = "manifest.json"
+     strip_path = true
+   }
 }
