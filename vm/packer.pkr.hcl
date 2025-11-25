@@ -23,7 +23,7 @@ source "virtualbox-iso" "ubuntu" {
   # Boot settings for Ubuntu Desktop ISO with autoinstall
   boot_command = [
     "<wait><wait><wait>c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ systemd.log_level=debug ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
@@ -53,6 +53,23 @@ source "virtualbox-iso" "ubuntu" {
 build {
   name    = "mrs-sdk-qt-desktop"
   sources = ["source.virtualbox-iso.ubuntu"]
+
+  # Debug: Print system information after SSH connects
+  provisioner "shell" {
+    inline = [
+      "echo '=== Debug: System Information ==='",
+      "uname -a",
+      "echo '=== Debug: Disk Usage ==='",
+      "df -h",
+      "echo '=== Debug: SSH Status ==='",
+      "systemctl status ssh || systemctl status sshd || echo 'SSH service not found'",
+      "echo '=== Debug: Network Configuration ==='",
+      "ip addr",
+      "echo '=== Debug: Ubuntu Release ==='",
+      "lsb_release -a",
+      "echo '=== Debug Information Complete ==='",
+    ]
+  }
 
   # Update system and install base dependencies
   provisioner "shell" {

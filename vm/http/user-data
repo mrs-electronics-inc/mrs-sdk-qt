@@ -1,54 +1,41 @@
 #cloud-config
 autoinstall:
   version: 1
+  # Disable all interactive sections to allow fully automated installation
+  interactive-sections: []
+  
   locale: en_US.UTF-8
   keyboard:
     layout: us
+  
   network:
     version: 2
     ethernets:
       eth0:
         dhcp4: true
+  
   storage:
-    config:
-      - type: disk
-        id: disk0
-        match:
-          size: largest
-        wipe: superblock-recursive
-        grub_device: true
-      - type: partition
-        id: partition0
-        device: disk0
-        size: -1
-        flag: linux
-      - type: lvm_volgroup
-        id: lvm_volgroup0
-        name: ubuntu-vg
-        devices:
-          - partition0
-      - type: lvm_partition
-        id: lvm_partition0
-        volgroup: lvm_volgroup0
-        name: ubuntu-lv
-        size: -1
-      - type: format
-        id: format0
-        fstype: ext4
-        volume: lvm_partition0
-      - type: mount
-        id: mount0
-        device: format0
-        path: /
+    layout:
+      name: direct
+  
   identity:
     hostname: mrs-sdk-qt
     username: ubuntu
     password: '$6$L7aB1H4mtiNwiEUP$2Wou3TWgLRblDBe6POKWpK2e4SVp5b.jaPKWs20fCoDYw/ITJLQigkkU5YvkYnM.osqM0BVpe4BvOzIzqKtEF.'
+    realname: Ubuntu User
+  
   ssh:
     install-server: true
-    allowed-signers: {}
+    allow-pw: true
+  
   packages:
     - openssh-server
-    - openssh-client
+  
   updates: security
   timezone: UTC
+  
+  # Add reporting to help debug issues
+  reporting:
+    builtin:
+      type: print
+      level: INFO
