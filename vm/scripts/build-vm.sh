@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # MRS SDK Qt VM Build Helper Script
 # This script automates local building of the VM image using Packer.
