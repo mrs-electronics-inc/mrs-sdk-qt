@@ -25,17 +25,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up build variables
+      - name: Extract version tag if applicable
         id: vars
         run: |
-          BUILD_DATE=$(date +%Y%m%d)
-          BUILD_TIME=$(date +%H%M%S)
-          OUTPUT_FILENAME="mrs-sdk-qt-${BUILD_DATE}-${BUILD_TIME}.ova"
-
-          echo "build_date=${BUILD_DATE}" >> $GITHUB_OUTPUT
-          echo "build_time=${BUILD_TIME}" >> $GITHUB_OUTPUT
-          echo "output_filename=${OUTPUT_FILENAME}" >> $GITHUB_OUTPUT
-
           # Extract version tag if this is a tagged release
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             VERSION="${{ github.ref }}"
@@ -53,7 +45,7 @@ jobs:
         run: |
           chmod +x scripts/build-vm.sh
 
-          BUILD_ARGS=(-d "${{ steps.vars.outputs.build_date }}" --non-interactive)
+          BUILD_ARGS=(--non-interactive)
 
           # Add version tag if this is a tagged release
           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then

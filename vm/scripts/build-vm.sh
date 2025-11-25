@@ -76,7 +76,6 @@ Build the MRS SDK Qt virtual machine image using Packer.
 
 Options:
     -h, --help              Show this help message
-    -d, --date DATE         Build date in YYYYMMDD format (default: auto)
     -m, --memory MB         VM RAM in MB (default: 4096)
     -c, --cpus CORES        VM CPU cores (default: 2)
     -s, --disk-size MB      Disk size in MB (default: 61440)
@@ -114,10 +113,6 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             show_usage
             exit 0
-            ;;
-        -d|--date)
-            PACKER_VARS="$PACKER_VARS -var \"build_date=$2\""
-            shift 2
             ;;
         -m|--memory)
             PACKER_VARS="$PACKER_VARS -var \"vm_memory=$2\""

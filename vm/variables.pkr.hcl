@@ -33,9 +33,3 @@ variable "iso_checksum" {
   default     = "sha256:faabcf33ae53976d2b8207a001ff32f4e5daae013505ac7188c9ea63988f8328"
   description = "Checksum for ISO verification"
 }
-
-variable "build_date" {
-  type        = string
-  default     = ""
-  description = "Build date in YYYYMMDD format (optional, for tracking purposes)"
-}
