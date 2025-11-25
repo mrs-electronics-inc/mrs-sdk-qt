@@ -49,7 +49,7 @@ variable "build_date" {
 locals {
   # Auto-generate build date if not provided
   build_date = var.build_date != "" ? var.build_date : formatdate("YYYYMMDD", timestamp())
-  
+
   # Generate OVA filename with date
   output_filename = "${var.vm_name}-${local.build_date}.ova"
 }
