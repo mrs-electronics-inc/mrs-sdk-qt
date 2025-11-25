@@ -23,7 +23,7 @@ jobs:
 
     permissions:
       contents: read
-      artifacts: write
+      actions: write
 
     steps:
       - name: Checkout repository
