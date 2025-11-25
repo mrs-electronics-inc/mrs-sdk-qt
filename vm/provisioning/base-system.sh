@@ -4,13 +4,14 @@
 # This script installs system-level dependencies and utilities required by Qt
 # and development tools. It runs with sudo privileges.
 
-set -e  # Exit on error
+set -eo pipefail
 
 echo "================================"
 echo "MRS SDK Qt - Base System Setup"
 echo "================================"
 
 # Update package manager
+export DEBIAN_FRONTEND=noninteractive
 echo "Updating package manager..."
 sudo apt-get update
 sudo apt-get upgrade -y

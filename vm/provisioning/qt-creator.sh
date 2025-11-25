@@ -28,7 +28,9 @@ fi
 
 # Create default Qt Creator configuration directory
 echo "Setting up Qt Creator configuration..."
-QT_CONFIG_DIR="$HOME/.config/QtProject"
+TARGET_USER="${SUDO_USER:-$USER}"
+QT_CONFIG_DIR="$(eval echo ~$TARGET_USER)/.config/QtProject"
+mkdir -p "$QT_CONFIG_DIR"
 mkdir -p "$QT_CONFIG_DIR"
 
 # Qt Creator will auto-detect available kits after we install them
