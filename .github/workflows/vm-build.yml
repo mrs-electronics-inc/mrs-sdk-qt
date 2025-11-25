@@ -78,9 +78,10 @@ jobs:
           rm "$PACKER_ZIP" SHA256SUMS SHA256SUMS.sig
 
           echo "${HOME}/packer" >> $GITHUB_PATH
+          export PATH="${HOME}/packer:$PATH"
 
           # Verify installation
-          packer version
+          "${HOME}/packer/packer" version
 
       - name: Install VirtualBox
         run: |
@@ -103,37 +104,41 @@ jobs:
           fi
           echo "VirtualBox kernel modules verified successfully."
 
-      - name: Initialize Packer
-        working-directory: vm
-        run: |
-          echo "Initializing Packer configuration..."
-          packer init .
+       - name: Initialize Packer
+         working-directory: vm
+         run: |
+           echo "Initializing Packer configuration..."
+           export PATH="${HOME}/packer:$PATH"
+           packer init .
 
-      - name: Format and validate Packer configuration
-        working-directory: vm
-        run: |
-          echo "Validating Packer configuration..."
-          packer fmt -check .
-          packer validate .
+       - name: Format and validate Packer configuration
+         working-directory: vm
+         run: |
+           echo "Validating Packer configuration..."
+           export PATH="${HOME}/packer:$PATH"
+           packer fmt -check .
+           packer validate .
 
-      - name: Build OVA image
-        working-directory: vm
-        run: |
-          echo "Building OVA image..."
+       - name: Build OVA image
+         working-directory: vm
+         run: |
+           echo "Building OVA image..."
 
-          BUILD_ARGS=(-var "build_date=${{ steps.vars.outputs.build_date }}")
+           export PATH="${HOME}/packer:$PATH"
 
-          # Add version tag if this is a tagged release
-          if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
-            BUILD_ARGS+=(-var "version=${{ steps.vars.outputs.version }}")
-          fi
+           BUILD_ARGS=(-var "build_date=${{ steps.vars.outputs.build_date }}")
 
-          packer build \
-            "${BUILD_ARGS[@]}" \
-            -color=false \
-            -timestamp-ui \
-            .
-        timeout-minutes: 120
+           # Add version tag if this is a tagged release
+           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
+             BUILD_ARGS+=(-var "version=${{ steps.vars.outputs.version }}")
+           fi
+
+           packer build \
+             "${BUILD_ARGS[@]}" \
+             -color=false \
+             -timestamp-ui \
+             .
+         timeout-minutes: 120
 
       - name: List build artifacts
         if: always()
