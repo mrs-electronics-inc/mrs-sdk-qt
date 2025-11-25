@@ -30,8 +30,6 @@ jobs:
         run: |
           BUILD_DATE=$(date +%Y%m%d)
           BUILD_TIME=$(date +%H%M%S)
-
-          # Determine output filename
           OUTPUT_FILENAME="mrs-sdk-qt-${BUILD_DATE}-${BUILD_TIME}.ova"
 
           echo "build_date=${BUILD_DATE}" >> $GITHUB_OUTPUT
@@ -45,36 +43,10 @@ jobs:
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check Packer installation
-        run: |
-          if command -v packer &> /dev/null; then
-            echo "Packer is already installed:"
-            packer version
-          else
-            echo "Packer not found, installing..."
-            exit 1
-          fi
-
       - name: Install VirtualBox
         run: |
-          echo "Installing VirtualBox and dependencies..."
-
           sudo apt-get update
-          sudo apt-get install -y \
-            virtualbox \
-            virtualbox-dkms \
-            libvirt-dev
-
-          # Verify kernel modules were built
-          echo "Verifying VirtualBox kernel modules..."
-          if ! lsmod | grep -q vboxdrv; then
-            echo "Warning: vboxdrv kernel module not loaded. Attempting to load..."
-            sudo modprobe vboxdrv || {
-              echo "Failed to load vboxdrv kernel module!"
-              exit 1
-            }
-          fi
-          echo "VirtualBox kernel modules verified successfully."
+          sudo apt-get install -y virtualbox
 
       - name: Initialize Packer
         working-directory: vm
@@ -82,12 +54,9 @@ jobs:
           echo "Initializing Packer configuration..."
           packer init .
 
-      - name: Format and validate Packer configuration
+      - name: Validate Packer configuration
         working-directory: vm
-        run: |
-          echo "Validating Packer configuration..."
-          packer fmt -check .
-          packer validate .
+        run: packer validate .
 
       - name: Build OVA image
         working-directory: vm
@@ -108,12 +77,6 @@ jobs:
             .
         timeout-minutes: 120
 
-      - name: List build artifacts
-        if: always()
-        run: |
-          echo "Build artifacts:"
-          find . -name "*.ova" -o -name "manifest.json" | head -20
-
       - name: Upload OVA artifact
         if: success()
         uses: actions/upload-artifact@v4
@@ -124,10 +87,3 @@ jobs:
             output/manifest.json
           retention-days: 30
           compression-level: 0
-
-      - name: Notify on failure
-        if: failure()
-        run: |
-          echo "⚠️  VM build failed!"
-          echo "Check the workflow logs for details."
-          exit 1
