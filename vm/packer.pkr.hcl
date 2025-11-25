@@ -20,16 +20,19 @@ source "virtualbox-iso" "ubuntu" {
   iso_url      = var.iso_url
   iso_checksum = var.iso_checksum
 
-  # Boot settings
+  # Boot settings for Ubuntu Desktop ISO
   boot_command = [
-    "<wait>c<wait>",
-    "linux /casper/vmlinuz --- quiet<enter>",
-    "<wait3>",
-    "initrd /casper/initrd<enter>",
-    "<wait3>",
-    "boot<enter>",
+    "<enter><wait>",
+    "<enter><wait>",
+    "<f6><esc>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs>",
+    "autoinstall ds=nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter>",
   ]
-  boot_wait = "5s"
+  boot_wait = "3s"
 
   # Headless mode (comment out if you want to see the VM window during build)
   headless = true
@@ -38,6 +41,9 @@ source "virtualbox-iso" "ubuntu" {
   format        = "ova"
   guest_os_type = "Ubuntu_64"
   vboxmanage    = [["modifyvm", "{{ .Name }}", "--nested-hw-virt", "on"]]
+
+  # HTTP server for preseed data
+  http_directory = "http"
 
   # SSH configuration for provisioning
   ssh_username = "ubuntu"

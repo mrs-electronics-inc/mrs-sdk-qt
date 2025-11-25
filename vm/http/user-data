@@ -1,0 +1,26 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  network:
+    version: 2
+    ethernets:
+      eth0:
+        dhcp4: true
+  storage:
+    layout:
+      name: lvm
+  identity:
+    hostname: mrs-sdk-qt
+    username: ubuntu
+    password: '$6$rounds=4096$abcdefghijklmnop$n/7hT5B/Z/n.vX8Z7K3Q7Z7K3Q7Z7K3Q7Z7K3Q7Z7K3Q7Z7K3Q7Z7K3Q7Z7K3Q7Z7K3Q7Z7K=='
+  ssh:
+    install-server: true
+    allow-pw: true
+  packages:
+    - openssh-server
+    - openssh-client
+  late-commands:
+    - 'sed -i "s/^#PasswordAuthentication.*/PasswordAuthentication yes/" /target/etc/ssh/sshd_config'
