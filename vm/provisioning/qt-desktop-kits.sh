@@ -29,85 +29,9 @@ sudo apt-get install -y \
 
 echo "✓ Qt 5 desktop kit installed"
 
-# Install Qt 6 using the official Qt online installer in unattended mode
-# This provides the latest Qt 6 versions with modern features
+# Install Qt 6 from the official Qt apt repository
+# Using the Qt apt repository provides stable, pre-built packages
 echo "Installing Qt 6 desktop kit..."
-
-# Create directory for Qt installation
-QT6_INSTALL_DIR="/opt/qt6"
-sudo mkdir -p "$QT6_INSTALL_DIR"
-
-# Download the Qt online installer
-echo "Downloading Qt online installer..."
-INSTALLER_URL="https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run"
-INSTALLER_PATH="/tmp/qt-installer.run"
-
-sudo wget -q "$INSTALLER_URL" -O "$INSTALLER_PATH"
-sudo chmod +x "$INSTALLER_PATH"
-
-# Create Qt installer script for unattended installation
-# This script automates the Qt 6 desktop kit installation
-echo "Creating Qt installation script..."
-cat > /tmp/qt6-install.qs <<'EOF'
-function Controller() {
-    installer.autoRejectMessageBoxes();
-    installer.installationFinished.connect(function() {
-        gui.clickButton(buttons.NextButton);
-    });
-}
-
-Controller.prototype.WelcomePageCallback = function() {
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.CredentialsPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.IntroductionPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.TargetDirectoryPageCallback = function() {
-    installer.setValue("TargetDir", "/opt/qt6");
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.ComponentSelectionPageCallback = function() {
-    var widget = gui.currentPageWidget();
-    widget.deselectAll();
-    
-    // Select Qt 6 latest desktop kit
-    widget.selectComponent("qt.qt6.latest.gcc_64");
-    widget.selectComponent("qt.qt6.latest.qtcreator");
-    
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.LicenseAgreementPageCallback = function() {
-    gui.currentPageWidget().AcceptLicenseRadioButton.checked = true;
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.StartMenuDirectoryPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.ReadyForInstallationPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
-}
-
-Controller.prototype.FinishedPageCallback = function() {
-    gui.clickButton(buttons.FinishButton);
-}
-EOF
-
-# Note: The Qt online installer approach is complex in headless environments.
-# As a more reliable alternative, we'll use the Qt apt repository.
-# Remove the installer download attempt and use official Qt apt packages instead.
-rm -f "$INSTALLER_PATH"
-
-echo "Installing Qt 6 from official Qt apt repository..."
 
 # Add Qt official repository
 echo "Adding Qt official repository..."

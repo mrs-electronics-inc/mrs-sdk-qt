@@ -53,15 +53,6 @@ build {
   name    = "mrs-sdk-qt-desktop"
   sources = ["source.virtualbox-iso.ubuntu"]
 
-  # Wait for cloud-init to complete
-  provisioner "shell" {
-    inline = [
-      "echo 'Waiting for cloud-init to finish...'",
-      "cloud-init status --wait",
-      "echo 'Cloud-init completed'"
-    ]
-  }
-
   # Update system and install base dependencies
   provisioner "shell" {
     script = "${path.root}/provisioning/base-system.sh"
@@ -89,9 +80,9 @@ build {
     ]
   }
 
-   # Generate manifest with build metadata
-   post-processor "manifest" {
-     output     = "manifest.json"
-     strip_path = true
-   }
+  # Generate manifest with build metadata
+  post-processor "manifest" {
+    output     = "manifest.json"
+    strip_path = true
+  }
 }

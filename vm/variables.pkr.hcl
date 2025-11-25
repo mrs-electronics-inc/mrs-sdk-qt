@@ -34,14 +34,8 @@ variable "iso_checksum" {
   description = "Checksum for ISO verification"
 }
 
-variable "output_directory" {
-  type        = string
-  default     = "output"
-  description = "Directory where OVA will be written"
-}
-
 variable "build_date" {
-   type        = string
-   default     = ""
-   description = "Build date in YYYYMMDD format (optional, for tracking purposes)"
+  type        = string
+  default     = ""
+  description = "Build date in YYYYMMDD format (optional, for tracking purposes)"
 }
