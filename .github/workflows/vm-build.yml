@@ -77,7 +77,6 @@ jobs:
           sudo apt-get install -y \
             virtualbox \
             virtualbox-dkms \
-            virtualbox-ext-pack \
             libvirt-dev
 
       - name: Initialize Packer
