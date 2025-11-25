@@ -65,16 +65,17 @@ jobs:
           wget -q "${CHECKSUM_URL}.sig" -O SHA256SUMS.sig
 
           # Download Packer binary
-          wget -q "$DOWNLOAD_URL" -O packer.zip
+          PACKER_ZIP="packer_${PACKER_VERSION}_linux_amd64.zip"
+          wget -q "$DOWNLOAD_URL" -O "$PACKER_ZIP"
 
           # Verify checksum
-          sha256sum -c <(grep "packer_${PACKER_VERSION}_linux_amd64.zip" SHA256SUMS) || {
+          sha256sum -c <(grep "$PACKER_ZIP" SHA256SUMS) || {
             echo "Checksum verification failed!"
             exit 1
           }
 
-          unzip -q packer.zip
-          rm packer.zip SHA256SUMS SHA256SUMS.sig
+          unzip -q "$PACKER_ZIP"
+          rm "$PACKER_ZIP" SHA256SUMS SHA256SUMS.sig
 
           echo "${HOME}/packer" >> $GITHUB_PATH
 
