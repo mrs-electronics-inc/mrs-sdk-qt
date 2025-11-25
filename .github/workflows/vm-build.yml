@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      # TODO: Remove this temporary branch before merging to main
       - 27-add-vm-image-workflow
     tags:
       - "v*.*.*"
@@ -49,35 +48,59 @@ jobs:
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install Packer
-        run: |
-          echo "Installing Packer..."
+       - name: Install Packer
+         run: |
+           echo "Installing Packer..."
 
-          # Download latest Packer version
-          PACKER_VERSION="1.11.1"
-          DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"
+           # Download latest Packer version
+           PACKER_VERSION="1.14.3"
+           DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"
+           CHECKSUM_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_SHA256SUMS"
 
-          mkdir -p "${HOME}/packer"
-          cd "${HOME}/packer"
+           mkdir -p "${HOME}/packer"
+           cd "${HOME}/packer"
 
-          wget -q "$DOWNLOAD_URL" -O packer.zip
-          unzip -q packer.zip
-          rm packer.zip
+           # Download checksums and verify signature
+           wget -q "$CHECKSUM_URL" -O SHA256SUMS
+           wget -q "${CHECKSUM_URL}.sig" -O SHA256SUMS.sig
 
-          echo "${HOME}/packer" >> $GITHUB_PATH
+           # Download Packer binary
+           wget -q "$DOWNLOAD_URL" -O packer.zip
 
-          # Verify installation
-          packer version
+           # Verify checksum
+           sha256sum -c <(grep "packer_${PACKER_VERSION}_linux_amd64.zip" SHA256SUMS) || {
+             echo "Checksum verification failed!"
+             exit 1
+           }
 
-      - name: Install VirtualBox
-        run: |
-          echo "Installing VirtualBox and dependencies..."
+           unzip -q packer.zip
+           rm packer.zip SHA256SUMS SHA256SUMS.sig
 
-          sudo apt-get update
-          sudo apt-get install -y \
-            virtualbox \
-            virtualbox-dkms \
-            libvirt-dev
+           echo "${HOME}/packer" >> $GITHUB_PATH
+
+           # Verify installation
+           packer version
+
+       - name: Install VirtualBox
+         run: |
+           echo "Installing VirtualBox and dependencies..."
+
+           sudo apt-get update
+           sudo apt-get install -y \
+             virtualbox \
+             virtualbox-dkms \
+             libvirt-dev
+
+           # Verify kernel modules were built
+           echo "Verifying VirtualBox kernel modules..."
+           if ! lsmod | grep -q vboxdrv; then
+             echo "Warning: vboxdrv kernel module not loaded. Attempting to load..."
+             sudo modprobe vboxdrv || {
+               echo "Failed to load vboxdrv kernel module!"
+               exit 1
+             }
+           fi
+           echo "VirtualBox kernel modules verified successfully."
 
       - name: Initialize Packer
         working-directory: vm
@@ -92,17 +115,24 @@ jobs:
           packer fmt -check .
           packer validate .
 
-      - name: Build OVA image
-        working-directory: vm
-        run: |
-          echo "Building OVA image..."
+       - name: Build OVA image
+         working-directory: vm
+         run: |
+           echo "Building OVA image..."
 
-          packer build \
-            -var "build_date=${{ steps.vars.outputs.build_date }}" \
-            -color=false \
-            -timestamp-ui \
-            .
-        timeout-minutes: 120
+           BUILD_ARGS=(-var "build_date=${{ steps.vars.outputs.build_date }}")
+           
+           # Add version tag if this is a tagged release
+           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
+             BUILD_ARGS+=(-var "version=${{ steps.vars.outputs.version }}")
+           fi
+
+           packer build \
+             "${BUILD_ARGS[@]}" \
+             -color=false \
+             -timestamp-ui \
+             .
+         timeout-minutes: 120
 
       - name: List build artifacts
         if: always()
@@ -110,14 +140,16 @@ jobs:
           echo "Build artifacts:"
           find . -name "*.ova" -o -name "manifest.json" | head -20
 
-      - name: Upload OVA artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mrs-sdk-qt-ova
-          path: output/
-          retention-days: 30
-          compression-level: 0
+       - name: Upload OVA artifact
+         if: success()
+         uses: actions/upload-artifact@v4
+         with:
+           name: mrs-sdk-qt-ova
+           path: |
+             output/*.ova
+             output/manifest.json
+           retention-days: 30
+           compression-level: 0
 
       - name: Notify on failure
         if: failure()
