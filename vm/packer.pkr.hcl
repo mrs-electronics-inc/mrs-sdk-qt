@@ -22,10 +22,10 @@ source "virtualbox-iso" "ubuntu" {
 
   # Boot settings for Ubuntu Desktop ISO with autoinstall
   boot_command = [
-    "e<wait>",
-    "<down><down><down><end>",
-    " autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/",
-    "<f10>"
+    "<wait><wait><wait>c<wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter><wait>",
+    "initrd /casper/initrd<enter><wait>",
+    "boot<enter>"
   ]
   boot_wait = "5s"
 
