@@ -20,19 +20,14 @@ source "virtualbox-iso" "ubuntu" {
   iso_url      = var.iso_url
   iso_checksum = var.iso_checksum
 
-  # Boot settings for Ubuntu Desktop ISO
+  # Boot settings for Ubuntu Desktop ISO with autoinstall
   boot_command = [
-    "<enter><wait>",
-    "<enter><wait>",
-    "<f6><esc>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs>",
-    "autoinstall ds=nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter>",
+    "e<wait>",
+    "<down><down><down><end>",
+    " autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/",
+    "<f10>"
   ]
-  boot_wait = "3s"
+  boot_wait = "5s"
 
   # Headless mode (comment out if you want to see the VM window during build)
   headless = true
