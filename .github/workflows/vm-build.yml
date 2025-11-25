@@ -31,11 +31,13 @@ jobs:
         id: vars
         run: |
           BUILD_DATE=$(date +%Y%m%d)
+          BUILD_TIME=$(date +%H%M%S)
 
           # Determine output filename
-          OUTPUT_FILENAME="mrs-sdk-qt-${BUILD_DATE}.ova"
+          OUTPUT_FILENAME="mrs-sdk-qt-${BUILD_DATE}-${BUILD_TIME}.ova"
 
           echo "build_date=${BUILD_DATE}" >> $GITHUB_OUTPUT
+          echo "build_time=${BUILD_TIME}" >> $GITHUB_OUTPUT
           echo "output_filename=${OUTPUT_FILENAME}" >> $GITHUB_OUTPUT
 
           # Extract version tag if this is a tagged release
