@@ -1,7 +1,6 @@
 #cloud-config
 autoinstall:
   version: 1
-  # Disable all interactive sections to allow fully automated installation
   interactive-sections: []
   
   locale: en_US.UTF-8
@@ -11,12 +10,16 @@ autoinstall:
   network:
     version: 2
     ethernets:
-      eth0:
+      id0:
+        match:
+          macaddress: 52:54:00:*:*:*
         dhcp4: true
   
   storage:
     layout:
       name: direct
+    swap:
+      size: 0
   
   identity:
     hostname: mrs-sdk-qt
@@ -27,15 +30,25 @@ autoinstall:
   ssh:
     install-server: true
     allow-pw: true
+    enabled: true
   
   packages:
     - openssh-server
+    - openssh-client
+    - linux-generic
   
   updates: security
   timezone: UTC
   
-  # Add reporting to help debug issues
-  reporting:
-    builtin:
-      type: print
-      level: INFO
+  grub:
+    install: true
+    reboot-with-timeout: 10
+  
+  early-commands:
+    - systemctl stop ssh
+  
+  late-commands:
+    - "sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /target/etc/ssh/sshd_config"
+    - "echo 'ubuntu:ubuntu' | chpasswd --root /target"
+    - systemctl -b enable ssh
+    - systemctl -b start ssh

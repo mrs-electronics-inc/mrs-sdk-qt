@@ -23,11 +23,12 @@ source "virtualbox-iso" "ubuntu" {
   # Boot settings for Ubuntu Desktop ISO with autoinstall
   boot_command = [
     "<wait><wait><wait>c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ systemd.log_level=debug ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
-  boot_wait = "5s"
+  boot_wait = "10s"
+  boot_keygroup_interval = "100ms"
 
   # Headless mode (comment out if you want to see the VM window during build)
   headless = true
@@ -43,7 +44,8 @@ source "virtualbox-iso" "ubuntu" {
   # SSH configuration for provisioning
   ssh_username = "ubuntu"
   ssh_password = "ubuntu"
-  ssh_timeout  = "20m"
+  ssh_timeout  = "60m"
+  ssh_wait_timeout = "60m"
 
   # Shutdown command
   shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
