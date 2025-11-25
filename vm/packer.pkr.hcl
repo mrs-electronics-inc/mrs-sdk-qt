@@ -1,0 +1,108 @@
+packer {
+  required_version = ">= 1.8.0"
+
+  required_plugins {
+    virtualbox = {
+      version = ">= 1.0.0"
+      source  = "github.com/hashicorp/virtualbox"
+    }
+  }
+}
+
+source "virtualbox-iso" "ubuntu" {
+  # Instance settings
+  vm_name   = var.vm_name
+  memory    = var.vm_memory
+  cpus      = var.vm_cpus
+  disk_size = var.disk_size
+
+  # ISO configuration
+  iso_url      = var.iso_url
+  iso_checksum = var.iso_checksum
+
+  # Boot settings for Ubuntu Desktop ISO with autoinstall
+  boot_command = [
+    "<wait><wait><wait>c<wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter><wait>",
+    "initrd /casper/initrd<enter><wait>",
+    "boot<enter>"
+  ]
+  boot_wait = "10s"
+  boot_keygroup_interval = "100ms"
+
+  # Headless mode (comment out if you want to see the VM window during build)
+  headless = true
+
+  # VirtualBox specific settings
+  format        = "ova"
+  guest_os_type = "Ubuntu_64"
+  vboxmanage    = [["modifyvm", "{{ .Name }}", "--nested-hw-virt", "on"]]
+
+  # HTTP server for preseed data
+  http_directory = "http"
+
+  # SSH configuration for provisioning
+  ssh_username = "ubuntu"
+  ssh_password = "ubuntu"
+  ssh_timeout  = "60m"
+  ssh_wait_timeout = "60m"
+
+  # Shutdown command
+  shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
+  shutdown_timeout = "5m"
+}
+
+build {
+  name    = "mrs-sdk-qt-desktop"
+  sources = ["source.virtualbox-iso.ubuntu"]
+
+  # Debug: Print system information after SSH connects
+  provisioner "shell" {
+    inline = [
+      "echo '=== Debug: System Information ==='",
+      "uname -a",
+      "echo '=== Debug: Disk Usage ==='",
+      "df -h",
+      "echo '=== Debug: SSH Status ==='",
+      "systemctl status ssh || systemctl status sshd || echo 'SSH service not found'",
+      "echo '=== Debug: Network Configuration ==='",
+      "ip addr",
+      "echo '=== Debug: Ubuntu Release ==='",
+      "lsb_release -a",
+      "echo '=== Debug Information Complete ==='",
+    ]
+  }
+
+  # Update system and install base dependencies
+  provisioner "shell" {
+    script = "${path.root}/provisioning/base-system.sh"
+  }
+
+  # Install Qt Creator
+  provisioner "shell" {
+    script = "${path.root}/provisioning/qt-creator.sh"
+  }
+
+  # Install Qt desktop kits (Qt 5 & Qt 6)
+  provisioner "shell" {
+    script = "${path.root}/provisioning/qt-desktop-kits.sh"
+  }
+
+  # Final cleanup and optimization
+  provisioner "shell" {
+    inline = [
+      "echo 'Running final cleanup...'",
+      "sudo apt-get autoremove -y",
+      "sudo apt-get autoclean -y",
+      "sudo apt-get clean -y",
+      "sudo rm -rf /tmp/* /var/tmp/*",
+      "echo 'Build complete!'",
+    ]
+  }
+
+  # Generate manifest with build metadata
+  post-processor "manifest" {
+    output     = "manifest.json"
+    strip_path = true
+  }
+}
