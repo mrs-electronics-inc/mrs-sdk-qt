@@ -27,7 +27,7 @@ source "virtualbox-iso" "ubuntu" {
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
-  boot_wait = "10s"
+  boot_wait              = "10s"
   boot_keygroup_interval = "100ms"
 
   # Headless mode (comment out if you want to see the VM window during build)
@@ -42,9 +42,9 @@ source "virtualbox-iso" "ubuntu" {
   http_directory = "http"
 
   # SSH configuration for provisioning
-  ssh_username = "ubuntu"
-  ssh_password = "ubuntu"
-  ssh_timeout  = "60m"
+  ssh_username     = "ubuntu"
+  ssh_password     = "ubuntu"
+  ssh_timeout      = "60m"
   ssh_wait_timeout = "60m"
 
   # Shutdown command

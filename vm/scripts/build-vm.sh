@@ -173,7 +173,7 @@ else
     print_info "Packer version: $PACKER_VERSION"
 fi
 
-if ! check_command "vboxmanage"; then
+if ! check_command "VBoxManage"; then
     print_error "VirtualBox not found. Install from: https://www.virtualbox.org/wiki/Downloads"
     MISSING_DEPS=true
 fi
