@@ -247,6 +247,8 @@ print_info "  Disk Size: 61440 MB / 60GB (use -s to override)"
 echo ""
 
 print_info "Starting build with QEMU/KVM..."
+print_info "Serial console (available during boot): nc 127.0.0.1 4444"
+echo ""
 
 # Run Packer build
 BUILD_START=$(date +%s)

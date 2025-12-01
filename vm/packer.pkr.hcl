@@ -35,7 +35,7 @@ source "qemu" "ubuntu" {
   disk_image  = false
   format      = "raw"
   qemuargs = [
-    ["-serial", "mon:telnet:127.0.0.1:0,server,nowait"]
+    ["-serial", "mon:telnet:127.0.0.1:4444,server,nowait"]
   ]
 
   # HTTP server for preseed data
