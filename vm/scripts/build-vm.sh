@@ -79,8 +79,6 @@ Options:
     -m, --memory MB         VM RAM in MB (default: 4096)
     -c, --cpus CORES        VM CPU cores (default: 2)
     -s, --disk-size MB      Disk size in MB (default: 61440)
-    --headless              Run VirtualBox in headless mode (default: true)
-    --gui                   Show VirtualBox GUI during build
     --validate-only         Only validate Packer configuration
     --format-only           Only format Packer configuration
     --debug                 Enable Packer debug output
@@ -105,7 +103,6 @@ PACKER_VARS=""
 PACKER_DEBUG=""
 VALIDATE_ONLY=false
 FORMAT_ONLY=false
-HEADLESS="true"
 NON_INTERACTIVE=false
 
 while [[ $# -gt 0 ]]; do
@@ -125,14 +122,6 @@ while [[ $# -gt 0 ]]; do
         -s|--disk-size)
             PACKER_VARS="$PACKER_VARS -var \"disk_size=$2\""
             shift 2
-            ;;
-        --headless)
-            HEADLESS="true"
-            shift
-            ;;
-        --gui)
-            HEADLESS="false"
-            shift
             ;;
         --validate-only)
             VALIDATE_ONLY=true
@@ -173,8 +162,8 @@ else
     print_info "Packer version: $PACKER_VERSION"
 fi
 
-if ! check_command "VBoxManage"; then
-    print_error "VirtualBox not found. Install from: https://www.virtualbox.org/wiki/Downloads"
+if ! check_command "qemu-system-x86_64"; then
+    print_error "QEMU not found. Install with: sudo apt-get install qemu-system-x86"
     MISSING_DEPS=true
 fi
 
@@ -258,7 +247,6 @@ print_info "Build parameters:"
 print_info "  VM Memory: 4096 MB (use -m to override)"
 print_info "  VM CPUs: 2 (use -c to override)"
 print_info "  Disk Size: 61440 MB / 60GB (use -s to override)"
-print_info "  Headless: $HEADLESS"
 echo ""
 
 print_warning "This build will take 30-60 minutes depending on your system."
@@ -276,13 +264,7 @@ else
     print_info "Running in non-interactive mode - starting build..."
 fi
 
-# Enable/disable headless mode in Packer
-if [ "$HEADLESS" = "false" ]; then
-    # Temporarily modify packer config to show GUI
-    print_info "Running VirtualBox in GUI mode"
-else
-    print_info "Running VirtualBox in headless mode"
-fi
+print_info "Building with QEMU/KVM..."
 
 # Run Packer build
 BUILD_START=$(date +%s)
@@ -305,20 +287,34 @@ print_header "Build Complete"
 print_success "VM image built successfully"
 print_info "Build time: $((BUILD_DURATION / 60)) minutes $((BUILD_DURATION % 60)) seconds"
 
-# Find output OVA
-OVA_FILE=$(find output -name "*.ova" -type f 2>/dev/null | head -1)
+# Find output images
+RAW_FILE=$(find output -name "packer-qemu" -type f 2>/dev/null | head -1)
+VMDK_FILE=$(find output -name "*.vmdk" -type f 2>/dev/null | head -1)
 
-if [ -n "$OVA_FILE" ]; then
-    OVA_SIZE=$(du -h "$OVA_FILE" | cut -f1)
-    print_success "OVA file created: $OVA_FILE ($OVA_SIZE)"
+if [ -n "$RAW_FILE" ]; then
+    RAW_SIZE=$(du -h "$RAW_FILE" | cut -f1)
+    print_success "Raw disk image created: $RAW_FILE ($RAW_SIZE)"
+fi
+
+if [ -n "$VMDK_FILE" ]; then
+    VMDK_SIZE=$(du -h "$VMDK_FILE" | cut -f1)
+    print_success "VMDK file created: $VMDK_FILE ($VMDK_SIZE)"
 else
-    print_warning "OVA file not found in output directory"
+    print_warning "VMDK file not found in output directory"
+fi
+
+if [ -z "$VMDK_FILE" ] && [ -z "$RAW_FILE" ]; then
+    print_warning "No output images found in output directory"
 fi
 
 print_info ""
 print_info "Next steps:"
-print_info "1. Download the OVA file from the output directory"
-print_info "2. Import it into VirtualBox, VMware, or GNOME Boxes"
+print_info "For VirtualBox/VMware:"
+print_info "  1. Download the VMDK file from output/"
+print_info "  2. Import it into VirtualBox, VMware, or GNOME Boxes"
+print_info "For KVM/libvirt:"
+print_info "  1. Download the raw disk image (packer-qemu) from output/"
+print_info "  2. Use it with virt-manager, KVM, or other libvirt tools"
 print_info "3. Start the VM and log in (ubuntu/ubuntu)"
 print_info ""
 print_info "For detailed instructions, see: docs/src/content/docs/guides/vm-setup.md"

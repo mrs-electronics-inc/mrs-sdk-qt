@@ -2,14 +2,14 @@ packer {
   required_version = ">= 1.8.0"
 
   required_plugins {
-    virtualbox = {
+    qemu = {
       version = ">= 1.0.0"
-      source  = "github.com/hashicorp/virtualbox"
+      source  = "github.com/hashicorp/qemu"
     }
   }
 }
 
-source "virtualbox-iso" "ubuntu" {
+source "qemu" "ubuntu" {
   # Instance settings
   vm_name   = var.vm_name
   memory    = var.vm_memory
@@ -27,16 +27,13 @@ source "virtualbox-iso" "ubuntu" {
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
-  boot_wait              = "10s"
-  boot_keygroup_interval = "100ms"
+  boot_wait = "10s"
 
-  # Headless mode (comment out if you want to see the VM window during build)
-  headless = true
-
-  # VirtualBox specific settings
-  format        = "ova"
-  guest_os_type = "Ubuntu_64"
-  vboxmanage    = [["modifyvm", "{{ .Name }}", "--nested-hw-virt", "on"]]
+  # QEMU specific settings
+  accelerator = "kvm"
+  headless    = true
+  disk_image  = false
+  format      = "raw"
 
   # HTTP server for preseed data
   http_directory = "http"
@@ -50,11 +47,14 @@ source "virtualbox-iso" "ubuntu" {
   # Shutdown command
   shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
   shutdown_timeout = "5m"
+
+  # QEMU specific output
+  output_directory = "output"
 }
 
 build {
   name    = "mrs-sdk-qt-desktop"
-  sources = ["source.virtualbox-iso.ubuntu"]
+  sources = ["source.qemu.ubuntu"]
 
   # Debug: Print system information after SSH connects
   provisioner "shell" {
@@ -97,6 +97,20 @@ build {
       "sudo apt-get clean -y",
       "sudo rm -rf /tmp/* /var/tmp/*",
       "echo 'Build complete!'",
+    ]
+  }
+
+  # Convert raw image to VMDK for VirtualBox compatibility
+  post-processor "shell-local" {
+    inline = [
+      "echo 'Converting raw image to VMDK format...'",
+      "cd output",
+      "if [ -f packer-qemu ]; then",
+      "  qemu-img convert -f raw -O vmdk packer-qemu ${var.vm_name}.vmdk",
+      "  echo 'VMDK conversion complete'",
+      "else",
+      "  echo 'Warning: raw image not found for conversion'",
+      "fi"
     ]
   }
 

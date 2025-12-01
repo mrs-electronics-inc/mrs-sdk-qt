@@ -35,12 +35,12 @@ jobs:
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install VirtualBox
+      - name: Install QEMU
         run: |
           sudo apt-get update
-          sudo apt-get install -y virtualbox
+          sudo apt-get install -y qemu-system-x86 qemu-utils
 
-      - name: Build OVA image
+      - name: Build VMDK image
         working-directory: vm
         run: |
           chmod +x scripts/build-vm.sh
@@ -55,13 +55,14 @@ jobs:
           ./scripts/build-vm.sh "${BUILD_ARGS[@]}"
         timeout-minutes: 120
 
-      - name: Upload OVA artifact
+      - name: Upload VM artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: mrs-sdk-qt-ova
+          name: mrs-sdk-qt-vm-images
           path: |
-            output/*.ova
+            output/packer-qemu
+            output/*.vmdk
             output/manifest.json
           retention-days: 30
           compression-level: 0

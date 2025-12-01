@@ -7,7 +7,7 @@ Packer configuration for building a VM image with Qt Creator and desktop build k
 Ubuntu 24.04 LTS VM with:
 - Qt Creator IDE
 - Qt 5 & Qt 6 desktop kits
-- OVA output format
+- VMDK output format (compatible with VirtualBox, VMware, and KVM/libvirt)
 
 ## Building
 
@@ -40,4 +40,39 @@ Customize with script options:
 
 ## Output
 
-OVA file created in `output/` directory with manifest.json.
+Two formats are automatically generated in the `output/` directory:
+
+1. **VMDK** (`mrs-sdk-qt.vmdk`) - For VirtualBox, VMware, GNOME Boxes
+2. **Raw** (`packer-qemu`) - For KVM, libvirt, QEMU
+
+### Using with VirtualBox
+
+Import the VMDK file:
+```bash
+# GUI: File → Import Appliance → select mrs-sdk-qt.vmdk
+# Or CLI:
+VBoxManage createvm --name mrs-sdk-qt --ostype Ubuntu_64 --register
+VBoxManage createmedium disk --filename output/mrs-sdk-qt.vmdk --format VMDK
+VBoxManage storageattach mrs-sdk-qt --storagectl SATA --port 0 --device 0 --type hdd --medium output/mrs-sdk-qt.vmdk
+```
+
+### Using with GNOME Boxes
+
+1. Open GNOME Boxes
+2. Click "+" → "Create Virtual Machine"
+3. Select "Import local disk image" and choose the VMDK file
+
+### Using with KVM/libvirt
+
+Use the raw disk image:
+```bash
+# Launch virt-manager
+virt-manager &
+
+# Or create a new domain via CLI
+virt-install --name mrs-sdk-qt \
+  --memory 4096 --vcpus 2 \
+  --disk path=output/packer-qemu,format=raw \
+  --graphics spice \
+  --import
+```
