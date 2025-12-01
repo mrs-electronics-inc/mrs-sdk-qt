@@ -90,6 +90,8 @@ In Qt Creator, go to **Help** → **About Qt Creator** → **Registered Kits** t
 
 ## Using the VM
 
+The MRS SDK Qt repository is pre-cloned in your home directory at `~/mrs-sdk-qt/`. You can start developing immediately without needing to clone it.
+
 ### Starting Qt Creator
 
 Open a terminal and run:
