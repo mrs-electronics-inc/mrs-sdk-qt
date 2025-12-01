@@ -245,7 +245,7 @@ print_success "Configuration formatted"
 print_header "Building VM Image"
 
 print_info "Build parameters:"
-print_info "  VM Memory: 4096 MB (use -m to override)"
+print_info "  VM Memory: 6144 MB (use -m to override)"
 print_info "  VM CPUs: 2 (use -c to override)"
 print_info "  Disk Size: 61440 MB / 60GB (use -s to override)"
 echo ""
@@ -275,7 +275,7 @@ print_success "VM image built successfully"
 print_info "Build time: $((BUILD_DURATION / 60)) minutes $((BUILD_DURATION % 60)) seconds"
 
 # Find output images
-RAW_FILE=$(find output -name "packer-qemu" -type f 2>/dev/null | head -1)
+RAW_FILE=$(find output -name "*.img" -type f 2>/dev/null | head -1)
 VMDK_FILE=$(find output -name "*.vmdk" -type f 2>/dev/null | head -1)
 
 if [ -n "$RAW_FILE" ]; then
@@ -296,12 +296,11 @@ fi
 
 print_info ""
 print_info "Next steps:"
-print_info "For VirtualBox/VMware:"
-print_info "  1. Download the VMDK file from output/"
-print_info "  2. Import it into VirtualBox, VMware, or GNOME Boxes"
+print_info "For VirtualBox/VMware/GNOME Boxes:"
+print_info "  Use: output/${var.vm_name}.vmdk"
 print_info "For KVM/libvirt:"
-print_info "  1. Download the raw disk image (packer-qemu) from output/"
-print_info "  2. Use it with virt-manager, KVM, or other libvirt tools"
-print_info "3. Start the VM and log in (ubuntu/ubuntu)"
+print_info "  Use: output/${var.vm_name}.img"
 print_info ""
-print_info "For detailed instructions, see: docs/src/content/docs/guides/vm-setup.md"
+print_info "Default login: ubuntu / ubuntu"
+print_info ""
+print_info "For detailed instructions, see: vm/README.md"
