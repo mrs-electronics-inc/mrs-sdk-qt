@@ -8,7 +8,7 @@ autoinstall:
   network:
     version: 2
     ethernets:
-      id0:
+      ens3:
         dhcp4: true
   storage:
     layout:
@@ -39,6 +39,8 @@ autoinstall:
     - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
     - 'curtin in-target -- systemctl enable ssh'
     - 'curtin in-target -- systemctl start ssh'
+    - 'echo waiting 30 seconds for network to come online...'
+    - 'sleep 30'
     - 'curtin in-target -- apt-get update'
     - 'curtin in-target -- apt-get install -y ubuntu-desktop'
     - 'curtin in-target -- apt-get install -y qtcreator qtbase5-dev qt5-qmake'
