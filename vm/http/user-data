@@ -2,55 +2,47 @@
 autoinstall:
   version: 1
   interactive-sections: []
-  apt:
-    preserve_sources_list: false
-  
   locale: en_US.UTF-8
   keyboard:
     layout: us
-  
   network:
     version: 2
     ethernets:
       id0:
-        match:
-          macaddress: 52:54:00:*:*:*
         dhcp4: true
-  
   storage:
     layout:
       name: direct
     swap:
       size: 0
-  
   identity:
     hostname: mrs-sdk-qt
     username: ubuntu
-    password: '$6$L7aB1H4mtiNwiEUP$2Wou3TWgLRblDBe6POKWpK2e4SVp5b.jaPKWs20fCoDYw/ITJLQigkkU5YvkYnM.osqM0BVpe4BvOzIzqKtEF.'
+    password: $6$exDY1mhS4XWGD.H1$ewJ0.HE5mwxvUrlnnqz6Gln3VZ7r9BtIR3NqYLsIYxT56xSnCDVs7L2EwIsKIC3RYjlEoWqxnEX33kJLWCppT0
     realname: Ubuntu User
-  
   ssh:
     install-server: true
     allow-pw: true
     enabled: true
-  
   packages:
     - openssh-server
     - openssh-client
     - linux-generic
-  
+    - git
+    - curl
+    - wget
   updates: security
   timezone: UTC
-  
   grub:
     install: true
-    reboot-with-timeout: 10
-  
-  early-commands:
-    - systemctl stop ssh
-  
   late-commands:
-    - "sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /target/etc/ssh/sshd_config"
-    - "echo 'ubuntu:ubuntu' | chpasswd --root /target"
-    - systemctl -b enable ssh
-    - systemctl -b start ssh
+    - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
+    - 'curtin in-target -- systemctl enable ssh'
+    - 'curtin in-target -- systemctl start ssh'
+    - 'curtin in-target -- apt-get update'
+    - 'curtin in-target -- apt-get install -y ubuntu-desktop'
+    - 'curtin in-target -- apt-get install -y qtcreator qtbase5-dev qt5-qmake'
+    - 'curtin in-target -- apt-get autoremove -y'
+    - 'curtin in-target -- apt-get autoclean -y'
+    - 'curtin in-target -- apt-get clean -y'
+    - 'curtin in-target -- rm -rf /tmp/* /var/tmp/*'

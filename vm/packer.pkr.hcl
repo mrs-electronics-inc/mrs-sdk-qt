@@ -20,14 +20,14 @@ source "qemu" "ubuntu" {
   iso_url      = var.iso_url
   iso_checksum = var.iso_checksum
 
-  # Boot settings for Ubuntu Desktop ISO with autoinstall
+  # Boot settings for Ubuntu Server ISO with autoinstall
   boot_command = [
     "<wait><wait><wait>c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ debug systemd.log_level=debug console=tty0 console=ttyS0,115200n8 ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ quiet splash ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
-  boot_wait = "10s"
+  boot_wait = "5s"
 
   # QEMU specific settings
   accelerator = var.accelerator
@@ -44,8 +44,8 @@ source "qemu" "ubuntu" {
   # SSH configuration for provisioning
   ssh_username     = "ubuntu"
   ssh_password     = "ubuntu"
-  ssh_timeout      = "60m"
-  ssh_wait_timeout = "60m"
+  ssh_timeout      = "120m"
+  ssh_wait_timeout = "120m"
 
   # Shutdown command
   shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
@@ -58,33 +58,6 @@ source "qemu" "ubuntu" {
 build {
   name    = "mrs-sdk-qt-desktop"
   sources = ["source.qemu.ubuntu"]
-
-  # Update system and install base dependencies
-  provisioner "shell" {
-    script = "${path.root}/provisioning/base-system.sh"
-  }
-
-  # Install Qt Creator
-  provisioner "shell" {
-    script = "${path.root}/provisioning/qt-creator.sh"
-  }
-
-  # Install Qt desktop kits (Qt 5 & Qt 6)
-  provisioner "shell" {
-    script = "${path.root}/provisioning/qt-desktop-kits.sh"
-  }
-
-  # Final cleanup and optimization
-  provisioner "shell" {
-    inline = [
-      "echo 'Running final cleanup...'",
-      "sudo apt-get autoremove -y",
-      "sudo apt-get autoclean -y",
-      "sudo apt-get clean -y",
-      "sudo rm -rf /tmp/* /var/tmp/*",
-      "echo 'Build complete!'",
-    ]
-  }
 
   # Convert raw image to VMDK for VirtualBox compatibility
   post-processor "shell-local" {

@@ -192,15 +192,11 @@ if ! check_file "$VM_DIR/variables.pkr.hcl"; then
     exit 1
 fi
 
-if ! check_file "$VM_DIR/provisioning/base-system.sh"; then
+if ! check_file "$VM_DIR/http/user-data"; then
     exit 1
 fi
 
-if ! check_file "$VM_DIR/provisioning/qt-creator.sh"; then
-    exit 1
-fi
-
-if ! check_file "$VM_DIR/provisioning/qt-desktop-kits.sh"; then
+if ! check_file "$VM_DIR/http/meta-data"; then
     exit 1
 fi
 

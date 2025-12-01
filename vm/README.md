@@ -4,10 +4,19 @@ Packer configuration for building a VM image with Qt Creator and desktop build k
 
 ## Overview
 
-Ubuntu 24.04 LTS VM with:
+Ubuntu 24.04 LTS Server with GNOME Desktop and:
 - Qt Creator IDE
-- Qt 5 & Qt 6 desktop kits
+- Qt 5 development kit
 - VMDK output format (compatible with VirtualBox, VMware, and KVM/libvirt)
+
+## Why Server ISO + ubuntu-desktop?
+
+This image uses Ubuntu Server ISO with the `ubuntu-desktop` metapackage installed, rather than the Desktop ISO. Here's why:
+
+- **Server ISO** uses Subiquity, which properly supports unattended autoinstall
+- **Desktop ISO** uses a Flutter-based GUI installer that doesn't handle autoinstall well
+- The end result is identical - both give you GNOME Desktop with the same applications
+- Using Server allows us to fully automate the build process with no interactive prompts
 
 ## Building
 
