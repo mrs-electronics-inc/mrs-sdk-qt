@@ -45,7 +45,7 @@ jobs:
         run: |
           chmod +x scripts/build-vm.sh
 
-          BUILD_ARGS=(--non-interactive)
+          BUILD_ARGS=()
 
           # Add version tag if this is a tagged release
           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then

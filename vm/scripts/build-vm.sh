@@ -100,7 +100,6 @@ declare -a PACKER_VARS
 PACKER_DEBUG=""
 VALIDATE_ONLY=false
 FORMAT_ONLY=false
-NON_INTERACTIVE=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -130,10 +129,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --debug)
             PACKER_DEBUG="-debug"
-            shift
-            ;;
-        --non-interactive)
-            NON_INTERACTIVE=true
             shift
             ;;
         *)
@@ -251,22 +246,7 @@ print_info "  VM CPUs: 2 (use -c to override)"
 print_info "  Disk Size: 61440 MB / 60GB (use -s to override)"
 echo ""
 
-print_warning "This build will take 30-60 minutes depending on your system."
-print_warning "A stable internet connection is required."
-echo ""
-
-if [ "$NON_INTERACTIVE" = false ]; then
-    read -p "Continue with build? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        print_info "Build cancelled by user"
-        exit 0
-    fi
-else
-    print_info "Running in non-interactive mode - starting build..."
-fi
-
-print_info "Building with QEMU/KVM..."
+print_info "Starting build with QEMU/KVM..."
 
 # Run Packer build
 BUILD_START=$(date +%s)
