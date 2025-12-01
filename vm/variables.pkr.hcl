@@ -39,3 +39,9 @@ variable "version" {
   default     = "latest"
   description = "Version tag for the VM image"
 }
+
+variable "accelerator" {
+  type        = string
+  default     = "kvm"
+  description = "QEMU accelerator to use (kvm for local, tcg for CI/cloud)"
+}

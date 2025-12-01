@@ -30,7 +30,7 @@ source "qemu" "ubuntu" {
   boot_wait = "10s"
 
   # QEMU specific settings
-  accelerator = "kvm"
+  accelerator = var.accelerator
   headless    = true
   disk_image  = false
   format      = "raw"
