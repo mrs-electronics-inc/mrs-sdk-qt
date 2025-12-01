@@ -68,11 +68,11 @@ build {
       "  exit 1",
       "fi",
       "cd output",
-      "if [ -f packer-qemu ]; then",
-      "  qemu-img convert -f raw -O vmdk packer-qemu ${var.vm_name}.vmdk",
+      "if [ -f ${var.vm_name} ]; then",
+      "  qemu-img convert -p -f raw -O vmdk ${var.vm_name} ${var.vm_name}.vmdk",
       "  echo 'VMDK conversion complete'",
       "else",
-      "  echo 'Error: raw image (packer-qemu) not found'",
+      "  echo 'Error: raw image (${var.vm_name}) not found'",
       "  exit 1",
       "fi"
     ]
@@ -80,7 +80,7 @@ build {
 
   # Generate manifest with build metadata
   post-processor "manifest" {
-    output     = "manifest.json"
+    output     = "output/manifest.json"
     strip_path = true
   }
 }
