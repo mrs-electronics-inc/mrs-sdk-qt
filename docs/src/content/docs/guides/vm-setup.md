@@ -3,61 +3,52 @@ title: VM Setup Guide
 description: Get started with the ready-to-use MRS SDK Qt virtual machine image
 ---
 
-The MRS SDK Qt project provides a ready-to-use virtual machine image with Qt Creator and pre-configured Qt desktop build kits. This guide walks you through obtaining, importing, and using the VM.
+The MRS SDK Qt project provides a ready-to-use virtual machine image with Qt Creator and pre-configured Qt 5 and Qt 6 desktop build kits. This guide walks you through obtaining, importing, and using the VM.
 
 ## Quick Start
 
-1. **Download** the OVA image
+1. **Download** the VMDK image
 2. **Import** it into your virtualization platform
 3. **Launch** and start developing
 
 ## Obtaining the VM Image
 
-### Option 1: Download from GitHub Releases
-
-Pre-built OVA images are available on the [GitHub Releases page](https://github.com/mrs-electronics-inc/mrs-sdk-qt/releases).
-
-1. Navigate to the latest release
-2. Download the `mrs-sdk-qt-*.ova` file
-3. Follow the import instructions below
-
-### Option 2: Download from GitHub Actions
+### Option 1: Download from GitHub Actions
 
 Recent builds are available as artifacts from the [vm-build workflow](https://github.com/mrs-electronics-inc/mrs-sdk-qt/actions/workflows/vm-build.yml):
 
 1. Open the most recent successful build
-2. Download the `mrs-sdk-qt-ova` artifact
-3. Extract and follow the import instructions
+2. Download the `mrs-sdk-qt-vm-images` artifact
+3. Extract the `mrs-sdk-qt.vmdk` file and follow the import instructions below
 
-### Option 3: Build Locally
+### Option 2: Build Locally
 
 To build the VM image on your machine:
 
 **Prerequisites:**
 - [Packer](https://www.packer.io/downloads) (>= v1.8.0)
-- [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+- [QEMU](https://www.qemu.org/) (and KVM for local acceleration)
 - 80GB free disk space
-- 4+ GB available RAM
+- 6+ GB available RAM
 
 **Build steps:**
 
 ```bash
 cd vm
-packer init .
-packer build .
+./scripts/build-vm.sh
 ```
 
-The OVA file will be created in the `output/` directory.
+The VMDK file will be created in the `output/` directory.
 
-For detailed build instructions, see the [VM README](/repo/vm/README.md).
+For detailed build instructions, see the [VM README](../../vm/README.md).
 
 ## Importing the VM
 
-Import the OVA file using your preferred virtualization platform:
+Import the VMDK file using your preferred virtualization platform (VirtualBox, VMware, GNOME Boxes, etc.):
 
 1. Open your virtualization software
-2. Import the `mrs-sdk-qt-*.ova` file
-3. Configure settings (recommended: 4GB RAM, 2 CPUs, 60GB disk)
+2. Import the `mrs-sdk-qt.vmdk` file
+3. Configure settings (recommended: 6GB RAM, 2 CPUs, 60GB disk)
 4. Start the VM
 
 ## First Login
@@ -82,10 +73,11 @@ Once logged in, verify all components are properly installed:
 qtcreator --version
 ```
 
-### Check Qt 5
+### Check Qt 5 and Qt 6
 
 ```bash
-qmake -v
+qt5-qmake --version
+qt6-qmake --version
 ```
 
 ### Launch Qt Creator
@@ -123,12 +115,10 @@ Or select it from the applications menu.
 ### System Tools
 
 The VM includes common development tools:
-- GCC/Clang compilers
-- CMake and Ninja build systems
+- GCC compiler and build-essential toolkit
 - Git version control
-- GDB debugger
 - SSH client/server
-- Python 3 and development headers
+- Curl and Wget
 
 ### File Transfer
 
@@ -208,7 +198,7 @@ Create VM snapshots before making significant changes using your virtualization 
 
 ### Slow Performance
 
-- Ensure VM has adequate RAM allocated (4GB minimum)
+- Ensure VM has adequate RAM allocated (6GB recommended)
 - Check host system resource availability
 - Disable 3D acceleration if causing issues
 
@@ -242,9 +232,9 @@ sudo apt-get autoclean
 
 ## Building VM Images from Source
 
-For advanced users who want to understand or modify the VM build process, see the [VM README](/repo/vm/README.md).
+For advanced users who want to understand or modify the VM build process, see the [VM README](../../vm/README.md).
 
-The Packer configuration in `/vm` is fully open-source and can be customized to add additional software or hardware kits.
+The Packer configuration in the `vm/` directory is fully open-source and can be customized to add additional software or hardware kits.
 
 ## Next Steps
 
