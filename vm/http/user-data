@@ -18,7 +18,7 @@ autoinstall:
   identity:
     hostname: mrs-sdk-qt
     username: ubuntu
-    password: $6$exDY1mhS4XWGD.H1$ewJ0.HE5mwxvUrlnnqz6Gln3VZ7r9BtIR3NqYLsIYxT56xSnCDVs7L2EwIsKIC3RYjlEoWqxnEX33kJLWCppT0
+    password: $6$wXSWO.tB/0LFwxhf$HHDKH9ptNthCDMaNbX49SEEtt.Pj.sKRBFpKdDPTHcUDDD2IA2VrpDodh.iiCOrvnzVmDzFujP0Z.o6PLHH8R0
     realname: Ubuntu User
   ssh:
     install-server: true
