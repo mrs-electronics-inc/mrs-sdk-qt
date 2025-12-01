@@ -99,7 +99,7 @@ EOF
 }
 
 # Parse command line arguments
-PACKER_VARS=""
+declare -a PACKER_VARS
 PACKER_DEBUG=""
 VALIDATE_ONLY=false
 FORMAT_ONLY=false
@@ -112,15 +112,15 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         -m|--memory)
-            PACKER_VARS="$PACKER_VARS -var \"vm_memory=$2\""
+            PACKER_VARS+=(-var "vm_memory=$2")
             shift 2
             ;;
         -c|--cpus)
-            PACKER_VARS="$PACKER_VARS -var \"vm_cpus=$2\""
+            PACKER_VARS+=(-var "vm_cpus=$2")
             shift 2
             ;;
         -s|--disk-size)
-            PACKER_VARS="$PACKER_VARS -var \"disk_size=$2\""
+            PACKER_VARS+=(-var "disk_size=$2")
             shift 2
             ;;
         --validate-only)
@@ -269,12 +269,12 @@ print_info "Building with QEMU/KVM..."
 # Run Packer build
 BUILD_START=$(date +%s)
 
-eval "packer build \
+packer build \
     -color=false \
     -timestamp-ui \
     $PACKER_DEBUG \
-    $PACKER_VARS \
-    ." || {
+    "${PACKER_VARS[@]}" \
+    . || {
     print_error "Build failed"
     exit 1
 }
