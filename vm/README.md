@@ -6,7 +6,8 @@ Packer configuration for building a VM image with Qt Creator and desktop build k
 
 Ubuntu 24.04 LTS Server with GNOME Desktop and:
 - Qt Creator IDE
-- Qt 5 development kit
+- Qt 5 and Qt 6 development kits
+- Build tools (gcc, g++, make)
 - VMDK output format (compatible with VirtualBox, VMware, and KVM/libvirt)
 
 ## Why Server ISO + ubuntu-desktop?
@@ -33,12 +34,16 @@ GitHub Actions automatically builds on:
 - Push to main branch
 - Tagged releases
 
-Artifacts uploaded as workflow artifacts.
+Workflow artifacts uploaded:
+- VMDK image (`mrs-sdk-qt.vmdk`)
+- Build manifest (`manifest.json`)
+
+Note: The raw `.img` file is not uploaded due to size (60 GB). For local builds, both VMDK and raw formats are generated.
 
 ## Configuration
 
 Default VM settings:
-- Memory: 4096 MB
+- Memory: 6144 MB (6 GB)
 - CPUs: 2
 - Disk: 60 GB
 
@@ -49,10 +54,11 @@ Customize with script options:
 
 ## Output
 
-Two formats are automatically generated in the `output/` directory:
+Three artifacts are automatically generated in the `output/` directory:
 
 1. **VMDK** (`mrs-sdk-qt.vmdk`) - For VirtualBox, VMware, GNOME Boxes
-2. **Raw** (`packer-qemu`) - For KVM, libvirt, QEMU
+2. **Raw** (`mrs-sdk-qt.img`) - For KVM, libvirt, QEMU
+3. **Manifest** (`manifest.json`) - Build metadata and artifact information
 
 ### Using with VirtualBox
 
@@ -80,8 +86,8 @@ virt-manager &
 
 # Or create a new domain via CLI
 virt-install --name mrs-sdk-qt \
-  --memory 4096 --vcpus 2 \
-  --disk path=output/packer-qemu,format=raw \
+  --memory 6144 --vcpus 2 \
+  --disk path=output/mrs-sdk-qt.img,format=raw \
   --graphics spice \
   --import
 ```

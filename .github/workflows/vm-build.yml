@@ -59,13 +59,12 @@ jobs:
         timeout-minutes: 120
 
       - name: Upload VM artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mrs-sdk-qt-vm-images
-          path: |
-            output/packer-qemu
-            output/*.vmdk
-            output/manifest.json
-          retention-days: 30
-          compression-level: 0
+       if: success()
+       uses: actions/upload-artifact@v4
+       with:
+         name: mrs-sdk-qt-vm-images
+         path: |
+           output/*.vmdk
+           output/manifest.json
+         retention-days: 30
+         compression-level: 0

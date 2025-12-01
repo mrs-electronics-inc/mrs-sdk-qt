@@ -6,7 +6,7 @@ variable "vm_name" {
 
 variable "vm_memory" {
   type        = number
-  default     = 4096
+  default     = 6144
   description = "Amount of RAM in MB to allocate to the VM"
 }
 
