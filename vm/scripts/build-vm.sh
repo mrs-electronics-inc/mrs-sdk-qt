@@ -79,6 +79,7 @@ Options:
     -m, --memory MB         VM RAM in MB (default: 4096)
     -c, --cpus CORES        VM CPU cores (default: 2)
     -s, --disk-size MB      Disk size in MB (default: 61440)
+    --var KEY=VALUE         Pass variable to Packer
     --validate-only         Only validate Packer configuration
     --format-only           Only format Packer configuration
     --debug                 Enable Packer debug output
@@ -89,6 +90,9 @@ Examples:
 
      # Build with custom memory and CPU
      $(basename "$0") -m 8192 -c 4
+
+     # Build with custom accelerator
+     $(basename "$0") --var accelerator=tcg
 
      # Validate configuration only
      $(basename "$0") --validate-only
@@ -117,6 +121,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -s|--disk-size)
             PACKER_VARS+=(-var "disk_size=$2")
+            shift 2
+            ;;
+        --var)
+            PACKER_VARS+=(-var "$2")
             shift 2
             ;;
         --validate-only)

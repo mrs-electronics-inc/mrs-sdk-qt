@@ -48,11 +48,11 @@ jobs:
           BUILD_ARGS=()
 
           # Use TCG accelerator in GitHub Actions (no KVM support)
-          BUILD_ARGS+=(-var "accelerator=tcg")
+          BUILD_ARGS+=(--var "accelerator=tcg")
 
           # Add version tag if this is a tagged release
           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
-            BUILD_ARGS+=(-var "version=${{ steps.vars.outputs.version }}")
+            BUILD_ARGS+=(--var "version=${{ steps.vars.outputs.version }}")
           fi
 
           ./scripts/build-vm.sh "${BUILD_ARGS[@]}"
