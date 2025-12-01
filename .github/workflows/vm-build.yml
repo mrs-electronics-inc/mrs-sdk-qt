@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build-vm:
-    name: Build OVA Image
+    name: Build VMDK Image
     runs-on: ubuntu-latest
 
     permissions:
