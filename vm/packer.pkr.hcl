@@ -23,7 +23,7 @@ source "qemu" "ubuntu" {
   # Boot settings for Ubuntu Desktop ISO with autoinstall
   boot_command = [
     "<wait><wait><wait>c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ systemd.log_level=debug ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
@@ -56,23 +56,6 @@ build {
   name    = "mrs-sdk-qt-desktop"
   sources = ["source.qemu.ubuntu"]
 
-  # Debug: Print system information after SSH connects
-  provisioner "shell" {
-    inline = [
-      "echo '=== Debug: System Information ==='",
-      "uname -a",
-      "echo '=== Debug: Disk Usage ==='",
-      "df -h",
-      "echo '=== Debug: SSH Status ==='",
-      "systemctl status ssh || systemctl status sshd || echo 'SSH service not found'",
-      "echo '=== Debug: Network Configuration ==='",
-      "ip addr",
-      "echo '=== Debug: Ubuntu Release ==='",
-      "lsb_release -a",
-      "echo '=== Debug Information Complete ==='",
-    ]
-  }
-
   # Update system and install base dependencies
   provisioner "shell" {
     script = "${path.root}/provisioning/base-system.sh"
@@ -104,12 +87,17 @@ build {
   post-processor "shell-local" {
     inline = [
       "echo 'Converting raw image to VMDK format...'",
+      "if ! command -v qemu-img &> /dev/null; then",
+      "  echo 'Error: qemu-img not found. Install with: apt-get install qemu-utils'",
+      "  exit 1",
+      "fi",
       "cd output",
       "if [ -f packer-qemu ]; then",
       "  qemu-img convert -f raw -O vmdk packer-qemu ${var.vm_name}.vmdk",
       "  echo 'VMDK conversion complete'",
       "else",
-      "  echo 'Warning: raw image not found for conversion'",
+      "  echo 'Error: raw image (packer-qemu) not found'",
+      "  exit 1",
       "fi"
     ]
   }

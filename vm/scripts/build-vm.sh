@@ -84,17 +84,14 @@ Options:
     --debug                 Enable Packer debug output
 
 Examples:
-    # Default build with auto-generated date
-    $(basename "$0")
+     # Default build
+     $(basename "$0")
 
-    # Build with custom memory and CPU
-    $(basename "$0") -m 8192 -c 4
+     # Build with custom memory and CPU
+     $(basename "$0") -m 8192 -c 4
 
-    # Build with specific date
-    $(basename "$0") -d 20250125
-
-    # Validate configuration only
-    $(basename "$0") --validate-only
+     # Validate configuration only
+     $(basename "$0") --validate-only
 EOF
 }
 
@@ -164,6 +161,11 @@ fi
 
 if ! check_command "qemu-system-x86_64"; then
     print_error "QEMU not found. Install with: sudo apt-get install qemu-system-x86"
+    MISSING_DEPS=true
+fi
+
+if ! check_command "qemu-img"; then
+    print_error "qemu-img not found. Install with: sudo apt-get install qemu-utils"
     MISSING_DEPS=true
 fi
 
