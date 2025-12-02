@@ -8,7 +8,7 @@ set(MRS_SDK_QT_SHARED_DEFINES "")
 
 ###########################################################################################################################################
 # Add variables based on MRS_SDK_QT_TARGET_DEVICE and MRS_SDK_QT_TARGET_OS.
-# These environment variables come from dedicated toolchain files.
+# These variables come from dedicated toolchain files.
 ###########################################################################################################################################
 set(MRS_SDK_QT_DEVICE_NEURALPLEX FALSE CACHE BOOL "Target device is NeuralPlex" FORCE)
 set(MRS_SDK_QT_DEVICE_MCONN FALSE CACHE BOOL "Target device is MConn" FORCE)
