@@ -63,14 +63,15 @@ build {
   post-processor "shell-local" {
     inline = [
       "echo 'Converting raw image to VMDK format...'",
-      "if ! command -v qemu-img &> /dev/null; then",
-      "  echo 'Error: qemu-img not found. Install with: apt-get install qemu-utils'",
+      "QEMU_IMG_PATH=$(command -v qemu-img || echo '/usr/bin/qemu-img')",
+      "if ! [ -x \"$QEMU_IMG_PATH\" ]; then",
+      "  echo \"Error: qemu-img not found at $QEMU_IMG_PATH. Install with: apt-get install qemu-utils\"",
       "  exit 1",
       "fi",
       "cd output",
       "if [ -f ${var.vm_name} ]; then",
       "  mv ${var.vm_name} ${var.vm_name}.img",
-      "  qemu-img convert -p -f raw -O vmdk ${var.vm_name}.img ${var.vm_name}.vmdk",
+      "  \"$QEMU_IMG_PATH\" convert -p -f raw -O vmdk ${var.vm_name}.img ${var.vm_name}.vmdk",
       "  echo 'VMDK conversion complete'",
       "else",
       "  echo 'Error: raw image (${var.vm_name}) not found'",
