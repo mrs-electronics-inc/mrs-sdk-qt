@@ -297,9 +297,13 @@ fi
 print_info ""
 print_info "Next steps:"
 print_info "For VirtualBox/VMware/GNOME Boxes:"
-print_info "  Use: output/${var.vm_name}.vmdk"
+if [ -n "$VMDK_FILE" ]; then
+    print_info "  Use: $VMDK_FILE"
+fi
 print_info "For KVM/libvirt:"
-print_info "  Use: output/${var.vm_name}.img"
+if [ -n "$RAW_FILE" ]; then
+    print_info "  Use: $RAW_FILE"
+fi
 print_info ""
 print_info "Default login: ubuntu / ubuntu"
 print_info ""
