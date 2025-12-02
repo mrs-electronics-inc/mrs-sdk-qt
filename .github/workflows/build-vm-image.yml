@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-vm-image:
+  build-vm:
     name: Build VMDK Image
     runs-on: ubuntu-latest
 
