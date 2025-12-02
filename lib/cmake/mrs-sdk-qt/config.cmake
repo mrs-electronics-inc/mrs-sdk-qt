@@ -10,9 +10,10 @@ set(MRS_SDK_QT_SHARED_DEFINES "")
 # Add variables based on MRS_SDK_QT_TARGET_DEVICE and MRS_SDK_QT_TARGET_OS.
 # These environment variables come from dedicated toolchain files.
 ###########################################################################################################################################
-set(MRS_SDK_QT_DEVICE_NEURALPLEX FALSE CACHE BOOL "Target device identifier" FORCE)
-set(MRS_SDK_QT_DEVICE_MCONN FALSE CACHE BOOL "Target device identifier" FORCE)
-set(MRS_SDK_QT_DEVICE_FUSION FALSE CACHE BOOL "Target device identifier" FORCE)
+set(MRS_SDK_QT_DEVICE_NEURALPLEX FALSE CACHE BOOL "Target device is NeuralPlex" FORCE)
+set(MRS_SDK_QT_DEVICE_MCONN FALSE CACHE BOOL "Target device is MConn" FORCE)
+set(MRS_SDK_QT_DEVICE_FUSION FALSE CACHE BOOL "Target device is FUSION" FORCE)
+set(MRS_SDK_QT_DEVICE_DESKTOP FALSE CACHE BOOL "Target device is desktop" FORCE)
 
 string(TOLOWER "${MRS_SDK_QT_TARGET_DEVICE}" _mrs_sdk_qt_target_device)
 string(TOLOWER "${MRS_SDK_QT_TARGET_OS}" _mrs_sdk_qt_target_os)
@@ -26,14 +27,14 @@ if(_mrs_sdk_qt_target_device STREQUAL "neuralplex")
         message(FATAL_ERROR "ERROR: no expected Qt version set for target device ${MRS_SDK_QT_TARGET_DEVICE}.")
     endif()
     set(MRS_SDK_QT_EXPECTED_QT_VERSION ${MRS_SDK_QT_EXPECTED_QT_VERSION_NEURALPLEX} CACHE STRING "expected Qt version")
-    set(MRS_SDK_QT_DEVICE_NEURALPLEX TRUE CACHE BOOL "Target device identifier" FORCE)
+    set(MRS_SDK_QT_DEVICE_NEURALPLEX TRUE CACHE BOOL "Target device is NeuralPlex" FORCE)
 
 elseif(_mrs_sdk_qt_target_device STREQUAL "mconn")
     if(NOT DEFINED MRS_SDK_QT_EXPECTED_QT_VERSION_MCONN)
         message(FATAL_ERROR "ERROR: no expected Qt version set for target device ${MRS_SDK_QT_TARGET_DEVICE}.")
     endif()
     set(MRS_SDK_QT_EXPECTED_QT_VERSION ${MRS_SDK_QT_EXPECTED_QT_VERSION_MCONN} CACHE STRING "expected Qt version")
-    set(MRS_SDK_QT_DEVICE_MCONN TRUE CACHE BOOL "Target device identifier" FORCE)
+    set(MRS_SDK_QT_DEVICE_MCONN TRUE CACHE BOOL "Target device is MConn" FORCE)
 
 elseif(_mrs_sdk_qt_target_device STREQUAL "fusion")
     # Yocto is not a valid OS target for FUSION devices.
@@ -44,7 +45,18 @@ elseif(_mrs_sdk_qt_target_device STREQUAL "fusion")
         message(FATAL_ERROR "ERROR: no expected Qt version set for target device ${MRS_SDK_QT_TARGET_DEVICE}.")
     endif()
     set(MRS_SDK_QT_EXPECTED_QT_VERSION ${MRS_SDK_QT_EXPECTED_QT_VERSION_FUSION} CACHE STRING "expected Qt version")
-    set(MRS_SDK_QT_DEVICE_FUSION TRUE CACHE BOOL "Target device identifier" FORCE)
+    set(MRS_SDK_QT_DEVICE_FUSION TRUE CACHE BOOL "Target device is FUSION" FORCE)
+
+elseif(_mrs_sdk_qt_target_device STREQUAL "desktop")
+    # The only valid OS target for desktop "devices" is, of course, desktop.
+    if(NOT _mrs_sdk_qt_target_os STREQUAL "desktop")
+        message(FATAL_ERROR "ERROR: invalid device target: ${_mrs_sdk_qt_target_os} OS not supported by desktop devices.")
+    endif()
+    if(NOT DEFINED MRS_SDK_QT_EXPECTED_QT_VERSION_DESKTOP)
+        message(FATAL_ERROR "ERROR: no expected Qt version set for target device ${MRS_SDK_QT_TARGET_DEVICE}.")
+    endif()
+    set(MRS_SDK_QT_EXPECTED_QT_VERSION ${MRS_SDK_QT_EXPECTED_QT_VERSION_DESKTOP} CACHE STRING "expected Qt version")
+    set(MRS_SDK_QT_DEVICE_DESKTOP TRUE CACHE BOOL "Target device is desktop" FORCE)
 
 else()
     message(FATAL_ERROR "ERROR: invalid device target: MRS_SDK_QT_TARGET_DEVICE=${MRS_SDK_QT_TARGET_DEVICE}")
@@ -75,11 +87,6 @@ set(_mrs_sdk_qt_is_arm 0)
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _mrs_sdk_qt_processor_lower)
 if(_mrs_sdk_qt_processor_lower MATCHES "arm|aarch64|cortex")
     set(_mrs_sdk_qt_is_arm 1)
-elseif(DEFINED CMAKE_CXX_COMPILER_TARGET)
-    string(TOLOWER "${CMAKE_CXX_COMPILER_TARGET}" _mrs_sdk_qt_compiler_target_lower)
-    if(_mrs_sdk_qt_compiler_target_lower MATCHES "arm|aarch64|cortex")
-        set(_mrs_sdk_qt_is_arm 1)
-    endif()
 endif()
 
 ###########################################################################################################################################
@@ -102,6 +109,7 @@ list(APPEND MRS_SDK_QT_SHARED_DEFINES
 )
 
 message(NOTICE "Environment: target device: ${MRS_SDK_QT_TARGET_DEVICE}")
+message(NOTICE "Environment: target processor: ${CMAKE_SYSTEM_PROCESSOR}")
 message(NOTICE "Environment: target OS: ${MRS_SDK_QT_TARGET_OS}")
 
 ###########################################################################################################################################

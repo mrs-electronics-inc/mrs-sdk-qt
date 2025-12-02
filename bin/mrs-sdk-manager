@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [[ $# -ne 1 ]]; then
+	echo "Usage: mrs-sdk-manager <sdk-version>"
+	exit 1
+fi
+
+echo "Setting up the MRS SDK..."
+
+MRS_SDK_QT_ROOT="$HOME/mrs-sdk-qt"
+readonly MRS_SDK_QT_VERSION="$1"
+
+if [[ -d "${MRS_SDK_QT_ROOT}" ]]; then
+	readonly sdk_version_dir="${MRS_SDK_QT_ROOT}/${MRS_SDK_QT_VERSION}"
+
+	if [[ -d "${sdk_version_dir}" ]]; then
+		ln -s "${sdk_version_dir}" "${MRS_SDK_QT_ROOT}/current"
+		export MRS_SDK_QT_ROOT
+		export MRS_SDK_QT_VERSION
+	else
+		echo "ERROR: could not find directory ${sdk_version_dir}."
+		exit 1
+	fi
+else
+	echo "ERROR: could not find SDK installation in ${MRS_SDK_QT_ROOT}."
+	exit 1
+fi

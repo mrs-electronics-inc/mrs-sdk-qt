@@ -1,4 +1,4 @@
-# Buildroot toolchain helper.
+# Qt5 Buildroot toolchain helper.
 
 # Set the expected Qt versions based on device target.
 set(MRS_SDK_QT_QT_MAJOR_VERSION "5" CACHE STRING "Required Qt toolchain major version" FORCE)

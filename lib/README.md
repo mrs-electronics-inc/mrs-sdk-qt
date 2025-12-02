@@ -13,16 +13,17 @@ HOME/mrs-sdk-qt/
 ├── bin/            # Top-level tools: version/installation manager, anything else that's not version-specific
 |   └── mrs-sdk-manager
 ├── current/        # Symlink to the SDK version currently in use
-└── <version>/
+└── <version>/      # A specific installed version of the SDK, including all libraries, headers, documentation, and other files necessary for use
     ├── bin/
     ├── docs/
+    ├── demos/
     ├── include/
     └── lib/
-        ├── cmake/
+        ├── cmake/                  # CMake configuration files for setting up toolchains and SDK libraries
         |   └── mrs-sdk-qt/
         |       ├── toolchains/
         |       └── config.cmake
-        ├── qmake/
+        ├── qmake/                  # QMake configuration files for setting up toolchains and SDK libraries
         |   └── mrs-sdk-qt/
         |       └── config.pri
         ├── qt5/
@@ -52,11 +53,12 @@ At some point we will create a better system for auto-install but we don't have 
 
 The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt kit:
 
-- `qt-buildroot.cmake`: points to Qt 5.9.1 inside the Buildroot sysroot and marks the target as `buildroot`.
+- `qt5-buildroot.cmake`: points to Qt 5.9.1 inside the Buildroot sysroot and marks the target as `buildroot`.
 - `qt5-yocto.cmake`: points to Qt 5.12.9 from the Yocto SDK and marks the kit as `yocto`.
-- `qt-local.cmake`: uses a desktop Qt 5.15.0 installation and identifies itself as the `local` kit.
+- `qt5-desktop.cmake`: uses a desktop Qt 5.15.0 installation and identifies itself as the `desktop` kit.
+- `qt6-desktop.cmake`: uses a desktop Qt 6.8.0 installation and identifies itself as the `desktop` kit.
 
-Each helper sets cache variables used in `config.cmake` to compute a consistent kit identity. When configuring the SDK, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/local equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the Qt kit configuration.
+Each helper sets cache variables used in `config.cmake` to compute a consistent kit identity. When configuring the SDK, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/desktop equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the Qt kit configuration.
 
 When an application links against the SDK, it also inherits kit metadata from the shared definitions appended by `config.cmake`. Those compile definitions include:
 
