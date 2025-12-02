@@ -3,7 +3,7 @@ title: VM Setup Guide
 description: Get started with the ready-to-use MRS SDK Qt virtual machine image
 ---
 
-The MRS SDK Qt project provides a ready-to-use virtual machine image with Qt Creator and pre-configured Qt 5 and Qt 6 desktop build kits. This guide walks you through obtaining, importing, and using the VM.
+The MRS SDK Qt project provides a ready-to-use virtual machine image with Qt Creator and pre-configured build kits. This guide walks you through obtaining, importing, and using the VM.
 
 ## Quick Start
 
@@ -13,19 +13,20 @@ The MRS SDK Qt project provides a ready-to-use virtual machine image with Qt Cre
 
 ## Obtaining the VM Image
 
-### Option 1: Download from GitHub Actions
+### Option 1: Download from OneDrive
 
-Recent builds are available as artifacts from the [vm-build workflow](https://github.com/mrs-electronics-inc/mrs-sdk-qt/actions/workflows/vm-build.yml):
+Pre-built VM images are available for download:
 
-1. Open the most recent successful build
-2. Download the `mrs-sdk-qt-vm-images` artifact
-3. Extract the `mrs-sdk-qt.vmdk` file and follow the import instructions below
+1. Visit the [MRS SDK Qt VM Images OneDrive folder](https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw)
+2. Download the latest `mrs-sdk-qt.vmdk` file
+3. Follow the [import instructions](#importing-the-vm) below
 
 ### Option 2: Build Locally
 
 To build the VM image on your machine:
 
 **Prerequisites:**
+
 - [Packer](https://www.packer.io/downloads) (>= v1.8.0)
 - [QEMU](https://www.qemu.org/) (and KVM for local acceleration)
 - 80GB free disk space
@@ -40,7 +41,7 @@ cd vm
 
 The VMDK file will be created in the `output/` directory.
 
-For detailed build instructions, see the [VM README](../../vm/README.md).
+For detailed build instructions, see the [VM README](https://github.com/mrs-electronics-inc/mrs-sdk-qt/tree/main/docs/vm/README.md).
 
 ## Importing the VM
 
@@ -54,6 +55,7 @@ Import the VMDK file using your preferred virtualization platform (VirtualBox, V
 ## First Login
 
 **Default Credentials:**
+
 - **Username:** `ubuntu`
 - **Password:** `ubuntu`
 
@@ -63,83 +65,38 @@ Import the VMDK file using your preferred virtualization platform (VirtualBox, V
 passwd
 ```
 
-## Verifying the Installation
-
-Once logged in, verify all components are properly installed:
-
-### Check Qt Creator
-
-```bash
-qtcreator --version
-```
-
-### Check Qt 5 and Qt 6
-
-```bash
-qt5-qmake --version
-qt6-qmake --version
-```
-
-### Launch Qt Creator
-
-```bash
-qtcreator &
-```
-
-In Qt Creator, go to **Help** → **About Qt Creator** → **Registered Kits** to see the detected Qt kits.
-
 ## Using the VM
 
 The MRS SDK Qt repository is pre-cloned in your home directory at `~/mrs-sdk-qt/`. You can start developing immediately without needing to clone it.
 
 ### Starting Qt Creator
 
-Open a terminal and run:
+Select Qt Creator from the application menu or open a terminal and run:
 
 ```bash
 qtcreator &
 ```
 
-Or select it from the applications menu.
-
 ### Creating a New Project
 
 1. Launch Qt Creator
-2. File → **New Project** → Select your desired project type
-3. Qt Creator will display available build kits (Qt 5 and Qt 6)
+2. **File** → **New Project** → Select your desired project type
+3. Qt Creator will display available build kits
 4. Choose your target kit and proceed
 
 ### Included Build Kits
 
-- **Qt 5** - Stable, widely-compatible desktop framework
-- **Qt 6** - Latest Qt version with modern features
+- **Desktop Qt 5**
+- **Desktop Qt 6**
 
 ### System Tools
 
 The VM includes common development tools:
+
 - GCC compiler and build-essential toolkit
 - Git version control
 - SSH client/server
-- Curl and Wget
-
-### File Transfer
-
-Transfer files using SSH:
-```bash
-scp file ubuntu@<vm-ip>:/path/to/destination
-```
-
-Get the VM's IP address:
-```bash
-ip addr show
-```
-
-## Network Access
-
-The VM is configured with NAT networking by default. To access services running on the VM from the host:
-
-1. Configure port forwarding in your virtualization platform
-2. Or switch to Bridged mode for direct network access
+- Curl and wget
 
 ## Customization
 
@@ -184,11 +141,13 @@ Create VM snapshots before making significant changes using your virtualization 
 ### Qt Creator Won't Start
 
 1. Verify installation:
+
    ```bash
    which qtcreator
    ```
 
 2. Try launching with verbose output:
+
    ```bash
    qtcreator -d
    ```
@@ -234,11 +193,4 @@ sudo apt-get autoclean
 
 ## Building VM Images from Source
 
-For advanced users who want to understand or modify the VM build process, see the [VM README](../../vm/README.md).
-
-The Packer configuration in the `vm/` directory is fully open-source and can be customized to add additional software or hardware kits.
-
-## Next Steps
-
-- [Installation Guide](/guides/installation) - Set up the SDK from the VM
-- [Getting Started](/docs) - Start developing with Qt
+For advanced users who want to understand or modify the VM build process, see the [VM README](https://github.com/mrs-electronics-inc/mrs-sdk-qt/tree/main/docs/vm/README.md).

@@ -5,6 +5,7 @@ Packer configuration for building a VM image with Qt Creator and desktop build k
 ## Overview
 
 Ubuntu 24.04 LTS Server with GNOME Desktop and:
+
 - Qt Creator IDE
 - Qt 5 and Qt 6 development kits
 - Build tools (gcc, g++, make)
@@ -28,26 +29,20 @@ cd vm
 ./scripts/build-vm.sh
 ```
 
-### CI/CD
+### Distribution
 
-GitHub Actions automatically builds on:
-- Push to main branch
-- Tagged releases
-
-Workflow artifacts uploaded:
-- VMDK image (`mrs-sdk-qt.vmdk`)
-- Build manifest (`manifest.json`)
-
-Note: The raw `.img` file is not uploaded due to size (60 GB). For local builds, both VMDK and raw formats are generated.
+Pre-built VM images are shared via OneDrive. To download an image, go [here](https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw).
 
 ## Configuration
 
 Default VM settings:
+
 - Memory: 6144 MB (6 GB)
 - CPUs: 2
 - Disk: 60 GB
 
 Customize with script options:
+
 ```bash
 ./scripts/build-vm.sh -m 8192 -c 4
 ```
@@ -63,6 +58,7 @@ Three artifacts are automatically generated in the `output/` directory:
 ### Using with VirtualBox
 
 Import the VMDK file:
+
 ```bash
 # GUI: File → Import Appliance → select mrs-sdk-qt.vmdk
 # Or CLI:
@@ -80,6 +76,7 @@ VBoxManage storageattach mrs-sdk-qt --storagectl SATA --port 0 --device 0 --type
 ### Using with KVM/libvirt
 
 Use the raw disk image:
+
 ```bash
 # Launch virt-manager
 virt-manager &
