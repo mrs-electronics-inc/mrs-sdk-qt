@@ -21,7 +21,7 @@ set(MRS_SDK_HEADERS
     include/Application.hpp
 )
 set(MRS_SDK_SOURCES
-    Application.cpp
+    src/Application.cpp
 )
 
 # Create the build target.
