@@ -1,0 +1,65 @@
+name: Build MRS SDK Qt VM Image
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: vm-build
+  cancel-in-progress: false
+
+jobs:
+  build-vm:
+    name: Build VMDK Image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version tag if applicable
+        id: vars
+        run: |
+          # Extract version tag if this is a tagged release
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION="${{ github.ref }}"
+            VERSION="${VERSION#refs/tags/}"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils
+
+      - name: Build VMDK image
+        working-directory: vm
+        run: |
+          chmod +x scripts/build-vm.sh
+
+          BUILD_ARGS=()
+
+          # Use TCG accelerator in GitHub Actions (no KVM support)
+          BUILD_ARGS+=(--var "accelerator=tcg")
+
+          # Add version tag if this is a tagged release
+          if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
+            BUILD_ARGS+=(--var "version=${{ steps.vars.outputs.version }}")
+          fi
+
+          ./scripts/build-vm.sh "${BUILD_ARGS[@]}"
+        timeout-minutes: 120
+
+      - name: Upload VM artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrs-sdk-qt-vm-images
+          path: |
+            output/*.vmdk
+            output/manifest.json
+          retention-days: 30
+          compression-level: 0
