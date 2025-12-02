@@ -9,50 +9,62 @@ NOTE: You will need to have Qt5 installed before you can compile.
 3. Install the SDK in the following structure:
 
 ```
-HOME/
-└── mrs-sdk-qt/
-    ├── lib/                    # Compiled static libraries
-    |   ├── buildroot/
-    |   |   ├── libmrs-sdk-qt-fusion.a
-    |   |   └── libmrs-sdk-qt-mconn.a
-    |   ├── local-qt5/
-    |   |   ├── libmrs-sdk-qt-fusion.a
-    |   |   ├── libmrs-sdk-qt-mconn.a
-    |   ├── local-qt6/
-    |   |   └── libmrs-sdk-qt-neuralplex.a
-    |   ├── yocto-qt5/
-    |   |   ├── libmrs-sdk-qt-fusion.a
-    |   |   └── libmrs-sdk-qt-mconn.a
-    |   ├── yocto-qt6/
-    |   |   └── libmrs-sdk-qt-neuralplex.a
-    |   ├──
-    |   └── libmrs-sdk-qt.a
-    ├── include/                # Header files
-    |   └── Application.hpp
-    └── builder/                # CMake and QMake configurations
-        ├── mrs-sdk-qt.cmake
-        └── mrs-sdk-qt.pri
+HOME/mrs-sdk-qt/
+├── bin/            # Top-level tools: version/installation manager, anything else that's not version-specific
+|   └── mrs-sdk-manager
+├── current/        # Symlink to the SDK version currently in use
+└── <version>/
+    ├── bin/
+    ├── docs/
+    ├── include/
+    └── lib/
+        ├── cmake/
+        |   └── mrs-sdk-qt/
+        |       ├── toolchains/
+        |       └── config.cmake
+        ├── qmake/
+        |   └── mrs-sdk-qt/
+        |       └── config.pri
+        ├── qt5/
+        │   ├── buildroot/
+        │   │   ├── linux_arm_mconn/
+        │   │   │   └── libmrs-sdk-qt.a
+        │   │   └── linux_arm_fusion/
+        │   │       └── libmrs-sdk-qt.a
+        │   ├── yocto/
+        │   │   └── linux_arm_mconn/
+        │   │       └── libmrs-sdk-qt.a
+        │   └── desktop/
+        │       └── linux_x86_64_desktop/
+        │           └── libmrs-sdk-qt.a
+        └── qt6/
+            ├── yocto/
+            │   ├── linux_arm_neuralplex/
+            │   │   └── libmrs-sdk-qt.a
+            └── desktop/
+                └── linux_x86_64_desktop/
+                    └── libmrs-sdk-qt.a
 ```
 
 At some point we will create a better system for auto-install but we don't have one yet.
 
 ## Kit-aware configuration
 
-The SDK exports a few helper files under `lib/cmake/toolchains` for bootstrapping CMake with the right Qt kit:
+The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt kit:
 
 - `qt-buildroot.cmake`: points to Qt 5.9.1 inside the Buildroot sysroot and marks the target as `buildroot`.
 - `qt5-yocto.cmake`: points to Qt 5.12.9 from the Yocto SDK and marks the kit as `yocto`.
 - `qt-local.cmake`: uses a desktop Qt 5.15.0 installation and identifies itself as the `local` kit.
 
-Each helper sets cache variables used in `mrs-sdk-qt.cmake` to compute a consistent kit identity. When configuring the SDK, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/toolchains/qt-yocto.cmake` (or the Buildroot/local equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the Qt kit configuration.
+Each helper sets cache variables used in `config.cmake` to compute a consistent kit identity. When configuring the SDK, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/local equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the Qt kit configuration.
 
-When an application links against the SDK, it also inherits kit metadata from the shared definitions appended by `mrs-sdk-qt.cmake`. Those compile definitions include:
+When an application links against the SDK, it also inherits kit metadata from the shared definitions appended by `config.cmake`. Those compile definitions include:
 
 - `MRS_SDK_QT_QT_VERSION`: the Qt release used for the current target.
 - `MRS_SDK_QT_TARGET_DEVICE`: the MRS device that runs the current target. One of `NeuralPlex`, `MConn`, or `FUSION`.
   - There are boolean flags defined for each of these: `MRS_SDK_QT_DEVICE_NEURALPLEX`, `MRS_SDK_QT_DEVICE_MCONN`, and `MRS_SDK_QT_DEVICE_FUSION`
 - `MRS_SDK_QT_TARGET_OS`: the OS that will run the current target. One of `Yocto`, `Buildroot`, or `local`.
-  - There are boolean flags defined for each of these: `MRS_SDK_QT_OS_YOCTO`, `MRS_SDK_QT_OS_BUILDROOT`, and `MRS_SDK_QT_OS_LOCAL`.
+  - There are boolean flags defined for each of these: `MRS_SDK_QT_OS_YOCTO`, `MRS_SDK_QT_OS_BUILDROOT`, and `MRS_SDK_QT_OS_DESKTOP`.
 - `MRS_SDK_QT_IS_ARM`: `1` when an ARM toolchain is detected.
 - `MRS_SDK_QT_IS_CROSSCOMPILING`: `1` when CMake believes it is cross-compiling.
 

@@ -47,13 +47,7 @@ target_include_directories(mrs-sdk-qt PUBLIC include)
 # The main mrs-sdk-qt.cmake file is where environment-specific macros and other necessary configurations are determined.
 # Things are split this way because those configurations need to be available to applications using the SDK,
 # not just during compilation.
-include(cmake/mrs-sdk-qt.cmake)
-# Set the library output name to be "mrs-sdk-qt-<device>".
-# This allows for selecting the proper built library based on device type in downstream applications.
-string(TOLOWER "${MRS_SDK_QT_TARGET_DEVICE}" _mrs_sdk_qt_target_device)
-set_target_properties(mrs-sdk-qt PROPERTIES
-    OUTPUT_NAME "mrs-sdk-qt-${_mrs_sdk_qt_target_device}"
-)
+include(cmake/mrs-sdk-qt/config.cmake)
 
 # Define library version from the most recent Git tag.
 # Default to "0.0.0" if Git doesn't have a version number.
@@ -73,7 +67,7 @@ set_target_properties(mrs-sdk-qt PROPERTIES
 # Output the library version number.
 message(NOTICE "MRS SDK: library version: ${GIT_TAG}")
 # Make the library version number available in the SDK sources.
-target_compile_definitions(mrs-sdk-qt PRIVATE MRS_SDK_LIB_VERSION=\"${GIT_TAG}\")
+target_compile_definitions(mrs-sdk-qt PRIVATE MRS_SDK_QT_LIB_VERSION=\"${GIT_TAG}\")
 
 # The following define makes the compiler emit warnings if you use any feature of Qt which as been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the deprecated API in order to know how to port your code away from it.

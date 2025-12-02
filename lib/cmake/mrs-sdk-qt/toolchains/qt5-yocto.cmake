@@ -1,4 +1,4 @@
-# Yocto toolchain helper.
+# Qt5 Yocto toolchain helper.
 # NOTE: this helper is only meant to be used with the Qt5 Yocto kit for MConn/FUSION devices.
 # Use the qt6-yocto.cmake helper for the NeuralPlex Qt6 kit.
 
@@ -29,6 +29,7 @@ set(OE_QMAKE_PATH_EXTERNAL_HOST_BINS $ENV{OE_QMAKE_PATH_EXTERNAL_HOST_BINS} CACH
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE BOOL FORCE)
 
 # Set the expected Qt versions based on device target.
+set(MRS_SDK_QT_QT_MAJOR_VERSION "5" CACHE STRING "Required Qt toolchain major version" FORCE)
 set(MRS_SDK_QT_EXPECTED_QT_VERSION_MCONN "5.12.9" CACHE STRING "Expected MConn Qt version" FORCE)
 set(MRS_SDK_QT_EXPECTED_QT_VERSION_FUSION "5.12.9" CACHE STRING "Expected FUSION Qt version" FORCE)
 
@@ -36,7 +37,7 @@ set(MRS_SDK_QT_EXPECTED_QT_VERSION_FUSION "5.12.9" CACHE STRING "Expected FUSION
 set(MRS_SDK_QT_TARGET_OS "Yocto" CACHE STRING "Target OS identifier" FORCE)
 set(MRS_SDK_QT_OS_YOCTO TRUE CACHE BOOL "Target OS is Yocto" FORCE)
 set(MRS_SDK_QT_OS_BUILDROOT FALSE CACHE BOOL "Target OS is Buildroot" FORCE)
-set(MRS_SDK_QT_OS_LOCAL FALSE CACHE BOOL "Target OS is local" FORCE)
+set(MRS_SDK_QT_OS_DESKTOP FALSE CACHE BOOL "Target OS is desktop" FORCE)
 
 # Yocto builds target ARM Cortex-A9 devices.
 set(CMAKE_SYSTEM_NAME "Linux" CACHE STRING "Target OS" FORCE)
