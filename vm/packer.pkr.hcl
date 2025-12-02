@@ -23,7 +23,7 @@ source "qemu" "ubuntu" {
   # Boot settings for Ubuntu Server ISO with autoinstall
   boot_command = [
     "<wait><wait><wait>c<wait>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ quiet splash ---<enter><wait>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ console=ttyS0 loglevel=7 ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "boot<enter>"
   ]
@@ -35,7 +35,8 @@ source "qemu" "ubuntu" {
   disk_image  = false
   format      = "raw"
   qemuargs = [
-    ["-serial", "mon:telnet:127.0.0.1:4444,server,nowait"]
+    ["-chardev", "stdio,id=char0,logfile=output/vm-serial.log"],
+    ["-serial", "chardev:char0"]
   ]
 
   # HTTP server for preseed data
