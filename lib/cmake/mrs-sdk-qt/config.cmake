@@ -132,31 +132,30 @@ message(NOTICE "Environment: target OS: ${MRS_SDK_QT_TARGET_OS}")
 # publish them via an imported target, and link the consumer target against it.
 ###########################################################################################################################################
 if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
-    # The paths in this section are dependent on the MRS_SDK_QT_ROOT variable.
-    # This can be configured from the downstream project. If not configured,
-    # the default will be $HOME/mrs-sdk-qt.
+    # Load SDK configuration from ~/.config/mrs-sdk-qt/config
+    set(_mrs_sdk_qt_global_config_file "$ENV{HOME}/.config/mrs-sdk-qt/config")
+    if(NOT EXISTS "${_mrs_sdk_qt_global_config_file}")
+        message(FATAL_ERROR "ERROR: MRS SDK config not found at ${_mrs_sdk_qt_global_config_file}. Run mrs-sdk-manager to initialize.")
+    endif()
+
+    # Parse the config file (KEY=VALUE format).
+    file(STRINGS "${_mrs_sdk_qt_global_config_file}" _config_lines)
+    foreach(_line ${_config_lines})
+        if(_line MATCHES "^([^=]+)=(.*)$")
+            set(${CMAKE_MATCH_1} "${CMAKE_MATCH_2}")
+        endif()
+    endforeach()
+
+    # Validate that required variables were set.
     if(NOT DEFINED MRS_SDK_QT_ROOT)
-        set(MRS_SDK_QT_ROOT "$ENV{HOME}/mrs-sdk-qt" CACHE PATH "Installation root directory of the MRS SDK Qt")
-        message(WARNING "MRS_SDK_QT_ROOT not defined. Defaulting to ${MRS_SDK_QT_ROOT}")
+        message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT not found in ${_mrs_sdk_qt_global_config_file}")
     endif()
-
-    # Verify that the given SDK root actually contains at least one valid SDK version.
-    file(GLOB _all_sdk_install_dirs LIST_DIRECTORIES true RELATIVE ${MRS_SDK_QT_ROOT} "${MRS_SDK_QT_ROOT}/*")
-    set(_sdk_version_options "${_all_sdk_install_dirs}")
-    set(_semver_regex "^[0-9]+\\.[0-9]+\\.[0-9]+$")
-    list(FILTER _sdk_version_options INCLUDE REGEX "${_semver_regex}")
-    if(NOT _sdk_version_options)
-        message(FATAL_ERROR "No valid SDK versions found in ${MRS_SDK_QT_ROOT}")
-    endif()
-
-    # Set the SDK version to the highest available if it was not already defined.
     if(NOT DEFINED MRS_SDK_QT_VERSION)
-        list(SORT _sdk_version_options COMPARE NATURAL ORDER DESCENDING)
-        list(GET _sdk_version_options 0 MRS_SDK_QT_VERSION)
-        message(WARNING "MRS_SDK_QT_VERSION not defined. Defaulting to ${MRS_SDK_QT_VERSION}")
-    else()
-        message(NOTICE "MRS SDK version: ${MRS_SDK_QT_VERSION}")
+        message(FATAL_ERROR "ERROR: MRS_SDK_QT_VERSION not found in ${_mrs_sdk_qt_global_config_file}")
     endif()
+
+    message(NOTICE "MRS SDK root: ${MRS_SDK_QT_ROOT}")
+    message(NOTICE "MRS SDK version: ${MRS_SDK_QT_VERSION}")
 
     # Export definitions that should only reach consumer targets via the imported target.
     set(MRS_SDK_QT_CONSUMER_ONLY_DEFINES "")
