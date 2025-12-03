@@ -19,11 +19,58 @@ if [[ -d "${MRS_SDK_QT_ROOT}" ]]; then
 
 		# Write config file
 		readonly config_dir="$HOME/.config/mrs-sdk-qt"
+		rm -r "${config_dir}" # Clear out old stuff
 		mkdir -p "${config_dir}"
-		cat > "${config_dir}/config" << EOF
+		cat > "${config_dir}/global-config" << EOF
 MRS_SDK_QT_ROOT=${MRS_SDK_QT_ROOT}
 MRS_SDK_QT_VERSION=${MRS_SDK_QT_VERSION}
 EOF
+
+		# Write CMake wrapper
+		cat > "${config_dir}/global-config.cmake" << 'CMAKE_EOF'
+# MRS SDK CMake configuration wrapper
+# This file reads the KEY=VALUE config file and sets CMake variables
+
+set(_mrs_sdk_qt_config_file "$ENV{HOME}/.config/mrs-sdk-qt/global-config")
+if(NOT EXISTS "${_mrs_sdk_qt_config_file}")
+    message(FATAL_ERROR "ERROR: MRS SDK global config not found at ${_mrs_sdk_qt_config_file}. Run mrs-sdk-manager to initialize.")
+endif()
+
+file(STRINGS "${_mrs_sdk_qt_config_file}" _config_lines)
+foreach(_line ${_config_lines})
+    if(_line MATCHES "^([^=]+)=(.*)$")
+        set(${CMAKE_MATCH_1} "${CMAKE_MATCH_2}")
+    endif()
+endforeach()
+
+if(NOT DEFINED MRS_SDK_QT_ROOT)
+	message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT not found in ${_mrs_sdk_qt_config_file}")
+endif()
+
+if(NOT DEFINED MRS_SDK_QT_VERSION)
+	message(FATAL_ERROR "ERROR: MRS_SDK_QT_VERSION not found in ${_mrs_sdk_qt_config_file}")
+endif()
+CMAKE_EOF
+
+		# Write QMake wrapper
+		cat > "${config_dir}/global-config.pri" << 'QMAKE_EOF'
+# MRS SDK QMake configuration wrapper
+# This file reads the KEY=VALUE config file and sets QMake variables
+
+_mrs_sdk_qt_config_file = "$$(HOME)/.config/mrs-sdk-qt/global-config"
+!exists($$_mrs_sdk_qt_config_file) {
+    error("ERROR: MRS SDK global config not found at $$_mrs_sdk_qt_config_file. Run mrs-sdk-manager to initialize.")
+}
+
+include($$_mrs_sdk_qt_config_file)
+
+isEmpty(MRS_SDK_QT_ROOT) {
+    error("ERROR: MRS_SDK_QT_ROOT not found in $$_mrs_sdk_qt_config_file")
+}
+isEmpty(MRS_SDK_QT_VERSION) {
+    error("ERROR: MRS_SDK_QT_VERSION not found in $$_mrs_sdk_qt_config_file")
+}
+QMAKE_EOF
 
 		echo "SUCCESS."
 	else

@@ -2,7 +2,7 @@
 
 Here are the steps for compiling and installing the library.
 
-NOTE: You will need to have Qt5 installed before you can compile.
+NOTE: You will need to have Qt5/Qt6 installed before you can compile.
 
 1. Open the CMake project in Qt Creator.
 2. Compile the project.

@@ -94,8 +94,7 @@ endif()
 set(_mrs_sdk_qt_qt_version ${MRS_SDK_QT_EXPECTED_QT_VERSION})
 
 ###########################################################################################################################################
-# Check that the expected Qt version, according to the device toolchain, matches what is actually being used.
-# Then, determine whether the target is an ARM processor based on the system processor and compiler target.
+# Determine whether the target is an ARM processor based on the system processor and compiler target.
 ###########################################################################################################################################
 set(_mrs_sdk_qt_is_arm 0)
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _mrs_sdk_qt_processor_lower)
@@ -104,7 +103,7 @@ if(_mrs_sdk_qt_processor_lower MATCHES "arm|aarch64|cortex")
 endif()
 
 ###########################################################################################################################################
-# Add all of the definitions taken from the toolchains.
+# Add all of the definitions that will be shared by the SDK and its consumers.
 # If there were no environment errors, output the target device and OS.
 ###########################################################################################################################################
 list(APPEND MRS_SDK_QT_SHARED_DEFINES

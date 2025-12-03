@@ -18,7 +18,8 @@ add_executable(spoke-zone-fake
 )
 
 set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-fake")
-include("$ENV{MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
+include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
+include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
 
 include(GNUInstallDirs)
 install(TARGETS spoke-zone-fake
