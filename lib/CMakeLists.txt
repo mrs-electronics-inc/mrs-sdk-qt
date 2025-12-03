@@ -13,9 +13,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-# Import all Qt modules necessary for compilation of the SDK.
-find_package(Qt5 REQUIRED COMPONENTS Core)
-
 # Define the lists of header and source files.
 set(MRS_SDK_HEADERS
     include/Application.hpp
@@ -37,10 +34,6 @@ set_target_properties(mrs-sdk-qt PROPERTIES
     AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated_files"
 )
 
-# Link the imported Qt modules into this library.
-# QMake handles this internally.
-target_link_libraries(mrs-sdk-qt PUBLIC Qt5::Core)
-
 # Configure the include directories.
 target_include_directories(mrs-sdk-qt PUBLIC include)
 
@@ -48,6 +41,14 @@ target_include_directories(mrs-sdk-qt PUBLIC include)
 # Things are split this way because those configurations need to be available to applications using the SDK,
 # not just during compilation.
 include(cmake/mrs-sdk-qt/config.cmake)
+
+# Link the imported Qt modules into this library.
+# QMake handles this internally.
+if(Qt5Core_VERSION)
+    target_link_libraries(mrs-sdk-qt PUBLIC Qt5::Core)
+elseif(Qt6Core_VERSION)
+    target_link_libraries(mrs-sdk-qt PUBLIC Qt6::Core)
+endif()
 
 # Define library version from the most recent Git tag.
 # Default to "0.0.0" if Git doesn't have a version number.

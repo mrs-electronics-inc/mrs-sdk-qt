@@ -63,26 +63,40 @@ else()
 endif()
 
 ###########################################################################################################################################
-# Check that the expected Qt version, according to the device toolchain, matches what is actually being used.
-# Then, determine whether the target is an ARM processor based on the system processor and compiler target.
+# Load the proper Qt version based on which kits we are using. We only have to worry about Qt5 vs. Qt6;
+# everything else is taken care of by the toolchain helpers.
 ###########################################################################################################################################
-if(Qt5Core_VERSION)
-    if(${MRS_SDK_QT_EXPECTED_QT_VERSION} STREQUAL ${Qt5Core_VERSION} AND ${MRS_SDK_QT_QT_MAJOR_VERSION} STREQUAL "5")
-        message(NOTICE "Qt version: ${MRS_SDK_QT_EXPECTED_QT_VERSION}")
+if(${MRS_SDK_QT_QT_MAJOR_VERSION} STREQUAL "5")
+    find_package(Qt5 REQUIRED COMPONENTS Core)
+    if(Qt5Core_VERSION)
+        if(${MRS_SDK_QT_EXPECTED_QT_VERSION} STREQUAL ${Qt5Core_VERSION} AND ${MRS_SDK_QT_QT_MAJOR_VERSION} STREQUAL "5")
+            message(NOTICE "Qt version: ${MRS_SDK_QT_EXPECTED_QT_VERSION}")
+        else()
+            message(FATAL_ERROR "ERROR: invalid Qt version: ${Qt5Core_VERSION}")
+        endif()
     else()
-        message(FATAL_ERROR "ERROR: invalid Qt version: ${Qt5Core_VERSION}")
+        message(FATAL_ERROR "ERROR: no valid Qt version found.")
     endif()
-elseif(Qt6Core_VERSION)
-    if(${MRS_SDK_QT_EXPECTED_QT_VERSION} STREQUAL ${Qt6Core_VERSION} AND ${MRS_SDK_QT_QT_MAJOR_VERSION} STREQUAL "6")
-        message(NOTICE "Qt version: ${MRS_SDK_QT_EXPECTED_QT_VERSION}")
+elseif(${MRS_SDK_QT_QT_MAJOR_VERSION} STREQUAL "6")
+    find_package(Qt6 REQUIRED COMPONENTS Core)
+    if(Qt6Core_VERSION)
+        if(${MRS_SDK_QT_EXPECTED_QT_VERSION} STREQUAL ${Qt6Core_VERSION} AND ${MRS_SDK_QT_QT_MAJOR_VERSION} STREQUAL "6")
+            message(NOTICE "Qt version: ${MRS_SDK_QT_EXPECTED_QT_VERSION}")
+        else()
+            message(FATAL_ERROR "ERROR: invalid Qt version: ${Qt6Core_VERSION}")
+        endif()
     else()
-        message(FATAL_ERROR "ERROR: invalid Qt version: ${Qt6Core_VERSION}")
+        message(FATAL_ERROR "ERROR: no valid Qt version found.")
     endif()
 else()
-    message(FATAL_ERROR "ERROR: no valid Qt version found.")
+    message(FATAL_ERROR "ERROR: no Qt major version specified. Did you run the correct toolchain helper?")
 endif()
 set(_mrs_sdk_qt_qt_version ${MRS_SDK_QT_EXPECTED_QT_VERSION})
 
+###########################################################################################################################################
+# Check that the expected Qt version, according to the device toolchain, matches what is actually being used.
+# Then, determine whether the target is an ARM processor based on the system processor and compiler target.
+###########################################################################################################################################
 set(_mrs_sdk_qt_is_arm 0)
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _mrs_sdk_qt_processor_lower)
 if(_mrs_sdk_qt_processor_lower MATCHES "arm|aarch64|cortex")
@@ -127,16 +141,17 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     endif()
 
     # Verify that the given SDK root actually contains at least one valid SDK version.
-    file(GLOB _all_dirs LIST_DIRECTORIES true RELATIVE ${MRS_SDK_QT_ROOT} "*")
-    set(_semver_regex "^\\d+\\.\\d+\\.\\d+$")
-    list(FILTER _all_sdk_dirs INCLUDE REGEX "${_semver_regex}" _sdk_version_options)
+    file(GLOB _all_sdk_install_dirs LIST_DIRECTORIES true RELATIVE ${MRS_SDK_QT_ROOT} "${MRS_SDK_QT_ROOT}/*")
+    set(_sdk_version_options "${_all_sdk_install_dirs}")
+    set(_semver_regex "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+    list(FILTER _sdk_version_options INCLUDE REGEX "${_semver_regex}")
     if(NOT _sdk_version_options)
         message(FATAL_ERROR "No valid SDK versions found in ${MRS_SDK_QT_ROOT}")
     endif()
 
     # Set the SDK version to the highest available if it was not already defined.
     if(NOT DEFINED MRS_SDK_QT_VERSION)
-        list(SORT _sdk_version_options VERSION DESCENDING)
+        list(SORT _sdk_version_options COMPARE NATURAL ORDER DESCENDING)
         list(GET _sdk_version_options 0 MRS_SDK_QT_VERSION)
         message(WARNING "MRS_SDK_QT_VERSION not defined. Defaulting to ${MRS_SDK_QT_VERSION}")
     else()
@@ -160,6 +175,13 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     set(MRS_SDK_QT_LIBRARY_DIR "${_lib_os_path}/${_lib_target_dirname}")
 
     if(TARGET ${MRS_SDK_QT_CONSUMER_TARGET})
+        message(NOTICE "Linking Qt libraries for target ${MRS_SDK_QT_CONSUMER_TARGET}...")
+        if(Qt5Core_VERSION)
+            target_link_libraries(${MRS_SDK_QT_CONSUMER_TARGET} PUBLIC Qt5::Core)
+        elseif(Qt6Core_VERSION)
+            target_link_libraries(${MRS_SDK_QT_CONSUMER_TARGET} PUBLIC Qt6::Core)
+        endif()
+
         message(NOTICE "Configuring MRS SDK for target ${MRS_SDK_QT_CONSUMER_TARGET}...")
 
         # Find the static library file in the specified location inside the SDK installation tree.
