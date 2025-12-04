@@ -1,0 +1,46 @@
+#cloud-config
+autoinstall:
+  version: 1
+  interactive-sections: []
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  network:
+    version: 2
+    ethernets:
+      ens3:
+        dhcp4: true
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+  identity:
+    hostname: mrs-sdk-qt
+    username: ubuntu
+    password: $6$wXSWO.tB/0LFwxhf$HHDKH9ptNthCDMaNbX49SEEtt.Pj.sKRBFpKdDPTHcUDDD2IA2VrpDodh.iiCOrvnzVmDzFujP0Z.o6PLHH8R0
+    realname: Ubuntu User
+  ssh:
+    install-server: true
+    allow-pw: true
+    enabled: true
+  packages:
+    - openssh-server
+    - openssh-client
+    - linux-generic
+    - git
+    - curl
+    - wget
+  updates: security
+  timezone: UTC
+  grub:
+    install: true
+  late-commands:
+    - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
+    - 'curtin in-target -- systemctl enable ssh'
+    - 'curtin in-target -- systemctl start ssh'
+    - 'sleep 30'
+    - 'cp /tmp/provision.sh /target/home/ubuntu/provision.sh && chmod +x /target/home/ubuntu/provision.sh && chown ubuntu:ubuntu /target/home/ubuntu/provision.sh'
+    - 'curtin in-target -- sudo -u ubuntu /home/ubuntu/provision.sh 2>&1 | tee /dev/console'
+    - 'rm /target/home/ubuntu/provision.sh'
+    - 'curtin in-target -- rm -rf /tmp/* /var/tmp/*'
