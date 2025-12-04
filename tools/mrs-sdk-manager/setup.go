@@ -2,7 +2,9 @@ package main
 
 import (
 	"embed"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -75,11 +77,13 @@ func Setup(sdkVersion string) error {
 	return nil
 }
 
-// validateSetup checks all preconditions before making any changes
+// validateSetup checks all preconditions before making any config changes.
+// Note that the SDK should already be installed when this command is run,
+// which is why the checks are strict.
 func validateSetup(mrsSdkQtRoot, sdkVersion string) error {
-	// Check if SDK root exists
+	// Check if SDK root exists.
 	if _, err := os.Stat(mrsSdkQtRoot); err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			return fmt.Errorf("could not find SDK installation in %s", mrsSdkQtRoot)
 		}
 		return fmt.Errorf("failed to stat SDK root: %w", err)
@@ -88,7 +92,7 @@ func validateSetup(mrsSdkQtRoot, sdkVersion string) error {
 	// Check if version directory exists
 	sdkVersionDir := filepath.Join(mrsSdkQtRoot, sdkVersion)
 	if _, err := os.Stat(sdkVersionDir); err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			return fmt.Errorf("could not find directory %s", sdkVersionDir)
 		}
 		return fmt.Errorf("failed to stat SDK version directory: %w", err)
@@ -97,6 +101,7 @@ func validateSetup(mrsSdkQtRoot, sdkVersion string) error {
 	return nil
 }
 
+// writeTemplateFile takes global configuration information and puts it into the specified template.
 func writeTemplateFile(templateName, outputPath string, data globalConfigData) error {
 	content, err := templates.ReadFile(templateName)
 	if err != nil {
@@ -117,10 +122,19 @@ func writeTemplateFile(templateName, outputPath string, data globalConfigData) e
 	return tmpl.Execute(f, data)
 }
 
+// writeStaticFile reads the file at filePath and writes it to outputPath.
+// However, it skips writing if outputPath already exists.
 func writeStaticFile(filePath, outputPath string) error {
-	if _, err := os.Stat(outputPath); !os.IsNotExist(err) {
-		// File exists, skip writing
-		return nil
+	_, err := os.Stat(outputPath)
+
+	if err != nil {
+		// If the file already exists, it's not an error, but we can skip writing again.
+		// Otherwise, return the real error.
+		if errors.Is(err, fs.ErrExist) {
+			return nil
+		} else {
+			return err
+		}
 	}
 
 	content, err := templates.ReadFile(filePath)
@@ -131,10 +145,14 @@ func writeStaticFile(filePath, outputPath string) error {
 	return os.WriteFile(outputPath, content, 0644)
 }
 
-// updateSymlink removes the old current symlink and creates a new one pointing to sdkVersionDir
+// updateSymlink removes the old current symlink and creates a new one pointing to sdkVersionDir.
 func updateSymlink(mrsSdkQtRoot, sdkVersionDir string) error {
+	// Note that we want to remove current/ even if it's not actually a symlink.
+	// This is because current/ should ONLY ever be a symlink.
+	// The SDK manager has the authority to remove anything else in current/ as it sees fit.
 	currentLink := filepath.Join(mrsSdkQtRoot, "current")
-	if err := os.Remove(currentLink); err != nil && !os.IsNotExist(err) {
+	err := os.Remove(currentLink)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return fmt.Errorf("failed to remove old symlink: %w", err)
 	}
 
