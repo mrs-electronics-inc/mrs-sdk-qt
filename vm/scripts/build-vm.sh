@@ -279,12 +279,12 @@ RAW_FILE=$(find output -name "*.img" -type f 2>/dev/null | head -1)
 VMDK_FILE=$(find output -name "*.vmdk" -type f 2>/dev/null | head -1)
 
 if [ -n "$RAW_FILE" ]; then
-    RAW_SIZE=$(du -h "$RAW_FILE" | cut -f1)
+    RAW_SIZE=$(du -bh "$RAW_FILE" | cut -f1)
     print_success "Raw disk image created: $RAW_FILE ($RAW_SIZE)"
 fi
 
 if [ -n "$VMDK_FILE" ]; then
-    VMDK_SIZE=$(du -h "$VMDK_FILE" | cut -f1)
+    VMDK_SIZE=$(du -bh "$VMDK_FILE" | cut -f1)
     print_success "VMDK file created: $VMDK_FILE ($VMDK_SIZE)"
 else
     print_warning "VMDK file not found in output directory"
