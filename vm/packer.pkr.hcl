@@ -60,6 +60,12 @@ build {
   name    = "MRS SDK Qt Development"
   sources = ["source.qemu.ubuntu"]
 
+  # Copy provisioning script to HTTP directory
+  file {
+    source      = "scripts/provision.sh"
+    destination = "/tmp/provision.sh"
+  }
+
   # Convert raw image to VMDK for VirtualBox compatibility
   post-processor "shell-local" {
     inline = [
