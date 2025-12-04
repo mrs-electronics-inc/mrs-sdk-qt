@@ -15,11 +15,11 @@ pipx install aqtinstall
 
 # Install Qt 5.15.0 LTS
 echo "Installing Qt 5.15.0 LTS..."
-~/.local/bin/aqt install-qt linux desktop 5.15.0
+~/.local/bin/aqt install-qt linux desktop 5.15.0 -m all
 
 # Install Qt 6.8.0 LTS
 echo "Installing Qt 6.8.0 LTS..."
-~/.local/bin/aqt install-qt linux desktop 6.8.0
+~/.local/bin/aqt install-qt linux desktop 6.8.0 -m all
 
 # Clean up apt cache
 echo "Cleaning up..."
