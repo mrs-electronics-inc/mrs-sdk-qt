@@ -22,7 +22,3 @@ include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
 include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
 
 include(GNUInstallDirs)
-install(TARGETS spoke-zone-fake
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
