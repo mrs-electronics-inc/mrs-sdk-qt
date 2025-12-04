@@ -16,6 +16,15 @@ type globalConfigData struct {
 	MRS_SDK_QT_VERSION string
 }
 
+// Setup activates a specific SDK version.
+//
+// Preconditions:
+//   - SDK root directory ($HOME/mrs-sdk-qt) must already exist
+//   - The specified SDK version directory must exist at $HOME/mrs-sdk-qt/<sdk-version>
+//
+// Note: The setup command does not create the SDK root directory.
+// It is assumed to be created by an external installation process.
+// If the root directory does not exist, Setup will return an error.
 func Setup(sdkVersion string) error {
 	fmt.Println("Setting up the MRS SDK...")
 
