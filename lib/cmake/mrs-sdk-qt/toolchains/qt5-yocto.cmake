@@ -5,7 +5,7 @@
 # First, set CMake variables necessary for the Yocto-Qt toolchain.
 # We have to start from the included toolchain file and then add some extra stuff that it doesn't do correctly.
 
-# Make sure the toolchain file's location is in the environment.
+# Make sure the toolchain environment is set up.
 # There is a setup script in the base of the toolchain that does this.
 if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
     message(FATAL_ERROR "Please run the Yocto toolchain setup script before configuring the SDK.")
@@ -14,19 +14,19 @@ endif()
 # Run the kit's toolchain file.
 include($ENV{OE_CMAKE_TOOLCHAIN_FILE})
 # These flags don't get set properly, so we do it manually here.
-set( CMAKE_C_FLAGS "$ENV{CFLAGS} -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9"  CACHE STRING "" FORCE )
-set( CMAKE_ASM_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "" FORCE )
-set( CMAKE_LDFLAGS_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "" FORCE )
+set(CMAKE_C_FLAGS "$ENV{CFLAGS} -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9"  CACHE STRING "" FORCE)
+set(CMAKE_ASM_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "" FORCE)
+set(CMAKE_LDFLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "" FORCE)
 # If this isn't set, CMake will try to test the ARM compiler, which fails because the ARM compiler's output will be for ARM and not x86.
 # Setting this variable is the solution added by CMake to skip this check when cross-compiling.
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY" CACHE STRING "Skips cross-compiler checks" FORCE)
-set(CMAKE_PREFIX_PATH "$ENV{OECORE_TARGET_SYSROOT}/usr" STRING FORCE)
+set(CMAKE_PREFIX_PATH "$ENV{OECORE_TARGET_SYSROOT}/usr" CACHE PATH "" FORCE)
 # In Qt5 Yocto toolchains, this doesn't get parsed properly.
 # The OE_QMAKE_PATH_EXTERNAL_HOST_BINS variable needs to be a CMake variable, but the toolchain only sets it as an env variable.
 set(OE_QMAKE_PATH_EXTERNAL_HOST_BINS $ENV{OE_QMAKE_PATH_EXTERNAL_HOST_BINS} CACHE STRING "Path to external Qt binaries" FORCE)
 # Useful debug output.
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE BOOL FORCE)
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOL "" FORCE)
 
 # Set the expected Qt versions based on device target.
 set(MRS_SDK_QT_QT_MAJOR_VERSION "5" CACHE STRING "Required Qt toolchain major version" FORCE)

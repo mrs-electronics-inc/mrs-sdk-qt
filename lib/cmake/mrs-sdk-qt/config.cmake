@@ -1,10 +1,26 @@
-# The kit in use must set the MRS_SDK_QT_TARGET_DEVICE variable. If it's not defined then fail the entire process.
-if(NOT DEFINED MRS_SDK_QT_TARGET_DEVICE)
-    message(FATAL_ERROR "ERROR: MRS_SDK_QT_TARGET_DEVICE variable must be set!")
-endif()
+###########################################################################################################################################
+# Check that all necessary variable are defined. These should come from a combination of the Qt kit and toolchain helpers.
+# If any are not defined then we need to halt the build immediately.
+###########################################################################################################################################
 
-# Export the list of definitions that the SDK target and its consumers share.
-set(MRS_SDK_QT_SHARED_DEFINES "")
+# The kit in use must set the MRS_SDK_QT_TARGET_DEVICE variable. If it's not defined then fail the entire process.
+# For desktop builds this is set by the toolchain helper, but for cross-compile builds this will be set in the Qt kit
+# to the device that kit is meant to compile for. If it's not defined then the kit is configured incorrectly.
+# All other variables should be set by the toolchain helper.
+set(_required_vars
+    MRS_SDK_QT_TARGET_DEVICE
+    MRS_SDK_QT_TARGET_OS
+    MRS_SDK_QT_OS_BUILDROOT
+    MRS_SDK_QT_OS_YOCTO
+    MRS_SDK_QT_OS_DESKTOP
+    MRS_SDK_QT_QT_MAJOR_VERSION
+)
+
+foreach(_var ${_required_vars})
+    if(NOT DEFINED ${_var})
+        message(FATAL_ERROR "ERROR: ${_var} variable must be set!")
+    endif()
+endforeach()
 
 ###########################################################################################################################################
 # Add variables based on MRS_SDK_QT_TARGET_DEVICE and MRS_SDK_QT_TARGET_OS.
@@ -106,6 +122,8 @@ endif()
 # Add all of the definitions that will be shared by the SDK and its consumers.
 # If there were no environment errors, output the target device and OS.
 ###########################################################################################################################################
+set(MRS_SDK_QT_SHARED_DEFINES "") # List of defs shared by both SDK target and its consumers
+
 list(APPEND MRS_SDK_QT_SHARED_DEFINES
     "MRS_SDK_QT_QT_MAJOR_VERSION=\"${MRS_SDK_QT_QT_MAJOR_VERSION}\""
     "MRS_SDK_QT_QT_VERSION=\"${_mrs_sdk_qt_qt_version}\""
