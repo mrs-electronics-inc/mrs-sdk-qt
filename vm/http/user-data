@@ -40,8 +40,6 @@ autoinstall:
     - 'curtin in-target -- systemctl enable ssh'
     - 'curtin in-target -- systemctl start ssh'
     - 'sleep 30'
-    - 'curtin in-target -- apt-get update'
-    - 'curtin in-target -- apt-get install -y git 2>&1 | tee /dev/console'
     - 'cp /tmp/provision.sh /target/home/ubuntu/provision.sh && chmod +x /target/home/ubuntu/provision.sh && chown ubuntu:ubuntu /target/home/ubuntu/provision.sh'
     - 'curtin in-target -- sudo -u ubuntu /home/ubuntu/provision.sh 2>&1 | tee /dev/console'
     - 'rm /target/home/ubuntu/provision.sh'

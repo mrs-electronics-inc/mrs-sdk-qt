@@ -7,7 +7,7 @@ echo "Starting MRS SDK Qt provisioning..."
 echo "Installing development tools..."
 sudo apt-get update
 sudo apt-get install -y ubuntu-desktop
-sudo apt-get install -y build-essential qtcreator python3-pip pipx
+sudo apt-get install -y build-essential qtcreator python3-pip pipx git
 
 # Install aqtinstall for Qt LTS versions
 echo "Installing aqtinstall..."
