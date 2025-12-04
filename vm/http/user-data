@@ -46,5 +46,5 @@ autoinstall:
     - 'curtin in-target -- apt-get autoremove -y'
     - 'curtin in-target -- apt-get autoclean -y'
     - 'curtin in-target -- apt-get clean -y'
-    - 'curtin in-target -- git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt /home/ubuntu/mrs-sdk-qt'
+    - 'curtin in-target -- sudo -u ubuntu git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt /home/ubuntu/mrs-sdk-qt'
     - 'curtin in-target -- rm -rf /tmp/* /var/tmp/*'
