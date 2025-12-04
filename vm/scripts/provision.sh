@@ -28,7 +28,8 @@ sudo apt-get autoclean -y
 sudo apt-get clean -y
 
 # Clone the mrs-sdk-qt repository
+mkdir ~/repos
 echo "Cloning mrs-sdk-qt repository..."
-git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt ~/mrs-sdk-qt
+git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt ~/repos/mrs-sdk-qt
 
 echo "Provisioning complete!"
