@@ -1,17 +1,26 @@
-# MRS SDK Qt configuration for QMake.
-# This file provides the same configuration capabilities as config.cmake for CMake users.
+###########################################################################################################################################
+# Check that all necessary variable are defined. These should come from a combination of the Qt kit and toolchain helpers.
+# If any are not defined then we need to halt the build immediately.
+###########################################################################################################################################
 
 # The kit in use must set the MRS_SDK_QT_TARGET_DEVICE variable. If it's not defined then fail the entire process.
-isEmpty(MRS_SDK_QT_TARGET_DEVICE) {
-    # It's possible there's an environment variable for it. Check that before failing.
-    MRS_SDK_QT_TARGET_DEVICE = "$$(MRS_SDK_QT_TARGET_DEVICE)"
-    isEmpty(MRS_SDK_QT_TARGET_DEVICE) {
-        error("ERROR: MRS_SDK_QT_TARGET_DEVICE variable must be set!")
+# For desktop builds this is set by the toolchain helper, but for cross-compile builds this will be set in the Qt kit
+# to the device that kit is meant to compile for. If it's not defined then the kit is configured incorrectly.
+# All other variables should be set by the toolchain helper.
+
+_required_vars = \
+    MRS_SDK_QT_TARGET_DEVICE \
+    MRS_SDK_QT_TARGET_OS \
+    MRS_SDK_QT_OS_BUILDROOT \
+    MRS_SDK_QT_OS_YOCTO \
+    MRS_SDK_QT_OS_DESKTOP \
+    MRS_SDK_QT_QT_MAJOR_VERSION
+
+for(_var, _required_vars) {
+    !defined($$_var, var) {
+        error($$_var variable must be set!)
     }
 }
-
-# Export the list of definitions that the SDK target and its consumers share.
-MRS_SDK_QT_SHARED_DEFINES =
 
 ###########################################################################################################################################
 # Add variables based on MRS_SDK_QT_TARGET_DEVICE and MRS_SDK_QT_TARGET_OS.
@@ -105,6 +114,7 @@ contains(_mrs_sdk_qt_processor_lower, "arm") {
 # Add all of the definitions that will be shared by the SDK and its consumers.
 # If there were no environment errors, output the target device and OS.
 ###########################################################################################################################################
+MRS_SDK_QT_SHARED_DEFINES = # List of defs shared by both SDK target and its consumers
 MRS_SDK_QT_SHARED_DEFINES += \
     MRS_SDK_QT_QT_MAJOR_VERSION=\\\"$$MRS_SDK_QT_QT_MAJOR_VERSION\\\" \
     MRS_SDK_QT_QT_VERSION=\\\"$$_mrs_sdk_qt_qt_version\\\" \
