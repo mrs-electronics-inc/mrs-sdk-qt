@@ -42,7 +42,7 @@ autoinstall:
     - 'sleep 30'
     - 'curtin in-target -- apt-get update'
     - 'curtin in-target -- apt-get install -y ubuntu-desktop 2>&1 | tee /dev/console'
-    - 'curtin in-target -- apt-get install -y build-essential qtcreator qtbase5-dev qt5-qmake qtbase6-dev qt6-qmake 2>&1 | tee /dev/console'
+    - 'curtin in-target -- apt-get install -y build-essential qtcreator qtbase5-dev qt5-qmake qt6-base-dev 2>&1 | tee /dev/console'
     - 'curtin in-target -- apt-get autoremove -y'
     - 'curtin in-target -- apt-get autoclean -y'
     - 'curtin in-target -- apt-get clean -y'

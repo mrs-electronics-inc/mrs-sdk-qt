@@ -120,18 +120,6 @@ sudo apt-get update
 sudo apt-get install <package-name>
 ```
 
-### Installing Additional Qt Modules
-
-Inside the VM, you can install additional Qt modules using apt:
-
-```bash
-# Search for Qt packages
-apt-cache search qt5
-
-# Install additional modules
-sudo apt-get install qt5<module-name>
-```
-
 ## Snapshots and Backups
 
 Create VM snapshots before making significant changes using your virtualization platform's snapshot feature.
