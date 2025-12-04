@@ -28,6 +28,17 @@ var setupCmd = &cobra.Command{
 	},
 }
 
+var buildLocalCmd = &cobra.Command{
+	Use:   "build-local",
+	Short: "Build the SDK library from source",
+	Long:  "Build the SDK library from source for all supported configurations (desktop, fusion, mconn across buildroot, yocto, and desktop OSes)",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return BuildLocal()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(setupCmd)
+	rootCmd.AddCommand(buildLocalCmd)
 }
