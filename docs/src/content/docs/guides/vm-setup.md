@@ -1,5 +1,5 @@
 ---
-title: VM Setup Guide
+title: Virtual Machine Setup
 description: Get started with the ready-to-use MRS SDK Qt virtual machine image
 ---
 
