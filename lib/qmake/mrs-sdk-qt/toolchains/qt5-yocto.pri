@@ -4,8 +4,12 @@
 
 # Make sure the toolchain environment is set up.
 # There is a setup script in the base of the toolchain that does this.
+
 isEmpty(OE_CMAKE_TOOLCHAIN_FILE) {
-    error("Please run the Yocto toolchain setup script before configuring the SDK.")
+    OE_CMAKE_TOOLCHAIN_FILE = $$(OE_CMAKE_TOOLCHAIN_FILE)
+    isEmpty(OE_CMAKE_TOOLCHAIN_FILE) {
+        error("Please run the Yocto toolchain setup script before configuring the SDK.")
+    }
 }
 # Set compiler flags for ARM Cortex-A9.
 QMAKE_CFLAGS += -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9

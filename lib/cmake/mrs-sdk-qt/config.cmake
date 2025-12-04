@@ -1,5 +1,5 @@
 ###########################################################################################################################################
-# Check that all necessary variable are defined. These should come from a combination of the Qt kit and toolchain helpers.
+# Check that all necessary variables are defined. These should come from a combination of the Qt kit and toolchain helpers.
 # If any are not defined then we need to halt the build immediately.
 ###########################################################################################################################################
 
@@ -149,20 +149,6 @@ message(NOTICE "Environment: target OS: ${MRS_SDK_QT_TARGET_OS}")
 # publish them via an imported target, and link the consumer target against it.
 ###########################################################################################################################################
 if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
-    # Load SDK configuration from ~/.config/mrs-sdk-qt/config
-    set(_mrs_sdk_qt_global_config_file "$ENV{HOME}/.config/mrs-sdk-qt/config")
-    if(NOT EXISTS "${_mrs_sdk_qt_global_config_file}")
-        message(FATAL_ERROR "ERROR: MRS SDK config not found at ${_mrs_sdk_qt_global_config_file}. Run mrs-sdk-manager to initialize.")
-    endif()
-
-    # Parse the config file (KEY=VALUE format).
-    file(STRINGS "${_mrs_sdk_qt_global_config_file}" _config_lines)
-    foreach(_line ${_config_lines})
-        if(_line MATCHES "^([^=]+)=(.*)$")
-            set(${CMAKE_MATCH_1} "${CMAKE_MATCH_2}")
-        endif()
-    endforeach()
-
     # Validate that required variables were set.
     if(NOT DEFINED MRS_SDK_QT_ROOT)
         message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT not found in ${_mrs_sdk_qt_global_config_file}")

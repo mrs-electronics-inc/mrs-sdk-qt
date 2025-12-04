@@ -1,9 +1,10 @@
 ###########################################################################################################################################
-# Check that all necessary variable are defined. These should come from a combination of the Qt kit and toolchain helpers.
+# Check that all necessary variables are defined. These should come from a combination of the Qt kit and toolchain helpers.
 # If any are not defined then we need to halt the build immediately.
 ###########################################################################################################################################
 
 # The kit in use must set the MRS_SDK_QT_TARGET_DEVICE variable. If it's not defined then fail the entire process.
+# Note that for QMake, this may be done via environment variables, which is why we check those.
 # For desktop builds this is set by the toolchain helper, but for cross-compile builds this will be set in the Qt kit
 # to the device that kit is meant to compile for. If it's not defined then the kit is configured incorrectly.
 # All other variables should be set by the toolchain helper.
@@ -18,7 +19,12 @@ _required_vars = \
 
 for(_var, _required_vars) {
     !defined($$_var, var) {
-        error($$_var variable must be set!)
+        # Check for an environment variable.
+        _val = $$getenv($$_var)
+        isEmpty(_val) {
+            error($$_var variable must be set!)
+        }
+        $$_var = $$_val
     }
 }
 
@@ -132,7 +138,7 @@ MRS_SDK_QT_SHARED_DEFINES += \
 DEFINES += $$MRS_SDK_QT_SHARED_DEFINES
 
 message("Environment: target device: $$MRS_SDK_QT_TARGET_DEVICE")
-message("Environment: target processor: $$_mrs_sdk_qt_processor")
+message("Environment: target processor: $$MRS_SDK_QT_SYSTEM_PROCESSOR")
 message("Environment: target OS: $$MRS_SDK_QT_TARGET_OS")
 
 ###########################################################################################################################################

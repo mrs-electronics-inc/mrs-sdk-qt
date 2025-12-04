@@ -15,10 +15,10 @@ set(CMAKE_AUTORCC ON)
 
 # Define the lists of header and source files.
 set(MRS_SDK_HEADERS
-    include/Application.hpp
+    include/BuildInfo.hpp
 )
 set(MRS_SDK_SOURCES
-    src/Application.cpp
+    src/BuildInfo.cpp
 )
 
 # Create the build target.
