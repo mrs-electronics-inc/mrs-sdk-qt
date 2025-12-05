@@ -9,18 +9,8 @@ import (
 	"github.com/fatih/color"
 )
 
-// InstallPaths represents the source and destination paths for a build configuration
-type InstallPaths struct {
-	QtVersion  string // "qt5" or "qt6"
-	OS         string // "buildroot", "yocto", "desktop"
-	Processor  string // "linux_x86_64", "linux_arm"
-	Device     string // "desktop", "fusion", "mconn"
-	BuildDir   string // Path to the build directory
-	InstallDir string // Path to the SDK installation directory
-}
-
 // InstallBuilds copies all compiled libraries and configuration files to the SDK installation tree
-func InstallBuilds(sdkRoot string) error {
+func InstallBuilds(sdkRepoRoot string) error {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("failed to get home directory: %w", err)
@@ -35,16 +25,16 @@ func InstallBuilds(sdkRoot string) error {
 		return fmt.Errorf("failed to create SDK root directory: %w", err)
 	}
 
-	// Default to version 0.0.0
+	// Default to version 0.0.0 for local/dev builds
 	sdkVersion := "0.0.0"
+	sdkDevVersionRoot := filepath.Join(sdkInstallRoot, sdkVersion)
 
-	// Install include files and cmake/qmake files (only once)
-	if err := installStaticFiles(sdkRoot, sdkInstallRoot, sdkVersion); err != nil {
+	// Install include files and CMake/QMake files (only once)
+	if err := installStaticFiles(sdkRepoRoot, sdkDevVersionRoot); err != nil {
 		return fmt.Errorf("failed to install static files: %w", err)
 	}
 
-	configs := getInstallPaths(sdkRoot, sdkInstallRoot, sdkVersion)
-	if err := installAllLibraries(configs); err != nil {
+	if err := installAllLibraries(AllBuildTargets(), sdkRepoRoot, sdkDevVersionRoot); err != nil {
 		return fmt.Errorf("failed to install libraries: %w", err)
 	}
 
@@ -53,8 +43,7 @@ func InstallBuilds(sdkRoot string) error {
 }
 
 // installStaticFiles copies include and configuration files to the SDK installation
-func installStaticFiles(sdkRoot, sdkInstallRoot, sdkVersion string) error {
-	sdkVersionDir := filepath.Join(sdkInstallRoot, sdkVersion)
+func installStaticFiles(sdkRepoRoot, sdkDevVersionRoot string) error {
 
 	type fileMapping struct {
 		name string
@@ -65,18 +54,18 @@ func installStaticFiles(sdkRoot, sdkInstallRoot, sdkVersion string) error {
 	files := []fileMapping{
 		{
 			name: "includes",
-			src:  filepath.Join(sdkRoot, "lib", "include"),
-			dst:  filepath.Join(sdkVersionDir, "include"),
+			src:  filepath.Join(sdkRepoRoot, "lib", "include"),
+			dst:  filepath.Join(sdkDevVersionRoot, "include"),
 		},
 		{
 			name: "CMake helpers",
-			src:  filepath.Join(sdkRoot, "lib", "cmake"),
-			dst:  filepath.Join(sdkVersionDir, "lib", "cmake"),
+			src:  filepath.Join(sdkRepoRoot, "lib", "cmake"),
+			dst:  filepath.Join(sdkDevVersionRoot, "lib", "cmake"),
 		},
 		{
 			name: "QMake helpers",
-			src:  filepath.Join(sdkRoot, "lib", "qmake"),
-			dst:  filepath.Join(sdkVersionDir, "lib", "qmake"),
+			src:  filepath.Join(sdkRepoRoot, "lib", "qmake"),
+			dst:  filepath.Join(sdkDevVersionRoot, "lib", "qmake"),
 		},
 	}
 
@@ -108,27 +97,28 @@ func installStaticFiles(sdkRoot, sdkInstallRoot, sdkVersion string) error {
 	return nil
 }
 
-func installAllLibraries(configs []InstallPaths) error {
+func installAllLibraries(installTargets []BuildTarget, sdkRepoRoot, sdkDevVersionRoot string) error {
 	// Install library files for each configuration
 	color.White("Installing compiled libraries...")
 	// Generate status messages.
 	// Calculate the maximum status message length for alignment of output.
 	maxStatusLen := 0
 	var statusMsgs []string
-	for i, config := range configs {
-		s := fmt.Sprintf("[%d/%d] Copying lib for %s/%s", i+1, len(configs), config.Device, config.OS)
+	for i, target := range installTargets {
+		s := fmt.Sprintf("[%d/%d] Copying lib from %s", i+1, len(installTargets), target.BuildDir())
 		statusMsgs = append(statusMsgs, s)
 		if len(s) > maxStatusLen {
 			maxStatusLen = len(s)
 		}
 	}
-	for i, config := range configs {
+	for i, target := range installTargets {
 		s := color.WhiteString(statusMsgs[i])
 		// Pad the message to align the success indicators.
 		padding := strings.Repeat(" ", maxStatusLen-len(statusMsgs[i])+3)
 		fmt.Print(s + padding)
-		if err := installLibrary(config); err != nil {
-			return fmt.Errorf("failed to install %s %s: %w", config.Device, config.OS, err)
+		if err := installLibrary(target, sdkRepoRoot, sdkDevVersionRoot); err != nil {
+			color.Red("\n%s")
+			return fmt.Errorf("failed to install %s: %w", target.BuildDir(), err)
 		}
 		color.Green("✓ Success.\n")
 	}
@@ -137,15 +127,9 @@ func installAllLibraries(configs []InstallPaths) error {
 }
 
 // installLibrary copies a compiled library to the appropriate installation location
-func installLibrary(config InstallPaths) error {
-	srcLib := filepath.Join(config.BuildDir, "artifacts", "libmrs-sdk-qt.a")
-	dstLibDir := filepath.Join(
-		config.InstallDir,
-		"lib",
-		config.QtVersion,
-		config.OS,
-		config.Processor+"_"+config.Device,
-	)
+func installLibrary(target BuildTarget, sdkRepoRoot, sdkDevVersionRoot string) error {
+	srcLib := filepath.Join(sdkRepoRoot, "build", target.BuildDir(), "artifacts", "libmrs-sdk-qt.a")
+	var dstLibDir = filepath.Join(sdkDevVersionRoot, target.InstTreeDir())
 
 	// Create the destination directory
 	if err := os.MkdirAll(dstLibDir, 0755); err != nil {
@@ -159,56 +143,6 @@ func installLibrary(config InstallPaths) error {
 	}
 
 	return nil
-}
-
-// getInstallPaths returns the install paths for all build configurations
-func getInstallPaths(sdkRoot, sdkInstallRoot, sdkVersion string) []InstallPaths {
-	sdkVersionDir := filepath.Join(sdkInstallRoot, sdkVersion)
-
-	paths := []InstallPaths{
-		{
-			QtVersion:  "qt5",
-			OS:         "desktop",
-			Processor:  "linux_x86_64",
-			Device:     "desktop",
-			BuildDir:   filepath.Join(sdkRoot, "build", "desktop-qt5"),
-			InstallDir: sdkVersionDir,
-		},
-		{
-			QtVersion:  "qt6",
-			OS:         "desktop",
-			Processor:  "linux_x86_64",
-			Device:     "desktop",
-			BuildDir:   filepath.Join(sdkRoot, "build", "desktop-qt6"),
-			InstallDir: sdkVersionDir,
-		},
-		{
-			QtVersion:  "qt5",
-			OS:         "buildroot",
-			Processor:  "linux_arm",
-			Device:     "fusion",
-			BuildDir:   filepath.Join(sdkRoot, "build", "fusion-buildroot"),
-			InstallDir: sdkVersionDir,
-		},
-		{
-			QtVersion:  "qt5",
-			OS:         "buildroot",
-			Processor:  "linux_arm",
-			Device:     "mconn",
-			BuildDir:   filepath.Join(sdkRoot, "build", "mconn-buildroot"),
-			InstallDir: sdkVersionDir,
-		},
-		{
-			QtVersion:  "qt5",
-			OS:         "yocto",
-			Processor:  "linux_arm",
-			Device:     "mconn",
-			BuildDir:   filepath.Join(sdkRoot, "build", "mconn-yocto"),
-			InstallDir: sdkVersionDir,
-		},
-	}
-
-	return paths
 }
 
 // copyFile copies a single file from src to dst

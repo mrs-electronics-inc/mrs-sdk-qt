@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -13,8 +14,7 @@ import (
 
 // BuildConfig represents a single build configuration
 type BuildConfig struct {
-	Device   string
-	OS       string
+	Target   BuildTarget
 	CmakeCmd []string
 }
 
@@ -78,23 +78,24 @@ func verifyRepoRoot(sdkRoot string) error {
 
 func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 	maxStatusLen := 0
+	var statusMsgs []string
 	for i, config := range configs {
-		statusMsg := fmt.Sprintf("[%d/%d] Building SDK lib for %s/%s)", i+1, len(configs), config.Device, config.OS)
-		if len(statusMsg) > maxStatusLen {
-			maxStatusLen = len(statusMsg)
+		s := fmt.Sprintf("[%d/%d] Building SDK lib for %s", i+1, len(configs), config.Target.BuildDir())
+		statusMsgs = append(statusMsgs, s)
+		if len(s) > maxStatusLen {
+			maxStatusLen = len(s)
 		}
 	}
 
 	for i, config := range configs {
-		statusMsg := fmt.Sprintf("[%d/%d] Building SDK lib for %s/%s)", i+1, len(configs), config.Device, config.OS)
-		s := color.WhiteString(statusMsg)
-
+		s := color.WhiteString(statusMsgs[i])
 		// Pad the message to align the success indicators.
-		padding := strings.Repeat(" ", maxStatusLen-len(statusMsg)+3)
+		padding := strings.Repeat(" ", maxStatusLen-len(statusMsgs[i])+3)
 		fmt.Print(s + padding)
 
 		if err := runBuild(sdkRoot, config); err != nil {
-			return fmt.Errorf("build failed for device %s, OS %s: %w", config.Device, config.OS, err)
+			color.Red("\n%s", err)
+			return fmt.Errorf("build failed for %s/%s", config.Target.Device, config.Target.OS)
 		}
 		color.Green("✓ Success.\n")
 	}
@@ -102,144 +103,89 @@ func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 	return nil
 }
 
+// runBuild executes the CMake configure and build steps for a configuration
+func runBuild(sdkRoot string, config BuildConfig) error {
+	// Get the setup command if there is one.
+	envSetupCmd := config.getBuildEnvSetupCmd()
+
+	// Create the build command.
+	// Structure: [setup &&] cmake configure && cmake build
+	buildDir := config.CmakeCmd[4]
+	fullCmd := fmt.Sprintf("%s && /usr/bin/cmake --build %s --target all",
+		strings.Join(config.CmakeCmd, " "),
+		buildDir,
+	)
+	if len(envSetupCmd) > 0 {
+		fullCmd = fmt.Sprintf("%s && %s", envSetupCmd, fullCmd)
+	}
+
+	// Build!!
+	cmd := exec.Command("/bin/bash", "-c", fullCmd)
+	cmd.Stdout = io.Discard
+	var stderrBuf bytes.Buffer
+	cmd.Stderr = &stderrBuf // Full control over error output
+	cmd.Dir = sdkRoot
+
+	if err := cmd.Run(); err != nil {
+		// color.Red("\n%s", stderrBuf.String())
+		// return err
+		return fmt.Errorf("%s", stderrBuf.String())
+	}
+	return nil
+}
+
 // getBuildConfigs returns all build configurations
 func getBuildConfigs(sdkRoot string) []BuildConfig {
-	configs := []BuildConfig{
-		{
-			Device: "desktop",
-			OS:     "desktop-qt5",
-			CmakeCmd: []string{
-				"/usr/bin/cmake",
-				"-S", filepath.Join(sdkRoot, "lib"),
-				"-B", filepath.Join(sdkRoot, "build", "desktop-qt5"),
-				"-DCMAKE_GENERATOR:STRING=Ninja",
-				"-DCMAKE_CXX_COMPILER:FILEPATH=/usr/lib/ccache/g++",
-				"-DCMAKE_PREFIX_PATH:PATH=$HOME/Qt/5.15.0/gcc_64",
-				"-DCMAKE_TOOLCHAIN_FILE:STRING=" + filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-desktop.cmake"),
-				"-DCMAKE_CXX_FLAGS_INIT:STRING=-DQT_QML_DEBUG",
-				"-DMRS_SDK_QT_TARGET_DEVICE:STRING=MConn",
-				"-DCMAKE_BUILD_TYPE:STRING=Debug",
-			},
-		},
-		{
-			Device: "desktop",
-			OS:     "desktop-qt6",
-			CmakeCmd: []string{
-				"/usr/bin/cmake",
-				"-S", filepath.Join(sdkRoot, "lib"),
-				"-B", filepath.Join(sdkRoot, "build", "desktop-qt6"),
-				"-DCMAKE_GENERATOR:STRING=Ninja",
-				"-DCMAKE_CXX_COMPILER:FILEPATH=/usr/lib/ccache/g++-13",
-				"-DCMAKE_PREFIX_PATH:PATH=$HOME/Qt/6.8.0/gcc_64",
-				"-DCMAKE_TOOLCHAIN_FILE:STRING=" + filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt6-desktop.cmake"),
-				"-DCMAKE_CXX_FLAGS_INIT:STRING=-DQT_QML_DEBUG",
-				"-DMRS_SDK_QT_TARGET_DEVICE:STRING=MConn",
-				"-DCMAKE_BUILD_TYPE:STRING=Debug",
-			},
-		},
-		{
-			Device: "fusion",
-			OS:     "buildroot",
-			CmakeCmd: []string{
-				"/usr/bin/cmake",
-				"-S", filepath.Join(sdkRoot, "lib"),
-				"-B", filepath.Join(sdkRoot, "build", "fusion-buildroot"),
-				"-DCMAKE_GENERATOR:STRING=Ninja",
-				"-DCMAKE_CXX_COMPILER:FILEPATH=/home/cpa/buildroot/output/host/usr/bin/arm-buildroot-linux-gnueabihf-g++",
-				"-DCMAKE_PREFIX_PATH:PATH=/home/cpa/buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr",
-				"-DCMAKE_TOOLCHAIN_FILE:STRING=" + filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-buildroot.cmake"),
-				"-DMRS_SDK_QT_TARGET_DEVICE:STRING=FUSION",
-				"-DCMAKE_BUILD_TYPE:STRING=Debug",
-			},
-		},
-		{
-			Device: "mconn",
-			OS:     "buildroot",
-			CmakeCmd: []string{
-				"/usr/bin/cmake",
-				"-S", filepath.Join(sdkRoot, "lib"),
-				"-B", filepath.Join(sdkRoot, "build", "mconn-buildroot"),
-				"-DCMAKE_GENERATOR:STRING=Ninja",
-				"-DCMAKE_CXX_COMPILER:FILEPATH=/home/cpa/buildroot/output/host/usr/bin/arm-buildroot-linux-gnueabihf-g++",
-				"-DCMAKE_PREFIX_PATH:PATH=/home/cpa/buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr",
-				"-DCMAKE_TOOLCHAIN_FILE:STRING=" + filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-buildroot.cmake"),
-				"-DMRS_SDK_QT_TARGET_DEVICE:STRING=MConn",
-				"-DCMAKE_BUILD_TYPE:STRING=Debug",
-			},
-		},
-		{
-			Device: "mconn",
-			OS:     "yocto",
-			CmakeCmd: []string{
-				"/usr/bin/cmake",
-				"-S", filepath.Join(sdkRoot, "lib"),
-				"-B", filepath.Join(sdkRoot, "build", "mconn-yocto"),
-				"-DCMAKE_GENERATOR:STRING=Ninja",
-				"-DCMAKE_SYSROOT:PATH=/home/cpa/yocto-5.12.9/sysroots/cortexa9hf-neon-poky-linux-gnueabi",
+	cmakeCmdBuilder := func(b BuildTarget) []string {
+		cmd := []string{
+			"/usr/bin/cmake",
+			"-S", filepath.Join(sdkRoot, "lib"),
+			"-B", filepath.Join(sdkRoot, "build", b.BuildDir()),
+			"-DCMAKE_GENERATOR:STRING=Ninja",
+		}
+		switch b.OS {
+		case "yocto":
+			cmd = append(cmd, "-DCMAKE_SYSROOT:PATH=/home/cpa/yocto-5.12.9/sysroots/cortexa9hf-neon-poky-linux-gnueabi",
 				"-DCMAKE_CXX_COMPILER:STRING=/home/cpa/yocto-5.12.9/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-g++",
 				"-DCMAKE_CXX_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi",
-				"-DCMAKE_TOOLCHAIN_FILE:STRING=" + filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake"),
+				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake"),
 				"-DCMAKE_CXX_FLAGS_INIT:STRING=",
-				"-DCMAKE_C_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi",
-				"-DMRS_SDK_QT_TARGET_DEVICE:STRING=MConn",
-				"-DCMAKE_BUILD_TYPE:STRING=Debug",
-			},
-		},
+				"-DCMAKE_C_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi")
+		case "buildroot":
+			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH=/home/cpa/buildroot/output/host/usr/bin/arm-buildroot-linux-gnueabihf-g++",
+				"-DCMAKE_PREFIX_PATH:PATH=/home/cpa/buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr",
+				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-buildroot.cmake"))
+		case "desktop":
+			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH=/usr/lib/ccache/g++")
+			if b.QtVersion == "qt5" {
+				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH=$HOME/Qt/5.15.0/gcc_64",
+					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-desktop.cmake"))
+			} else {
+				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH=$HOME/Qt/6.8.0/gcc_64",
+					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt6-desktop.cmake"))
+			}
+			cmd = append(cmd, "-DCMAKE_CXX_FLAGS_INIT:STRING=-DQT_QML_DEBUG")
+		}
+		cmd = append(cmd, "-DMRS_SDK_QT_TARGET_DEVICE:STRING="+b.Device,
+			"-DCMAKE_BUILD_TYPE:STRING="+b.BuildType)
+		return cmd
+	}
+
+	var configs []BuildConfig
+	for _, target := range AllBuildTargets() {
+		configs = append(configs, BuildConfig{
+			Target:   target,
+			CmakeCmd: cmakeCmdBuilder(target),
+		})
 	}
 
 	return configs
 }
 
-// runBuild executes the CMake configure and build steps for a configuration
-func runBuild(sdkRoot string, config BuildConfig) error {
-	// For yocto builds, source the environment before running cmake
-	if config.OS == "yocto" {
-		return runBuildWithEnv(sdkRoot, config)
+func (b *BuildConfig) getBuildEnvSetupCmd() string {
+	if b.Target.OS == "yocto" {
+		return "source /home/cpa/yocto-5.12.9/environment-setup-cortexa9hf-neon-poky-linux-gnueabi"
 	}
 
-	// Run CMake configure
-	configCmd := exec.Command(config.CmakeCmd[0], config.CmakeCmd[1:]...)
-	configCmd.Stdout = io.Discard
-	configCmd.Stderr = io.Discard
-	configCmd.Dir = sdkRoot
-
-	if err := configCmd.Run(); err != nil {
-		return fmt.Errorf("cmake configure failed: %w", err)
-	}
-
-	// Run CMake build (extract build directory from config.CmakeCmd)
-	// The -B flag is at index 3, so the build directory is at index 4
-	buildDir := config.CmakeCmd[4]
-	buildCmd := exec.Command("/usr/bin/cmake", "--build", buildDir, "--target", "all")
-	buildCmd.Stdout = io.Discard
-	buildCmd.Stderr = io.Discard
-	buildCmd.Dir = sdkRoot
-
-	if err := buildCmd.Run(); err != nil {
-		return fmt.Errorf("cmake build failed: %w", err)
-	}
-
-	return nil
-}
-
-// runBuildWithEnv runs the build with an environment setup script (for yocto)
-func runBuildWithEnv(sdkRoot string, config BuildConfig) error {
-	envScript := "/home/cpa/yocto-5.12.9/environment-setup-cortexa9hf-neon-poky-linux-gnueabi"
-
-	// Extract build directory from config.CmakeCmd (the -B flag is at index 3, directory at index 4)
-	buildDir := config.CmakeCmd[4]
-
-	// Create a bash command that sources the environment and runs cmake
-	bashCmd := fmt.Sprintf("source %s && %s && /usr/bin/cmake --build %s --target all",
-		envScript,
-		strings.Join(config.CmakeCmd, " "),
-		buildDir,
-	)
-
-	cmd := exec.Command("/bin/bash", "-c", bashCmd)
-	cmd.Stdout = io.Discard
-	cmd.Stderr = io.Discard
-	cmd.Dir = sdkRoot
-
-	return cmd.Run()
+	return ""
 }
