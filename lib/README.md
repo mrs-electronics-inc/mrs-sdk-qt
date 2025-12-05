@@ -82,7 +82,8 @@ This ensures the right Qt paths and ARM flags are applied for your target kit.
 
 When an application links against the SDK (via either CMake or QMake), it also inherits kit metadata from the shared definitions. Those compile definitions include:
 
-- `MRS_SDK_QT_QT_VERSION`: the Qt release used for the current target.
+- `MRS_SDK_QT_QT_MAJOR_VERSION`: the major version of Qt (5 or 6) used for the current target.
+- `MRS_SDK_QT_QT_VERSION`: the full Qt release version used for the current target.
 - `MRS_SDK_QT_TARGET_DEVICE`: the MRS device that runs the current target. One of `NeuralPlex`, `MConn`, or `FUSION`.
   - There are boolean flags defined for each of these: `MRS_SDK_QT_DEVICE_NEURALPLEX`, `MRS_SDK_QT_DEVICE_MCONN`, and `MRS_SDK_QT_DEVICE_FUSION`
 - `MRS_SDK_QT_TARGET_OS`: the OS that will run the current target. One of `Yocto`, `Buildroot`, or `Desktop`.
