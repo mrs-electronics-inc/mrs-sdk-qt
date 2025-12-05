@@ -31,19 +31,13 @@ func BuildLocal() error {
 		return err
 	}
 
-	color.Green("Building MRS SDK library from source...\n\n")
-
+	color.New(color.FgHiCyan, color.Bold).Println("===== Building MRS SDK libraries from source...")
 	configs := getBuildConfigs(sdkRoot)
-
-	for i, config := range configs {
-		color.White("[%d/%d] Building SDK (device %s, OS %s)...\n", i+1, len(configs), config.Device, config.OS)
-		if err := runBuild(sdkRoot, config); err != nil {
-			return fmt.Errorf("build failed for device %s, OS %s: %w", config.Device, config.OS, err)
-		}
-		color.Green("✓ Build for device %s, OS %s built successfully\n", config.Device, config.OS)
+	if err := runAllBuilds(sdkRoot, configs); err != nil {
+		return err
 	}
 
-	color.Green("\n✓ All builds completed successfully")
+	color.New(color.FgGreen, color.Bold).Println("===== ✓ All builds completed successfully")
 	return nil
 }
 
@@ -77,6 +71,32 @@ func verifyRepoRoot(sdkRoot string) error {
 
 	if repoName != "mrs-sdk-qt" {
 		return fmt.Errorf("not in the mrs-sdk-qt repository (found: %s)", repoName)
+	}
+
+	return nil
+}
+
+func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
+	maxStatusLen := 0
+	for i, config := range configs {
+		statusMsg := fmt.Sprintf("[%d/%d] Building SDK lib for %s/%s)", i+1, len(configs), config.Device, config.OS)
+		if len(statusMsg) > maxStatusLen {
+			maxStatusLen = len(statusMsg)
+		}
+	}
+
+	for i, config := range configs {
+		statusMsg := fmt.Sprintf("[%d/%d] Building SDK lib for %s/%s)", i+1, len(configs), config.Device, config.OS)
+		s := color.WhiteString(statusMsg)
+
+		// Pad the message to align the success indicators.
+		padding := strings.Repeat(" ", maxStatusLen-len(statusMsg)+3)
+		fmt.Print(s + padding)
+
+		if err := runBuild(sdkRoot, config); err != nil {
+			return fmt.Errorf("build failed for device %s, OS %s: %w", config.Device, config.OS, err)
+		}
+		color.Green("✓ Success.\n")
 	}
 
 	return nil

@@ -34,11 +34,21 @@ var buildLocalCmd = &cobra.Command{
 	Long:  "Build the SDK library from source for all supported configurations (desktop, fusion, mconn across buildroot, yocto, and desktop OSes)",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return BuildLocal()
+		if err := BuildLocal(); err != nil {
+			return err
+		}
+		if installFlag {
+			sdkRoot, _ := os.Getwd()
+			return InstallBuilds(sdkRoot)
+		}
+		return nil
 	},
 }
+
+var installFlag bool
 
 func init() {
 	rootCmd.AddCommand(setupCmd)
 	rootCmd.AddCommand(buildLocalCmd)
+	buildLocalCmd.Flags().BoolVar(&installFlag, "install", false, "Install compiled libraries to ~/mrs-sdk-qt")
 }
