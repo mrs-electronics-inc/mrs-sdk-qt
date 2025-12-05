@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 
+	buildlocal "mrs-sdk-manager/build_local"
+	"mrs-sdk-manager/setup"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +26,7 @@ var setupCmd = &cobra.Command{
 	Long:  "Setup and activate a specific SDK version",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return Setup(args[0])
+		return setup.Setup(args[0])
 	},
 }
 
@@ -34,12 +36,12 @@ var buildLocalCmd = &cobra.Command{
 	Long:  "Build the SDK library from source for all supported configurations (MConn/FUSION/desktop across Yocto/Buildroot/desktop OSes)",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := BuildLocal(); err != nil {
+		if err := buildlocal.BuildLocal(); err != nil {
 			return err
 		}
 		if installFlag {
 			sdkRoot, _ := os.Getwd()
-			return InstallBuilds(sdkRoot)
+			return buildlocal.InstallBuilds(sdkRoot)
 		}
 		return nil
 	},
