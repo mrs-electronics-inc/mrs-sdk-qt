@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 )
@@ -77,30 +78,86 @@ func verifyRepoRoot(sdkRoot string) error {
 }
 
 func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
-	maxStatusLen := 0
-	var statusMsgs []string
+	const maxConcurrency = 4
+	semaphore := make(chan struct{}, maxConcurrency)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	errChan := make(chan error, len(configs))
+
+	numConfigs := len(configs)
+
+	// Pre-calculate all status messages and find max length for column alignment
+	statusMsgs := make([]string, numConfigs)
+	maxMsgLen := 0
 	for i, config := range configs {
-		s := fmt.Sprintf("[%d/%d] Building SDK lib for %s", i+1, len(configs), config.Target.BuildDir())
-		statusMsgs = append(statusMsgs, s)
-		if len(s) > maxStatusLen {
-			maxStatusLen = len(s)
+		statusMsgs[i] = fmt.Sprintf("[%d/%d] Building SDK lib for %s", i+1, numConfigs, config.Target.BuildDir())
+		if len(statusMsgs[i]) > maxMsgLen {
+			maxMsgLen = len(statusMsgs[i])
 		}
 	}
 
-	for i, config := range configs {
-		s := color.WhiteString(statusMsgs[i])
-		// Pad the message to align the success indicators.
-		padding := strings.Repeat(" ", maxStatusLen-len(statusMsgs[i])+3)
-		fmt.Print(s + padding)
+	// Print initial status lines with padding
+	for i := range configs {
+		padding := strings.Repeat(" ", maxMsgLen-len(statusMsgs[i])+3)
+		fmt.Println(color.WhiteString(statusMsgs[i]) + padding + " " + color.YellowString("Pending"))
+	}
 
-		if err := runBuild(sdkRoot, config); err != nil {
-			color.Red("\n%s", err)
-			return fmt.Errorf("build failed for %s/%s", config.Target.Device, config.Target.OS)
-		}
-		color.Green("✓ Success.\n")
+	for i, config := range configs {
+		wg.Add(1)
+		go func(i int, config BuildConfig) {
+			defer wg.Done()
+
+			// Acquire semaphore slot
+			semaphore <- struct{}{}
+			defer func() { <-semaphore }()
+
+			// Run the build
+			if err := runBuild(sdkRoot, config); err != nil {
+				mu.Lock()
+				// Move up to line i, update it, move back down
+				linesToMove := numConfigs - i
+				padding := strings.Repeat(" ", maxMsgLen-len(statusMsgs[i])+3)
+				fmt.Print(ansiCursorUp(linesToMove))
+				fmt.Print("\r" + ansiClearLine())
+				fmt.Println(color.WhiteString(statusMsgs[i]) + padding + " " + color.RedString("✗ Failed"))
+				fmt.Print(ansiCursorDown(linesToMove))
+				mu.Unlock()
+				errChan <- fmt.Errorf("build failed for %s/%s", config.Target.Device, config.Target.OS)
+			} else {
+				mu.Lock()
+				// Move up to line i, update it, move back down
+				linesToMove := numConfigs - i
+				padding := strings.Repeat(" ", maxMsgLen-len(statusMsgs[i])+3)
+				fmt.Print(ansiCursorUp(linesToMove))
+				fmt.Print("\r" + ansiClearLine())
+				fmt.Println(color.WhiteString(statusMsgs[i]) + padding + " " + color.GreenString("✓ Success"))
+				fmt.Print(ansiCursorDown(linesToMove))
+				mu.Unlock()
+			}
+		}(i, config)
+	}
+
+	wg.Wait()
+	close(errChan)
+
+	// Return first error if any occurred
+	for err := range errChan {
+		return err
 	}
 
 	return nil
+}
+
+func ansiCursorUp(lines int) string {
+	return fmt.Sprintf("\033[%dA", lines)
+}
+
+func ansiCursorDown(lines int) string {
+	return fmt.Sprintf("\033[%dB", lines)
+}
+
+func ansiClearLine() string {
+	return "\033[K"
 }
 
 // runBuild executes the CMake configure and build steps for a configuration
