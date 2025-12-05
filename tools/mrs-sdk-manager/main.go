@@ -31,7 +31,7 @@ var setupCmd = &cobra.Command{
 var buildLocalCmd = &cobra.Command{
 	Use:   "build-local",
 	Short: "Build the SDK library from source",
-	Long:  "Build the SDK library from source for all supported configurations (desktop, fusion, mconn across buildroot, yocto, and desktop OSes)",
+	Long:  "Build the SDK library from source for all supported configurations (MConn/FUSION/desktop across Yocto/Buildroot/desktop OSes)",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := BuildLocal(); err != nil {
@@ -50,5 +50,5 @@ var installFlag bool
 func init() {
 	rootCmd.AddCommand(setupCmd)
 	rootCmd.AddCommand(buildLocalCmd)
-	buildLocalCmd.Flags().BoolVar(&installFlag, "install", false, "Install compiled libraries to ~/mrs-sdk-qt")
+	buildLocalCmd.Flags().BoolVarP(&installFlag, "install", "i", false, "Install compiled libraries to ~/mrs-sdk-qt")
 }
