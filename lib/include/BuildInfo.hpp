@@ -7,11 +7,11 @@ namespace mrs_sdk {
 
 class BuildInfo {
 public:
-    BuildInfo();
+    static QVersionNumber sdkVersion();
+    static QString targetDevice();
+    static QString targetOs();
 
-    QVersionNumber sdkVersion() const;
-    QString targetDevice() const;
-    QString targetOs() const;
+    static void print();
 };
 
 }
