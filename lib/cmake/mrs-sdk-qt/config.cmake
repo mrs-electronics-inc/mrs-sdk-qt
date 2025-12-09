@@ -189,7 +189,7 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
         # Find the static library file in the specified location inside the SDK installation tree.
         # Using REQUIRED ensures that the entire script will fail if it is not found.
         find_library(MRS_SDK_QT_LIBS
-            NAMES "${MRS_SDK_QT_LIB_NAME}"
+            NAMES ${MRS_SDK_QT_LIB_NAME}
             PATHS "${MRS_SDK_QT_LIBRARY_DIR}"
             NO_DEFAULT_PATH
             NO_CMAKE_FIND_ROOT_PATH
