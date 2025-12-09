@@ -2,6 +2,7 @@ package buildlocal
 
 import (
 	"fmt"
+	"mrs-sdk-manager/utils"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,7 +19,7 @@ func InstallBuilds(sdkRepoRoot string) error {
 
 	sdkInstallRoot := filepath.Join(homeDir, "mrs-sdk-qt")
 
-	color.New(color.FgHiCyan, color.Bold).Printf("===== Installing SDK in %s...\n", sdkInstallRoot)
+	utils.PrintTaskStart(fmt.Sprintf("Installing SDK in %s...", sdkInstallRoot))
 
 	// Create SDK root directory if it doesn't exist
 	if err := os.MkdirAll(sdkInstallRoot, 0755); err != nil {
@@ -38,7 +39,7 @@ func InstallBuilds(sdkRepoRoot string) error {
 		return fmt.Errorf("failed to install libraries: %w", err)
 	}
 
-	color.New(color.FgGreen, color.Bold).Println("===== ✓ All SDK components installed successfully")
+	utils.PrintSuccess("All SDK components installed successfully")
 	return nil
 }
 

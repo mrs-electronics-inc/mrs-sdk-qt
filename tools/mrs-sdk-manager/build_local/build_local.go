@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"mrs-sdk-manager/utils"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,13 +33,13 @@ func Build() error {
 		return err
 	}
 
-	color.New(color.FgHiCyan, color.Bold).Println("===== Building MRS SDK libraries from source...")
+	utils.PrintTaskStart("Building MRS SDK libraries from source...")
 	configs := getBuildConfigs(sdkRoot)
 	if err := runAllBuilds(sdkRoot, configs); err != nil {
 		return err
 	}
 
-	color.New(color.FgGreen, color.Bold).Println("===== ✓ All builds completed successfully")
+	utils.PrintSuccess("All builds completed successfully")
 	return nil
 }
 
@@ -172,8 +173,7 @@ func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 
 	// Display first error if one occurred.
 	if firstErr.err != nil {
-		color.New(color.FgRed, color.Bold).Printf("\n===== Build Error in %s:\n", firstErr.config.Target.BuildDir())
-		color.Red(firstErr.err.Error())
+		utils.PrintError(fmt.Sprintf("Build Error in %s:", firstErr.config.Target.BuildDir()), firstErr.err.Error())
 		return fmt.Errorf("build failed for %s", firstErr.config.Target.BuildDir())
 	}
 

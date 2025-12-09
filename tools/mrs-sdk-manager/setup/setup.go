@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"mrs-sdk-manager/utils"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -28,7 +29,7 @@ type globalConfigData struct {
 // It is assumed to be created by an external installation process.
 // If the root directory does not exist, Setup will return an error.
 func Setup(sdkVersion string) error {
-	fmt.Println("Setting up the MRS SDK...")
+	utils.PrintTaskStart("Setting up the MRS SDK...")
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -73,7 +74,7 @@ func Setup(sdkVersion string) error {
 		return err
 	}
 
-	fmt.Printf("SUCCESS. SDK config saved in %s\n", configDir)
+	utils.PrintSuccess(fmt.Sprintf("SDK config saved in %s", configDir))
 	return nil
 }
 
