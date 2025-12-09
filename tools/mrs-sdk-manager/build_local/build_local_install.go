@@ -26,7 +26,7 @@ func InstallBuilds(sdkRepoRoot string) error {
 	}
 
 	// Default to version 0.0.0 for local/dev builds
-	sdkVersion := "0.0.0"
+	const sdkVersion = "0.0.0"
 	sdkDevVersionRoot := filepath.Join(sdkInstallRoot, sdkVersion)
 
 	// Install include files and CMake/QMake files (only once)
@@ -117,7 +117,7 @@ func installAllLibraries(installTargets []BuildTarget, sdkRepoRoot, sdkDevVersio
 		padding := strings.Repeat(" ", maxStatusLen-len(statusMsgs[i])+3)
 		fmt.Print(s + padding)
 		if err := installLibrary(target, sdkRepoRoot, sdkDevVersionRoot); err != nil {
-			color.Red("\n%s")
+			fmt.Println()
 			return fmt.Errorf("failed to install %s: %w", target.BuildDir(), err)
 		}
 		color.Green("✓ Success.\n")

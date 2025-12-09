@@ -127,21 +127,18 @@ func writeTemplateFile(templateName, outputPath string, data globalConfigData) e
 func writeStaticFile(filePath, outputPath string) error {
 	_, err := os.Stat(outputPath)
 
-	if err != nil {
-		// If the file already exists, it's not an error, but we can skip writing again.
-		// Otherwise, return the real error.
-		if errors.Is(err, fs.ErrExist) {
-			return nil
-		} else {
-			return err
-		}
+	// Skip writing if a) the file already exists or b) an unexpected error occurred.
+	if err == nil || !errors.Is(err, fs.ErrNotExist) {
+		return err
 	}
 
+	// Read the template file.
 	content, err := templates.ReadFile(filePath)
 	if err != nil {
 		return err
 	}
 
+	// Write the template file to the designated location.
 	return os.WriteFile(outputPath, content, 0644)
 }
 

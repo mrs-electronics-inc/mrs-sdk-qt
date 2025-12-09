@@ -126,7 +126,7 @@ func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 			defer func() { <-semaphore }()
 
 			// Check again after acquiring semaphore.
-			// A lot of time could have passed while we were waiting for it.
+			// It's possible cancel() was called during the time we were waiting.
 			if ctx.Err() != nil {
 				return
 			}
@@ -173,7 +173,7 @@ func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 	// Display first error if one occurred.
 	if firstErr.err != nil {
 		color.New(color.FgRed, color.Bold).Printf("\n===== Build Error in %s:\n", firstErr.config.Target.BuildDir())
-		color.Red("%s", firstErr.err.Error())
+		color.Red(firstErr.err.Error())
 		return fmt.Errorf("build failed for %s", firstErr.config.Target.BuildDir())
 	}
 
@@ -187,10 +187,11 @@ func runBuild(sdkRoot string, config BuildConfig) error {
 
 	// Create the build command.
 	// Structure: [setup &&] cmake configure && cmake build
-	buildDir := config.CmakeCmd[4]
+	// The build directory is the value of -B flag (4th index in the cmake command array).
+	buildDirArg := config.CmakeCmd[4]
 	fullCmd := fmt.Sprintf("%s && /usr/bin/cmake --build %s --target all",
 		strings.Join(config.CmakeCmd, " "),
-		buildDir,
+		buildDirArg,
 	)
 	if len(envSetupCmd) > 0 {
 		fullCmd = fmt.Sprintf("%s && %s", envSetupCmd, fullCmd)

@@ -37,13 +37,13 @@ func AllBuildTargets() []BuildTarget {
 	return allTargets
 }
 
-var validBuildTypes = []string{
+var validBuildTypes = [...]string{
 	"debug",
 }
 
 // The order of this slice should NOT change!!!
 // These are the targets minus build type.
-var validTargets = []BuildTarget{
+var validTargets = [...]BuildTarget{
 	{
 		QtVersion: "qt5",
 		OS:        "yocto",

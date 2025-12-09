@@ -16,9 +16,15 @@ var buildLocalCmd = &cobra.Command{
 		if err := buildLocal.Build(); err != nil {
 			return err
 		}
-		installFlag, _ := cmd.Flags().GetBool("install")
+		installFlag, err := cmd.Flags().GetBool("install")
+		if err != nil {
+			return err
+		}
 		if installFlag {
-			sdkRoot, _ := os.Getwd()
+			sdkRoot, err := os.Getwd()
+			if err != nil {
+				return err
+			}
 			return buildLocal.InstallBuilds(sdkRoot)
 		}
 		return nil
