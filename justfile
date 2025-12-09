@@ -1,3 +1,6 @@
+libs: tools
+    mrs-sdk-manager build-local --install
+
 tools: deps
     cd tools/mrs-sdk-manager && go install
 
