@@ -1,12 +1,17 @@
 # The `mrs-sdk-qt` Library
 
+The `mrs-sdk-qt` library is the centerpiece of the SDK.
+
+## Installation
+
 Here are the steps for compiling and installing the library.
 
 NOTE: You will need to have Qt5/Qt6 installed before you can compile.
 
-1. Open the CMake project in Qt Creator.
-2. Compile the project.
-3. Install the SDK in the following structure:
+1. Install the `just` tool: `sudo apt install just`
+2. Compile the tooling: `just tools`
+3. Compile the SDK libraries: `just libs`
+4. The SDK will be installed in the following tree on your system:
 
 ```
 HOME/mrs-sdk-qt/
@@ -47,9 +52,9 @@ HOME/mrs-sdk-qt/
                     └── libmrs-sdk-qt.a
 ```
 
-At some point we will create a better system for auto-install but we don't have one yet.
+## Usage
 
-## Kit-aware configuration
+Projects using the SDK need to set up their CMake/QMake configuration to use the library compiled for their specific device/OS target.
 
 The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt kit:
 
@@ -58,25 +63,26 @@ The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for b
 - `qt5-desktop.cmake`: uses a desktop Qt 5.15.0 installation and identifies itself as the `desktop` kit.
 - `qt6-desktop.cmake`: uses a desktop Qt 6.8.0 installation and identifies itself as the `desktop` kit.
 
-Each helper sets cache variables used in `config.cmake` to compute a consistent kit identity. When configuring the SDK, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/desktop equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the Qt kit configuration.
+The QMake `.pri` versions of these helpers are located in `lib/qmake/mrs-sdk-qt/toolchains`.
 
-### QMake
+Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` (or `lib/qmake/mrs-sdk-qt/config.pri`) to compute a consistent kit identity. When configuring the SDK kit in Qt Creator, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/desktop equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the configuration menu for each Qt kit.
 
-The SDK also exports QMake configuration files under `lib/qmake/mrs-sdk-qt/toolchains` for projects using QMake:
+Here is an **example CMake project configuration** for the SDK:
 
-- `qt5-buildroot.pri`: points to Qt 5.9.1 inside the Buildroot sysroot and marks the target as `buildroot`.
-- `qt5-yocto.pri`: points to Qt 5.12.9 from the Yocto SDK and marks the kit as `yocto`.
-- `qt5-desktop.pri`: uses a desktop Qt 5.15.0 installation and identifies itself as the `desktop` kit.
-- `qt6-desktop.pri`: uses a desktop Qt 6.8.0 installation and identifies itself as the `desktop` kit.
-
-Each helper sets QMake variables used in `config.pri` to compute a consistent kit identity. Include the appropriate toolchain file in your QMake project before including `config.pri`:
-
-```qmake
-include($${MRS_SDK_QT_ROOT}/lib/qmake/mrs-sdk-qt/toolchains/qt5-yocto.pri)
-include($${MRS_SDK_QT_ROOT}/lib/qmake/mrs-sdk-qt/config.pri)
+```cmake
+# Assumes the toolchain helper was included as CMAKE_TOOLCHAIN_FILE in the kit configuration
+set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-fake")
+include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
+include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
 ```
 
-This ensures the right Qt paths and ARM flags are applied for your target kit.
+Here is an **example QMake project configuration** for the SDK:
+
+```qmake
+include("$$(QMAKE_TOOLCHAIN_FILE)")
+include("$$(HOME)/.config/mrs-sdk-qt/global-config.pri")
+include("$$MRS_SDK_QT_ROOT/current/lib/qmake/mrs-sdk-qt/config.pri")
+```
 
 ### Shared Compile Definitions
 
