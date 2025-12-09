@@ -19,8 +19,8 @@ type BuildConfig struct {
 	CmakeCmd []string
 }
 
-// BuildLocal builds the SDK library from source for all supported configurations
-func BuildLocal() error {
+// Build builds the SDK library from source for all supported configurations
+func Build() error {
 	// Get the current working directory (SDK root)
 	sdkRoot, err := os.Getwd()
 	if err != nil {
