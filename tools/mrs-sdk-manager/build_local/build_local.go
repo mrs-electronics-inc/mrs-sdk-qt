@@ -2,8 +2,8 @@ package buildlocal
 
 import (
 	"bytes"
+	"context"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -77,12 +77,21 @@ func verifyRepoRoot(sdkRoot string) error {
 	return nil
 }
 
+type buildError struct {
+	config BuildConfig
+	err    error
+}
+
 func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 	const maxConcurrency = 4
 	semaphore := make(chan struct{}, maxConcurrency)
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	errChan := make(chan error, len(configs))
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var firstErr buildError
 
 	numConfigs := len(configs)
 
@@ -107,57 +116,68 @@ func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 		go func(i int, config BuildConfig) {
 			defer wg.Done()
 
+			// Check if build was cancelled
+			if ctx.Err() != nil {
+				return
+			}
+
 			// Acquire semaphore slot
 			semaphore <- struct{}{}
 			defer func() { <-semaphore }()
 
-			// Run the build
-			if err := runBuild(sdkRoot, config); err != nil {
-				mu.Lock()
-				// Move up to line i, update it, move back down
+			// Check again after acquiring semaphore.
+			// A lot of time could have passed while we were waiting for it.
+			if ctx.Err() != nil {
+				return
+			}
+
+			// This function handles updating the outputted status of a build.
+			updateStatusFunc := func(status string) {
+				// Figure out how many lines to move.
+				// The cursor is always at the bottom to start.
 				linesToMove := numConfigs - i
 				padding := strings.Repeat(" ", maxMsgLen-len(statusMsgs[i])+3)
-				fmt.Print(ansiCursorUp(linesToMove))
-				fmt.Print("\r" + ansiClearLine())
-				fmt.Println(color.WhiteString(statusMsgs[i]) + padding + " " + color.RedString("✗ Failed"))
-				fmt.Print(ansiCursorDown(linesToMove))
+				// Move up to the line for this build using ANSI code.
+				fmt.Printf("\033[%dA", linesToMove)
+				// Clear the line using ANSI code.
+				fmt.Print("\r" + "\033[K")
+				// Print the new status line.
+				fmt.Println(color.WhiteString(statusMsgs[i]) + padding + " " + status)
+				// Move the cursor back down to the bottom using ANSI code.
+				fmt.Printf("\033[%dB", linesToMove)
+			}
+
+			// Run the build.
+			if err := runBuild(sdkRoot, config); err != nil {
+				// If an error occurs, and it's the first build to error out,
+				// then we need to save it and cancel all the other builds.
+				// The mutex is locked immediately to prevent a race for setting the error and cancelling.
+				mu.Lock()
+				if firstErr.err == nil {
+					firstErr.err = err
+					firstErr.config = config
+					cancel()
+				}
+				updateStatusFunc(color.RedString("✗ Failed"))
 				mu.Unlock()
-				errChan <- fmt.Errorf("build failed for %s/%s", config.Target.Device, config.Target.OS)
 			} else {
 				mu.Lock()
-				// Move up to line i, update it, move back down
-				linesToMove := numConfigs - i
-				padding := strings.Repeat(" ", maxMsgLen-len(statusMsgs[i])+3)
-				fmt.Print(ansiCursorUp(linesToMove))
-				fmt.Print("\r" + ansiClearLine())
-				fmt.Println(color.WhiteString(statusMsgs[i]) + padding + " " + color.GreenString("✓ Success"))
-				fmt.Print(ansiCursorDown(linesToMove))
+				updateStatusFunc(color.GreenString("✓ Success"))
 				mu.Unlock()
 			}
 		}(i, config)
 	}
 
 	wg.Wait()
-	close(errChan)
 
-	// Return first error if any occurred
-	for err := range errChan {
-		return err
+	// Display first error if one occurred.
+	if firstErr.err != nil {
+		color.New(color.FgRed, color.Bold).Printf("\n===== Build Error in %s:\n", firstErr.config.Target.BuildDir())
+		color.Red("%s", firstErr.err.Error())
+		return fmt.Errorf("build failed for %s", firstErr.config.Target.BuildDir())
 	}
 
 	return nil
-}
-
-func ansiCursorUp(lines int) string {
-	return fmt.Sprintf("\033[%dA", lines)
-}
-
-func ansiCursorDown(lines int) string {
-	return fmt.Sprintf("\033[%dB", lines)
-}
-
-func ansiClearLine() string {
-	return "\033[K"
 }
 
 // runBuild executes the CMake configure and build steps for a configuration
@@ -178,15 +198,14 @@ func runBuild(sdkRoot string, config BuildConfig) error {
 
 	// Build!!
 	cmd := exec.Command("/bin/bash", "-c", fullCmd)
-	cmd.Stdout = io.Discard
-	var stderrBuf bytes.Buffer
-	cmd.Stderr = &stderrBuf // Full control over error output
+	// Save all output so that we can use it later.
+	var outputBuf bytes.Buffer
+	cmd.Stdout = &outputBuf
+	cmd.Stderr = &outputBuf
 	cmd.Dir = sdkRoot
 
 	if err := cmd.Run(); err != nil {
-		// color.Red("\n%s", stderrBuf.String())
-		// return err
-		return fmt.Errorf("%s", stderrBuf.String())
+		return fmt.Errorf("%s", outputBuf.String())
 	}
 	return nil
 }
