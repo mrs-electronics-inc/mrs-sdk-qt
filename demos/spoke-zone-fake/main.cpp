@@ -1,11 +1,9 @@
-#include <QCoreApplication>
-#include "Application.hpp"
+#include "BuildInfo.hpp"
 
 int main(int argc, char *argv[])
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    Q_UNUSED(argc)
+    Q_UNUSED(argv)
 
-    Application app;
-    app.announce();
+    mrs_sdk::BuildInfo::print();
 }
