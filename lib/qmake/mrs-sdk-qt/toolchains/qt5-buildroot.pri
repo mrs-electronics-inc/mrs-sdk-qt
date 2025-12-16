@@ -15,8 +15,3 @@ MRS_SDK_QT_OS_DESKTOP = FALSE
 MRS_SDK_QT_SYSTEM_NAME = Linux
 MRS_SDK_QT_SYSTEM_PROCESSOR = arm
 MRS_SDK_QT_CROSSCOMPILING = TRUE
-
-# Set compiler flags for ARM Cortex-A9.
-# QMAKE_CFLAGS += -march=cortex-a9 -mfpu=neon -mfloat-abi=hard
-# QMAKE_CXXFLAGS += -march=cortex-a9 -mfpu=neon -mfloat-abi=hard
-# QMAKE_LFLAGS += -march=cortex-a9 -mfpu=neon -mfloat-abi=hard
