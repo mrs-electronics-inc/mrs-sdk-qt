@@ -13,15 +13,12 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-# Import all Qt modules necessary for compilation of the SDK.
-find_package(Qt5 REQUIRED COMPONENTS Core)
-
 # Define the lists of header and source files.
 set(MRS_SDK_HEADERS
-    include/Application.hpp
+    include/BuildInfo.hpp
 )
 set(MRS_SDK_SOURCES
-    Application.cpp
+    src/BuildInfo.cpp
 )
 
 # Create the build target.
@@ -37,17 +34,21 @@ set_target_properties(mrs-sdk-qt PROPERTIES
     AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated_files"
 )
 
-# Link the imported Qt modules into this library.
-# QMake handles this internally.
-target_link_libraries(mrs-sdk-qt PRIVATE Qt5::Core)
-
 # Configure the include directories.
 target_include_directories(mrs-sdk-qt PUBLIC include)
 
-# The .cmake file is where environment-specific macros and other necessary configurations are determined.
+# The main mrs-sdk-qt.cmake file is where environment-specific macros and other necessary configurations are determined.
 # Things are split this way because those configurations need to be available to applications using the SDK,
 # not just during compilation.
-include(mrs-sdk-qt.cmake)
+include(cmake/mrs-sdk-qt/config.cmake)
+
+# Link the imported Qt modules into this library.
+# QMake handles this internally.
+if(Qt5Core_VERSION)
+    target_link_libraries(mrs-sdk-qt PUBLIC Qt5::Core)
+elseif(Qt6Core_VERSION)
+    target_link_libraries(mrs-sdk-qt PUBLIC Qt6::Core)
+endif()
 
 # Define library version from the most recent Git tag.
 # Default to "0.0.0" if Git doesn't have a version number.
@@ -67,7 +68,7 @@ set_target_properties(mrs-sdk-qt PROPERTIES
 # Output the library version number.
 message(NOTICE "MRS SDK: library version: ${GIT_TAG}")
 # Make the library version number available in the SDK sources.
-target_compile_definitions(mrs-sdk-qt PRIVATE MRS_SDK_LIB_VERSION=\"${GIT_TAG}\")
+target_compile_definitions(mrs-sdk-qt PRIVATE MRS_SDK_QT_LIB_VERSION=\"${GIT_TAG}\")
 
 # The following define makes the compiler emit warnings if you use any feature of Qt which as been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the deprecated API in order to know how to port your code away from it.

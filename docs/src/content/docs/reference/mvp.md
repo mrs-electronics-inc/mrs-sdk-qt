@@ -57,7 +57,7 @@ Not only will new projects be able to easily pull in the basic components of the
 
 ### 2.2 Centralized Development
 
-Another major goal for the SDK is to provide a **central place for developing bugfixes and new features**. 
+Another major goal for the SDK is to provide a **central place for developing bugfixes and new features**.
 
 Currently, we have no true standard place for implementing new features and bugfixes in the base MRS code; and, even if we did, any new code introduced in that copy would have to be propagated to all the other copies. As a result, most fixes and improvements that are needed are either not developed at all or developed only in one project and not copied to the other projects, which significantly reduces our motivation to continue development.
 
@@ -74,7 +74,8 @@ The SDK must be compatible with a variety of MRS products, OS architectures, and
 - **Qt Versions:**
   - *5.9.1:* MConn/FUSION Buildroot toolchain
   - *5.12.9:* MConn/FUSION Yocto toolchain
-  - *5.15.0:* Qt5 desktop toolchain
+  - *5.15.x:* Qt5 desktop toolchain (LTS)
+  - *6.8.x:* Qt6 desktop toolchain (LTS)
   - *6.8.1:* Neuralplex toolchain
 
 ### 2.4 Documentation
@@ -104,7 +105,7 @@ The unit tests will be **run automatically using CI/CD jobs**.
 
 The SDK must support a wide range of different [environments](#23-supported-environments). To accomplish this, a small **custom build system** will be required.
 
-This system will be **compatible with both QMake and CMake**. 
+This system will be **compatible with both QMake and CMake**.
 
 > We encourage you to use CMake in any new projects, especially for NeuralPlex projects that use Qt6. Qt moved to CMake as its main build system with Qt6 and is not actively developing QMake anymore; support for QMake is required mostly to better support projects using older Qt versions.
 
