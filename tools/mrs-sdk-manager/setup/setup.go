@@ -60,7 +60,7 @@ func Setup(sdkVersion string) error {
 		return fmt.Errorf("failed to write global-config: %w", err)
 	}
 
-	// Phase 4: Write static files only if they don't exist
+	// Phase 4: Write static files. Existing files will be overwritten.
 	if err := writeStaticFile("templates/global-config.cmake", filepath.Join(configDir, "global-config.cmake")); err != nil {
 		return fmt.Errorf("failed to write CMake config: %w", err)
 	}
@@ -124,15 +124,8 @@ func writeTemplateFile(templateName, outputPath string, data globalConfigData) e
 }
 
 // writeStaticFile reads the file at filePath and writes it to outputPath.
-// However, it skips writing if outputPath already exists.
+// If a file already exists at outputPath, it will be overwritten.
 func writeStaticFile(filePath, outputPath string) error {
-	_, err := os.Stat(outputPath)
-
-	// Skip writing if a) the file already exists or b) an unexpected error occurred.
-	if err == nil || !errors.Is(err, fs.ErrNotExist) {
-		return err
-	}
-
 	// Read the template file.
 	content, err := templates.ReadFile(filePath)
 	if err != nil {
