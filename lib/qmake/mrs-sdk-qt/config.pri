@@ -145,7 +145,7 @@ message("Environment: target OS: $$MRS_SDK_QT_TARGET_OS")
 # Everything below handles linking consumer projects against the prebuilt SDK library.
 # When a downstream target is created, we locate the built artifacts and link against them.
 ###########################################################################################################################################
-contains(TEMPLATE, app) {
+!isEmpty(MRS_SDK_QT_CONSUMER_TARGET) {
     # Resolve the canonical library and include paths for the installed SDK.
     MRS_SDK_QT_LIBRARY_DIR_BASE = $$MRS_SDK_QT_ROOT/$${MRS_SDK_QT_VERSION}/lib
     MRS_SDK_QT_LIB_NAME = mrs-sdk-qt
@@ -165,5 +165,5 @@ contains(TEMPLATE, app) {
     INCLUDEPATH += $$MRS_SDK_QT_INCLUDE_DIRS
     DEPENDPATH += $$MRS_SDK_QT_INCLUDE_DIRS
 
-    message("Configuring MRS SDK for target in $$MRS_SDK_QT_LIBRARY_DIR")
+    message("Configuring MRS SDK for target $${MRS_SDK_QT_CONSUMER_TARGET}...")
 }
