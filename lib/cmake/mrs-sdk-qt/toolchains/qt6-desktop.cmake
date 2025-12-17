@@ -2,7 +2,7 @@
 
 # Set the expected Qt versions based on device target.
 set(MRS_SDK_QT_QT_MAJOR_VERSION "6" CACHE STRING "Required Qt toolchain major version" FORCE)
-set(MRS_SDK_QT_EXPECTED_QT_VERSION_DESKTOP "6.8.0" CACHE STRING "Expected desktop Qt version" FORCE)
+set(MRS_SDK_QT_EXPECTED_QT_VERSION_DESKTOP "6.8" CACHE STRING "Expected desktop Qt version" FORCE)
 
 # Set the necessary parameters.
 set(MRS_SDK_QT_TARGET_DEVICE "Desktop" CACHE STRING "Target device identifier" FORCE)

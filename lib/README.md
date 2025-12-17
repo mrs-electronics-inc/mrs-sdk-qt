@@ -60,8 +60,8 @@ The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for b
 
 - `qt5-buildroot.cmake`: points to Qt 5.9.1 inside the Buildroot sysroot and marks the target as `buildroot`.
 - `qt5-yocto.cmake`: points to Qt 5.12.9 from the Yocto SDK and marks the kit as `yocto`.
-- `qt5-desktop.cmake`: uses a desktop Qt 5.15.0 installation and identifies itself as the `desktop` kit.
-- `qt6-desktop.cmake`: uses a desktop Qt 6.8.0 installation and identifies itself as the `desktop` kit.
+- `qt5-desktop.cmake`: uses a desktop Qt 5.15 installation and identifies itself as the `desktop` kit.
+- `qt6-desktop.cmake`: uses a desktop Qt 6.8 installation and identifies itself as the `desktop` kit.
 
 The QMake `.pri` versions of these helpers are located in `lib/qmake/mrs-sdk-qt/toolchains`.
 

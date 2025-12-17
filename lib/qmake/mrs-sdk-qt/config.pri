@@ -86,20 +86,40 @@ equals(_mrs_sdk_qt_target_device, "neuralplex") {
 ###########################################################################################################################################
 equals(MRS_SDK_QT_QT_MAJOR_VERSION, 5) {
     equals(QT_MAJOR_VERSION, 5) {
-        equals(MRS_SDK_QT_EXPECTED_QT_VERSION, $$QT_VERSION) {
-            message("Qt version: $$MRS_SDK_QT_EXPECTED_QT_VERSION")
+        equals(MRS_SDK_QT_OS_DESKTOP, TRUE) {
+            # Desktop builds support LTS versions with patch flexibility
+            contains(QT_VERSION, "^$$MRS_SDK_QT_EXPECTED_QT_VERSION\\.[0-9]+$") {
+                message("Qt version: $$QT_VERSION")
+            } else {
+                error("ERROR: invalid Qt version: $$QT_VERSION")
+            }
         } else {
-            error("ERROR: invalid Qt version: $$QT_VERSION")
+            # Cross-compile builds require exact version match
+            equals(QT_VERSION, $$MRS_SDK_QT_EXPECTED_QT_VERSION) {
+                message("Qt version: $$QT_VERSION")
+            } else {
+                error("ERROR: invalid Qt version: $$QT_VERSION")
+            }
         }
     } else {
         error("ERROR: no valid Qt version found.")
     }
 } else:equals(MRS_SDK_QT_QT_MAJOR_VERSION, 6) {
     equals(QT_MAJOR_VERSION, 6) {
-        equals(MRS_SDK_QT_EXPECTED_QT_VERSION, $$QT_VERSION) {
-            message("Qt version: $$MRS_SDK_QT_EXPECTED_QT_VERSION")
+        equals(MRS_SDK_QT_OS_DESKTOP, TRUE) {
+            # Desktop builds support LTS versions with patch flexibility
+            contains(QT_VERSION, "^$$MRS_SDK_QT_EXPECTED_QT_VERSION\\.[0-9]+$") {
+                message("Qt version: $$QT_VERSION")
+            } else {
+                error("ERROR: invalid Qt version: $$QT_VERSION")
+            }
         } else {
-            error("ERROR: invalid Qt version: $$QT_VERSION")
+            # Cross-compile builds require exact version match
+            equals(QT_VERSION, $$MRS_SDK_QT_EXPECTED_QT_VERSION) {
+                message("Qt version: $$QT_VERSION")
+            } else {
+                error("ERROR: invalid Qt version: $$QT_VERSION")
+            }
         }
     } else {
         error("ERROR: no valid Qt version found.")
@@ -146,6 +166,22 @@ message("Environment: target OS: $$MRS_SDK_QT_TARGET_OS")
 # When a downstream target is created, we locate the built artifacts and link against them.
 ###########################################################################################################################################
 !isEmpty(MRS_SDK_QT_CONSUMER_TARGET) {
+    # Validate that required variables were set.
+    isEmpty(_mrs_sdk_qt_global_config_file) {
+        error("ERROR: MRS SDK global config not found. Run mrs-sdk-manager to initialize.")
+    } else:!exists($$_mrs_sdk_qt_global_config_file) {
+        error("ERROR: MRS SDK global config not found at $${_mrs_sdk_qt_global_config_file}. Run mrs-sdk-manager to initialize.")
+    }
+    isEmpty(MRS_SDK_QT_ROOT) {
+        error("ERROR: MRS_SDK_QT_ROOT not found in $${_mrs_sdk_qt_global_config_file}")
+    }
+    isEmpty(MRS_SDK_QT_VERSION) {
+        error("ERROR: MRS_SDK_QT_VERSION not found in $${_mrs_sdk_qt_global_config_file}")
+    }
+
+    message("MRS SDK root: $${MRS_SDK_QT_ROOT}")
+    message("MRS SDK version: $${MRS_SDK_QT_VERSION}")
+
     # Resolve the canonical library and include paths for the installed SDK.
     MRS_SDK_QT_LIBRARY_DIR_BASE = $$MRS_SDK_QT_ROOT/$${MRS_SDK_QT_VERSION}/lib
     MRS_SDK_QT_LIB_NAME = mrs-sdk-qt

@@ -2,7 +2,7 @@
 
 # Set the expected Qt versions based on device target.
 MRS_SDK_QT_QT_MAJOR_VERSION = 5
-MRS_SDK_QT_EXPECTED_QT_VERSION_DESKTOP = 5.15.0
+MRS_SDK_QT_EXPECTED_QT_VERSION_DESKTOP = 5.15
 
 # Set the necessary parameters.
 MRS_SDK_QT_TARGET_DEVICE = Desktop
