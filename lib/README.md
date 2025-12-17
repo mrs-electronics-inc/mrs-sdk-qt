@@ -71,7 +71,7 @@ Here is an **example CMake project configuration** for the SDK:
 
 ```cmake
 # Assumes the toolchain helper was included as CMAKE_TOOLCHAIN_FILE in the kit configuration
-set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-fake")
+set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-demo")
 include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
 include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
 ```
