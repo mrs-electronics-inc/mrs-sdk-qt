@@ -9,7 +9,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "mrs-sdk-manager",
 	Short: "MRS SDK manager and installer",
-	Long:  "mrs-sdk-manager is a tool for managing and installing MRS SDK versions",
+	Long:  "mrs-sdk-manager is a tool for managing and installing MRS SDK versions on Debian-based systems.",
 }
 
 func Execute() {
