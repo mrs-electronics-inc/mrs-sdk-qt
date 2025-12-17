@@ -74,8 +74,8 @@ The SDK must be compatible with a variety of MRS products, OS architectures, and
 - **Qt Versions:**
   - *5.9.1:* MConn/FUSION Buildroot toolchain
   - *5.12.9:* MConn/FUSION Yocto toolchain
-  - *5.15:* Qt5 desktop toolchain (LTS)
-  - *6.8:* Qt6 desktop toolchain (LTS)
+  - *5.15.x:* Qt5 desktop toolchain (LTS)
+  - *6.8.x:* Qt6 desktop toolchain (LTS)
   - *6.8.1:* Neuralplex toolchain
 
 ### 2.4 Documentation
