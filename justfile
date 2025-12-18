@@ -1,8 +1,8 @@
 default:
     @just --list
 
-format:
-    ./tools/format.sh
+format args='':
+    ./tools/format.sh {{ args }}
 
 libs: tools
     mrs-sdk-manager build-local --install

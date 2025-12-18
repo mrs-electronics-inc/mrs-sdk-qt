@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to format all C++ source files using clang-format
 # Usage: ./format.sh [--check]
 #   --check: perform a dry-run check instead of formatting
