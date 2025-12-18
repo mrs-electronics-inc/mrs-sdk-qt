@@ -1,0 +1,24 @@
+name: C++ Formatting Check
+
+on:
+  pull_request:
+    paths:
+      - '**.cpp'
+      - '**.hpp'
+      - '**.h'
+      - '.clang-format'
+      - '.github/workflows/clang-format.yml'
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+
+      - name: Check C++ formatting
+        run: ./tools/format.sh --check

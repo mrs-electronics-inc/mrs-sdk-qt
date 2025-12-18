@@ -2,7 +2,8 @@
 
 #include <QDebug>
 
-namespace mrs_sdk {
+namespace mrs_sdk
+{
 
 QVersionNumber BuildInfo::sdkVersion()
 {
@@ -21,7 +22,8 @@ QString BuildInfo::targetOs()
 
 void BuildInfo::print()
 {
-    qInfo().noquote() << QString("MRS SDK Info: version %1, targeting device/OS %2/%3").arg(sdkVersion().toString(), targetDevice(), targetOs());
+    qInfo().noquote() << QString("MRS SDK Info: version %1, targeting device/OS %2/%3")
+                             .arg(sdkVersion().toString(), targetDevice(), targetOs());
 }
 
-}
+} // namespace mrs_sdk

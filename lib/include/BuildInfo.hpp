@@ -3,9 +3,11 @@
 #include <QString>
 #include <QVersionNumber>
 
-namespace mrs_sdk {
+namespace mrs_sdk
+{
 
-class BuildInfo {
+class BuildInfo
+{
 public:
     static QVersionNumber sdkVersion();
     static QString targetDevice();
@@ -14,4 +16,4 @@ public:
     static void print();
 };
 
-}
+} // namespace mrs_sdk
