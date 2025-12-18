@@ -1,3 +1,6 @@
+default:
+    @just --list
+
 libs: tools
     mrs-sdk-manager build-local --install
 
