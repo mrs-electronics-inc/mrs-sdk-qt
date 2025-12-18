@@ -1,0 +1,45 @@
+name: C++ Formatting Check
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ '**.cpp', '**.hpp', '**.h', '**.cc', '.clang-format', '.github/workflows/clang-format.yaml' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ '**.cpp', '**.hpp', '**.h', '**.cc', '.clang-format', '.github/workflows/clang-format.yaml' ]
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+
+      - name: Check C++ formatting
+        run: |
+          # Find all C++ source files, excluding generated files and build directories
+          SOURCES=$(find . \
+            -type f \
+            \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" -o -name "*.cc" \) \
+            -not -path "./build/*" \
+            -not -path "./CMakeFiles/*" \
+            -not -path "./.git/*" \
+            -not -path "./docs/node_modules/*" \
+            -not -path "./lib/generated_files/*" \
+            -not -path "./.bots/*")
+
+          # Check formatting
+          clang-format --dry-run -Werror $SOURCES
+
+          if [ $? -eq 0 ]; then
+            echo "✓ All files are properly formatted"
+          else
+            echo "✗ Some files are not properly formatted. Run 'tools/format.sh' to fix."
+            exit 1
+          fi
