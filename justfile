@@ -1,7 +1,7 @@
 default:
     @just --list
 
-format args='':
+format *args:
     ./tools/format.sh {{ args }}
 
 libs: tools

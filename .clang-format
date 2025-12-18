@@ -1,14 +1,66 @@
----
+# .clang-format configuration for Qt C++ projects
 Language: Cpp
-BasedOnStyle: Google
+Standard: Cpp11
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-ColumnLimit: 100
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortBlocksOnASingleLine: Never
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortCaseLabelsOnASingleLine: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterCaseLabel: true
+  BeforeLambdaBody: true
+  BeforeCatch: true
+  BeforeElse: true
+  SplitEmptyFunction: false
+SpacesInParentheses: false
+AlignAfterOpenBracket: BlockIndent
+SpaceBeforeParens: ControlStatements
+AlignConsecutiveMacros: true
+AlignArrayOfStructures: Left
+AlignConsecutiveDeclarations: false
+AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true
+  AlignCompound: true
+  AcrossComments: true
+AlignTrailingComments: true
+AllowShortFunctionsOnASingleLine: None
+SpacesInAngles: Never
+AllowShortIfStatementsOnASingleLine: false
+BreakStringLiterals: false
+PenaltyBreakString: 10000
+SpaceAfterTemplateKeyword: false
+KeepEmptyLinesAtEOF: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
 AllowShortLoopsOnASingleLine: false
-BreakBeforeBraces: Attach
-NamespaceIndentation: Inner
+EmptyLineBeforeAccessModifier: Always
+ColumnLimit: 120
+IncludeCategories:
+  - Regex: '^<Q.*>'       # Qt framework headers
+    Priority: 1
+  - Regex: '^<.*>'        # System headers (angle brackets)
+    Priority: 2
+  - Regex: '^".*"'        # Project headers (double quotes)
+    Priority: 3
+SortIncludes: true
+IncludeBlocks: Regroup    # Group by category before sorting
+
+
+# Force consistent indentation behavior for classes and members
+AccessModifierOffset: -4
+
+InsertBraces: true
+
+StatementAttributeLikeMacros: ['EMIT']
+
+PointerAlignment: Left
+
+BreakConstructorInitializers: BeforeComma
+AlwaysBreakTemplateDeclarations: Yes
