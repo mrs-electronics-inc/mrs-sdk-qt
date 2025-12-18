@@ -1,5 +1,7 @@
 #!/bin/bash
 # Script to format all C++ source files using clang-format
+# Usage: ./format.sh [--check]
+#   --check: perform a dry-run check instead of formatting
 
 set -e
 
@@ -7,16 +9,14 @@ set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-# Find all C++ source files, excluding generated files and build directories
-SOURCES=$(find . \
-  -type f \
-  \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" -o -name "*.cc" \) \
-  -not -path "./build/*" \
-  -not -path "./CMakeFiles/*" \
-  -not -path "./.git/*" \
-  -not -path "./docs/node_modules/*" \
-  -not -path "./lib/generated_files/*" \
-  -not -path "./.bots/*")
+# Parse arguments
+CHECK_ONLY=false
+if [[ "$1" == "--check" ]]; then
+  CHECK_ONLY=true
+fi
+
+# Find all tracked C++ source files (respects .gitignore)
+SOURCES=$(git ls-files | grep -E '\.(cpp|hpp|h|cc)$')
 
 # Check if clang-format is available
 if ! command -v clang-format &> /dev/null; then
@@ -24,8 +24,18 @@ if ! command -v clang-format &> /dev/null; then
   exit 1
 fi
 
-echo "Formatting C++ files..."
-echo "$SOURCES" | xargs clang-format -i
-
-echo "Done! Formatted files:"
-echo "$SOURCES" | nl
+if [ "$CHECK_ONLY" = true ]; then
+  echo "Checking C++ formatting..."
+  clang-format --dry-run -Werror $SOURCES
+  if [ $? -eq 0 ]; then
+    echo "✓ All files are properly formatted"
+  else
+    echo "✗ Some files are not properly formatted. Run 'just format' to fix."
+    exit 1
+  fi
+else
+  echo "Formatting C++ files..."
+  echo "$SOURCES" | xargs clang-format -i
+  echo "Done! Formatted files:"
+  echo "$SOURCES" | nl
+fi
