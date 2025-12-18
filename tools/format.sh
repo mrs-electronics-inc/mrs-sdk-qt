@@ -16,7 +16,7 @@ if [[ "$1" == "--check" ]]; then
 fi
 
 # Find all tracked C++ source files (respects .gitignore)
-SOURCES=$(git ls-files | grep -E '\.(cpp|hpp|h|cc)$')
+SOURCES=$(git ls-files | grep -E '\.(cpp|hpp|h)$')
 
 # Check if clang-format is available
 if ! command -v clang-format &> /dev/null; then
