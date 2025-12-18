@@ -1,0 +1,30 @@
+name: Go Formatting & Linting
+
+on:
+  pull_request:
+    paths:
+      - 'tools/**/*.go'
+      - 'tools/**/go.mod'
+      - 'tools/**/go.sum'
+      - '.github/workflows/go-lint.yml'
+
+jobs:
+  format-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.0'
+
+      - name: Check Go formatting
+        run: ./tools/format-go.sh --check
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          working-directory: tools
