@@ -1,15 +1,15 @@
-name: Go Formatting & Linting
+name: Go Checks
 
 on:
   pull_request:
     paths:
-      - 'tools/**/*.go'
-      - 'tools/**/go.mod'
-      - 'tools/**/go.sum'
-      - '.github/workflows/go-lint.yml'
+      - 'tools/mrs-sdk-manager/**/*.go'
+      - 'tools/mrs-sdk-manager/go.mod'
+      - 'tools/mrs-sdk-manager/go.sum'
+      - '.github/workflows/go-check.yml'
 
 jobs:
-  format-and-lint:
+  format:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,13 @@ jobs:
 
       - name: Check Go formatting
         run: ./tools/format-go.sh --check
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v4

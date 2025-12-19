@@ -1,4 +1,4 @@
-name: C++ Formatting Check
+name: C++ Checks
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - '**.hpp'
       - '**.h'
       - '.clang-format'
-      - '.github/workflows/clang-format.yml'
+      - '.github/workflows/clang-check.yml'
 
 jobs:
   format-check:
