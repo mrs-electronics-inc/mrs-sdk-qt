@@ -16,7 +16,7 @@ repos:
     hooks:
       - id: go-vet
         name: go vet
-        entry: ./tools/go-vet.sh
+        entry: ./tools/lint-go.sh
         language: script
         types: [go]
         files: ^tools/mrs-sdk-manager/
