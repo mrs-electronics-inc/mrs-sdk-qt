@@ -7,7 +7,7 @@ on:
       - '**.hpp'
       - '**.h'
       - '.clang-format'
-      - '.github/workflows/clang-check.yml'
+      - '.github/workflows/cpp-check.yml'
 
 jobs:
   format-check:
