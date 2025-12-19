@@ -7,6 +7,9 @@ format-cpp *args:
 format-go *args:
     ./tools/format-go.sh {{ args }}
 
+lint-go *args:
+    ./tools/lint-go.sh {{ args }}
+
 libs: tools
     mrs-sdk-manager build-local --install
 
