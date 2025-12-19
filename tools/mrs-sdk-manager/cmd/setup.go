@@ -7,7 +7,7 @@ import (
 )
 
 var setupCmd = &cobra.Command{
-			Use:   "setup <sdk-version>",
+	Use:   "setup <sdk-version>",
 	Short: "Setup a specific SDK version",
 	Long:  "Setup and activate a specific SDK version",
 	Args:  cobra.ExactArgs(1),

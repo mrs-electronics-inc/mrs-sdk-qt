@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+cd tools/mrs-sdk-manager
+go vet ./...

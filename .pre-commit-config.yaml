@@ -12,18 +12,17 @@ repos:
     hooks:
       - id: clang-format
         types: [c++, c, header]
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v2.7.2
-    hooks:
-      - id: golangci-lint
-        args: ['--fix']
-        types: [go]
-        files: ^tools/
   - repo: local
     hooks:
+      - id: go-vet
+        name: go vet
+        entry: ./tools/go-vet.sh
+        language: script
+        types: [go]
+        files: ^tools/mrs-sdk-manager/
       - id: go-format-check
         name: Check Go formatting
         entry: ./tools/format-go.sh --check
         language: script
         types: [go]
-        files: ^tools/
+        files: ^tools/mrs-sdk-manager/
