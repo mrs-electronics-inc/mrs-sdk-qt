@@ -21,7 +21,7 @@ repos:
         types: [go]
         files: ^tools/mrs-sdk-manager/
       - id: go-format-check
-        name: Check Go formatting
+        name: go format
         entry: ./tools/format-go.sh --check
         language: script
         types: [go]
