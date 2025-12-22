@@ -33,14 +33,8 @@ autoinstall:
     - wget
   updates: security
   timezone: UTC
-  grub:
-    install: true
   late-commands:
     - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
     - 'curtin in-target -- systemctl enable ssh'
     - 'curtin in-target -- systemctl start ssh'
-    - 'sleep 30'
-    - 'cp /tmp/provision.sh /target/home/ubuntu/provision.sh && chmod +x /target/home/ubuntu/provision.sh && chown ubuntu:ubuntu /target/home/ubuntu/provision.sh'
-    - 'curtin in-target -- sudo -u ubuntu /home/ubuntu/provision.sh 2>&1 | tee /dev/console'
-    - 'rm /target/home/ubuntu/provision.sh'
-    - 'curtin in-target -- rm -rf /tmp/* /var/tmp/*'
+    - 'curtin in-target -- systemctl is-active ssh || systemctl restart ssh'
