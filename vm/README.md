@@ -44,6 +44,31 @@ This captures all QEMU serial output including Ubuntu installation logs, cloud-i
 
 See [examples/successful-build-serial.log](examples/successful-build-serial.log) for an example of a successful build's serial output.
 
+## First Boot & Provisioning
+
+After the VM image is built, boot it in your hypervisor of choice (VirtualBox, VMware, KVM, etc.).
+
+The VM includes a provisioning script at `~/provision.sh` that installs the Qt development environment. To run it:
+
+```bash
+./provision.sh
+```
+
+**Note:** The script installs:
+
+- GNOME Desktop (ubuntu-desktop)
+- Build tools (gcc, g++, make, git)
+- Qt Creator IDE
+- Qt 5.15.0 LTS and Qt 6.8.0 LTS via aqtinstall
+- MRS SDK Qt repository
+
+**Before running provisioning:** Ensure the system clock is synchronized. If you see apt errors about invalid release files, run:
+
+```bash
+sudo timedatectl set-ntp true
+sudo systemctl restart systemd-timesyncd
+```
+
 ### Distribution
 
 Pre-built VM images are shared via OneDrive. To download an image, go [here](https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw).
