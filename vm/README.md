@@ -29,6 +29,8 @@ cd vm
 ./scripts/build-vm.sh
 ```
 
+**Note:** Close unnecessary applications before building. The VM installation runs faster and VNC monitoring stays responsive when your system has available resources.
+
 ### Monitoring Build Output
 
 During the build, monitor the serial console output to see what's happening:
