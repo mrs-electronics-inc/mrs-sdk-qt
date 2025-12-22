@@ -42,6 +42,8 @@ tail -f vm/output/vm-serial.log
 
 This captures all QEMU serial output including Ubuntu installation logs, cloud-init provisioning, and any errors that occur during the build. The log file is written to in real-time, so you can watch the installation progress without relying on VNC or SSH.
 
+See [examples/successful-build-serial.log](examples/successful-build-serial.log) for an example of a successful build's serial output.
+
 ### Distribution
 
 Pre-built VM images are shared via OneDrive. To download an image, go [here](https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw).
