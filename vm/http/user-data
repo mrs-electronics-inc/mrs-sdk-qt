@@ -33,6 +33,8 @@ autoinstall:
     - wget
   updates: security
   timezone: UTC
+  grub:
+    install: true
   late-commands:
     - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
     - 'curtin in-target -- systemctl enable ssh'

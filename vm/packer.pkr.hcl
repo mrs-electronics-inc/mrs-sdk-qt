@@ -82,12 +82,12 @@ build {
   }
 
   # Copy provisioning script to output directory
-  # post-processor "shell-local" {
-  #   inline = [
-  #     "cp scripts/provision.sh output/provision.sh",
-  #     "chmod +x output/provision.sh"
-  #   ]
-  # }
+  post-processor "shell-local" {
+    inline = [
+      "cp scripts/provision.sh output/provision.sh",
+      "chmod +x output/provision.sh"
+    ]
+  }
 
   # Generate manifest with build metadata
   post-processor "manifest" {
