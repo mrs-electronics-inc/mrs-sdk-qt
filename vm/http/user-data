@@ -37,4 +37,3 @@ autoinstall:
     - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
     - 'curtin in-target -- systemctl enable ssh'
     - 'curtin in-target -- systemctl start ssh'
-    - 'curtin in-target -- systemctl is-active ssh || systemctl restart ssh'
