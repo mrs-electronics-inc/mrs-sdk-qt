@@ -60,6 +60,12 @@ build {
   name    = "MRS SDK Qt Development"
   sources = ["source.qemu.ubuntu"]
 
+  # Copy provisioning script to VM
+  provisioner "file" {
+    source      = "scripts/provision.sh"
+    destination = "/home/ubuntu/provision.sh"
+  }
+
   # Convert raw image to VMDK for VirtualBox compatibility
   post-processor "shell-local" {
     inline = [
@@ -78,14 +84,6 @@ build {
       "  echo 'Error: raw image (${var.vm_name}) not found'",
       "  exit 1",
       "fi"
-    ]
-  }
-
-  # Copy provisioning script to output directory
-  post-processor "shell-local" {
-    inline = [
-      "cp scripts/provision.sh output/provision.sh",
-      "chmod +x output/provision.sh"
     ]
   }
 
