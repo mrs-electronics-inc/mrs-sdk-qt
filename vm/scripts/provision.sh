@@ -32,4 +32,6 @@ mkdir ~/repos
 echo "Cloning mrs-sdk-qt repository..."
 git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt ~/repos/mrs-sdk-qt
 
+# TODO: actually install the SDK
+
 echo "Provisioning complete!"

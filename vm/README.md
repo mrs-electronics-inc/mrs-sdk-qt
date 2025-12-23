@@ -1,6 +1,6 @@
 # MRS SDK Qt - Virtual Machine Image
 
-Packer configuration for building a VM image with Qt Creator and desktop build kits.
+We provide a pre-built VM image optimized for developing applications with `mrs-sdk-qt`.
 
 ## Overview
 
@@ -9,7 +9,7 @@ Ubuntu 24.04 LTS Server with GNOME Desktop and:
 - Qt Creator IDE
 - Qt 5 and Qt 6 development kits
 - Build tools (gcc, g++, make)
-- VMDK output format (compatible with VirtualBox, VMware, and KVM/libvirt)
+- MRS Qt SDK
 
 ## Why Server ISO + ubuntu-desktop?
 
@@ -20,35 +20,27 @@ This image uses Ubuntu Server ISO with the `ubuntu-desktop` metapackage installe
 - The end result is identical - both give you GNOME Desktop with the same applications
 - Using Server allows us to fully automate the build process with no interactive prompts
 
-## Building
+## VM Image
 
-### Local Build
+### Download
 
-```bash
-cd vm
-./scripts/build-vm.sh
-```
+Pre-built VM images are shared via OneDrive. To download an image, see [here](https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw).
 
-**Note:** Close unnecessary applications before building. The VM installation runs faster and VNC monitoring stays responsive when your system has available resources.
+### Build
 
-### Monitoring Build Output
+If you would like to build the VM image yourself, see the [build instructions](./BUILD.md).
 
-During the build, monitor the serial console output to see what's happening:
+## First Boot
 
-```bash
-# In another terminal:
-tail -f vm/output/vm-serial.log
-```
+After you have BLANK the VM image, create a new VM with it in your hypervisor of choice (VirtualBox, VMware, KVM, etc.).
 
-This captures all QEMU serial output including Ubuntu installation logs, cloud-init provisioning, and any errors that occur during the build. The log file is written to in real-time, so you can watch the installation progress without relying on VNC or SSH.
+The default username and password are `ubuntu`.
 
-See [examples/successful-build-serial.log](examples/successful-build-serial.log) for an example of a successful build's serial output.
+## Provisioning
 
-## First Boot & Provisioning
+After the VM boots, you will need to run the provisioning script to finish setting things up.
 
-After the VM image is built, boot it in your hypervisor of choice (VirtualBox, VMware, KVM, etc.).
-
-The VM includes a provisioning script at `~/provision.sh` that installs the Qt development environment. To run it:
+To run it:
 
 ```bash
 ./provision.sh
@@ -59,38 +51,18 @@ The VM includes a provisioning script at `~/provision.sh` that installs the Qt d
 - GNOME Desktop (ubuntu-desktop)
 - Build tools (gcc, g++, make, git)
 - Qt Creator IDE
-- Qt 5.15.0 LTS and Qt 6.8.0 LTS via aqtinstall
-- MRS SDK Qt repository
+- Qt 5.15.0 LTS and Qt 6.8.0 LTS via aqtinstall, with all their modules
+- MRS Qt SDK
 
-**Before running provisioning:** Ensure the system clock is synchronized. If you see apt errors about invalid release files, run:
+### Troubleshooting
+
+If you see apt errors about invalid release files, run:
 
 ```bash
 sudo timedatectl set-ntp true
 sudo systemctl restart systemd-timesyncd
 ```
 
-### Distribution
+It should always be safe to try re-running the provisioning script if it exits with errors.
 
-Pre-built VM images are shared via OneDrive. To download an image, go [here](https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw).
-
-## Configuration
-
-Default VM settings:
-
-- Memory: 6144 MB (6 GB)
-- CPUs: 2
-- Disk: 60 GB
-
-Customize with script options:
-
-```bash
-./scripts/build-vm.sh -m 8192 -c 4
-```
-
-## Output
-
-Three artifacts are automatically generated in the `output/` directory:
-
-1. **VMDK** (`mrs-sdk-qt.vmdk`) - For VirtualBox, VMware, GNOME Boxes
-2. **Raw** (`mrs-sdk-qt.img`) - For KVM, libvirt, QEMU
-3. **Manifest** (`manifest.json`) - Build metadata and artifact information
+If re-running the provisioning script fails, try rebooting the VM and re-running the script.
