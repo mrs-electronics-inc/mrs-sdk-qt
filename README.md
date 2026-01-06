@@ -56,13 +56,7 @@ Coming soon!
    cd mrs-sdk-qt
    ```
 
-2. Initialize submodules:
-
-   ```bash
-   git submodule update --init --recursive
-   ```
-
-3. Build the SDK:
+2. Build the SDK:
    TBD
 
 <!-- TODO(#5): Add build instructions once we have them -->
