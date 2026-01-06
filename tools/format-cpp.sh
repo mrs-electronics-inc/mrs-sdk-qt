@@ -26,7 +26,7 @@ fi
 
 if [[ "${CHECK_ONLY}" -eq 1 ]]; then
   echo "Checking C++ formatting..."
-  if clang-format --dry-run -Werror "${SOURCES}"; then
+  if echo "${SOURCES}" | xargs clang-format --dry-run -Werror; then
     echo "✓ All files are properly formatted"
   else
     echo "✗ Some files are not properly formatted. Run 'just format-cpp' to fix."
