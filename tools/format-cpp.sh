@@ -6,17 +6,17 @@
 set -e
 
 # Get the repository root
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$REPO_ROOT"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "${REPO_ROOT}"
 
 # Parse arguments
-CHECK_ONLY=false
+CHECK_ONLY=0
 if [[ "$1" == "--check" ]]; then
-  CHECK_ONLY=true
+  CHECK_ONLY=1
 fi
 
 # Find all tracked C++ source files (respects .gitignore)
-SOURCES=$(git ls-files | grep -E '\.(cpp|hpp|h)$')
+SOURCES=$(git ls-files | grep -E '\.(cpp|hpp|h)$' || true)
 
 # Check if clang-format is available
 if ! command -v clang-format &> /dev/null; then
@@ -24,18 +24,17 @@ if ! command -v clang-format &> /dev/null; then
   exit 1
 fi
 
-if [ "$CHECK_ONLY" = true ]; then
+if [[ "${CHECK_ONLY}" -eq 1 ]]; then
   echo "Checking C++ formatting..."
-  clang-format --dry-run -Werror $SOURCES
-  if [ $? -eq 0 ]; then
+  if clang-format --dry-run -Werror "${SOURCES}"; then
     echo "✓ All files are properly formatted"
   else
-    echo "✗ Some files are not properly formatted. Run 'just format' to fix."
+    echo "✗ Some files are not properly formatted. Run 'just format-cpp' to fix."
     exit 1
   fi
 else
   echo "Formatting C++ files..."
-  echo "$SOURCES" | xargs clang-format -i
+  echo "${SOURCES}" | xargs clang-format -i
   echo "Done! Formatted files:"
-  echo "$SOURCES" | nl
+  echo "${SOURCES}" | nl
 fi

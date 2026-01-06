@@ -6,13 +6,13 @@
 set -e
 
 # Get the repository root
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$REPO_ROOT"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "${REPO_ROOT}"
 
 # Parse arguments
-CHECK_ONLY=false
+CHECK_ONLY=0
 if [[ "$1" == "--check" ]]; then
-  CHECK_ONLY=true
+  CHECK_ONLY=1
 fi
 
 # Check if gofmt is available
@@ -21,9 +21,10 @@ if ! command -v gofmt &> /dev/null; then
   exit 1
 fi
 
-if [ "$CHECK_ONLY" = true ]; then
+if [[ "${CHECK_ONLY}" -eq 1 ]]; then
   echo "Checking Go formatting..."
-  if [ -n "$(gofmt -l tools/)" ]; then
+  UNFORMATTED="$(gofmt -l tools/)"
+  if [[ -n "${UNFORMATTED}" ]]; then
     echo "Go formatting issues found:"
     gofmt -d tools/
     echo "✗ Some files are not properly formatted. Run 'just format-go' to fix."
