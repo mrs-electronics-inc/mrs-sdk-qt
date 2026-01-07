@@ -1,56 +1,15 @@
 # The `mrs-sdk-qt` Library
 
-The `mrs-sdk-qt` library is the centerpiece of the SDK.
+The `mrs-sdk-qt` library is the centerpiece of the Qt SDK.
 
-## Installation
+This table lists some important documentation pages for getting started:
 
-Here are the steps for compiling and installing the library.
-
-NOTE: You will need to have Qt5/Qt6 installed before you can compile.
-
-1. Install the `just` tool: `sudo apt install just`
-2. Compile the tooling: `just tools`
-3. Compile the SDK libraries: `just libs`
-4. The SDK will be installed in the following tree on your system:
-
-```
-HOME/mrs-sdk-qt/
-├── bin/            # Top-level tools: version/installation manager, anything else that's not version-specific
-|   └── mrs-sdk-manager
-├── current/        # Symlink to the SDK version currently in use
-└── <version>/      # A specific installed version of the SDK, including all libraries, headers, documentation, and other files necessary for use
-    ├── bin/
-    ├── docs/
-    ├── demos/
-    ├── include/
-    └── lib/
-        ├── cmake/                  # CMake configuration files for setting up toolchains and SDK libraries
-        |   └── mrs-sdk-qt/
-        |       ├── toolchains/
-        |       └── config.cmake
-        ├── qmake/                  # QMake configuration files for setting up toolchains and SDK libraries
-        |   └── mrs-sdk-qt/
-        |       └── config.pri
-        ├── qt5/
-        │   ├── buildroot/
-        │   │   ├── linux_arm_mconn/
-        │   │   │   └── libmrs-sdk-qt.a
-        │   │   └── linux_arm_fusion/
-        │   │       └── libmrs-sdk-qt.a
-        │   ├── yocto/
-        │   │   └── linux_arm_mconn/
-        │   │       └── libmrs-sdk-qt.a
-        │   └── desktop/
-        │       └── linux_x86_64_desktop/
-        │           └── libmrs-sdk-qt.a
-        └── qt6/
-            ├── yocto/
-            │   ├── linux_arm_neuralplex/
-            │   │   └── libmrs-sdk-qt.a
-            └── desktop/
-                └── linux_x86_64_desktop/
-                    └── libmrs-sdk-qt.a
-```
+| Topic | Link |
+| --- | --- |
+| Installation | https://qt.mrs-electronics.dev/get-started/install/ |
+| Build from source | https://qt.mrs-electronics.dev/get-started/build-from-source/ |
+| Installation tree | https://qt.mrs-electronics.dev/reference/installation-tree/ |
+| SDK components | https://qt.mrs-electronics.dev/reference/sdk-components/ |
 
 ## Usage
 
