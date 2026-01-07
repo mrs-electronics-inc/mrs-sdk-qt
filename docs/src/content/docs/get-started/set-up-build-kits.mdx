@@ -5,17 +5,76 @@ sidebar:
   order: 2
 ---
 
-The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt kit:
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-| File | Qt version | Target Identifier |
-| --- | --- | --- |
-| `qt5-buildroot.cmake` | Buildroot Qt 5.9.1 | `buildroot` |
-| `qt5-yocto.cmake` | Yocto Qt 5.12.9 | `yocto` |
-| `qt5-desktop.cmake` | Desktop Qt 5.15 | `desktop` |
-| `qt6-desktop.cmake` | Desktop Qt 6.8 | `desktop` |
+The MRS SDK for Qt leverages Qt Creator <a href="https://doc.qt.io/qtcreator/creator-preferences-kits.html" target="_blank">kits</a> to cross-compile projects for various MRS products.
 
-Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` (or `lib/qmake/mrs-sdk-qt/config.pri`) to compute a consistent kit identity. When configuring the SDK kit in Qt Creator, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/desktop equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the configuration menu for each Qt kit.
+<Aside type="tip">
 
-Assumes the toolchain helper was included as CMAKE_TOOLCHAIN_FILE in the kit configuration
+Qt Creator kits can be difficult to understand at first. If you have never worked with kits before, it is recommended to read Qt's documentation before diving in blindly.
 
-{/* TODO(#5): add everything */}
+Here are some of the most relevant pages:
+
+- [Managing Qt versions](https://doc.qt.io/qtcreator/creator-project-qmake.html)
+- [Managing registered compilers](https://doc.qt.io/qtcreator/creator-preferences-kits-compilers.html)
+- [Manage kits](https://doc.qt.io/qtcreator/creator-preferences-kits.html)
+- [Configuring projects](https://doc.qt.io/qtcreator/creator-configuring-projects.html)
+
+</Aside>
+
+## Which kits do I need?
+
+{/* TODO(#44): update this when NeuralPlex Yocto kit is integrated */}
+
+Most users will not need to set up all of the possible SDK kits. For example, if you have only NeuralPlex devices, you will only need 1 of the 5 kits to work on your projects.
+
+The following table summarizes which kits you'll need:
+
+| Product | Kits Required |
+| --- | --- |
+| NeuralPlex | `desktop-qt6` |
+| MConn | `mconn-yocto`, `mconn-buildroot`, `desktop-qt5` |
+| FUSION | `fusion-buildroot`, `desktop-qt5` |
+
+**NOTE:** any contributors to the [SDK project](https://github.com/mrs-electronics-inc/mrs-sdk-qt) will need to set up all kits in order to have full testing capabilities.
+
+## Kit Configurations
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        The SDK exports a few helper scripts under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt version:
+
+        | File | Qt version | Target OS identifier |
+        | --- | --- | --- |
+        | `qt5-buildroot.cmake` | Buildroot Qt 5.9.1 | `buildroot` |
+        | `qt5-yocto.cmake` | Yocto Qt 5.12.9 | `yocto` |
+        | `qt5-desktop.cmake` | Desktop Qt 5.15 | `desktop` |
+        | `qt6-desktop.cmake` | Desktop Qt 6.8 | `desktop` |
+
+        Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake`.
+    </TabItem>
+    <TabItem label="QMake">
+        The SDK exports a few helper scripts under `lib/qmake/mrs-sdk-qt/toolchains` for bootstrapping QMake with the right Qt version:
+
+        | File | Qt version | Target OS identifier |
+        | --- | --- | --- |
+        | `qt5-buildroot.pri` | Buildroot Qt 5.9.1 | `buildroot` |
+        | `qt5-yocto.pri` | Yocto Qt 5.12.9 | `yocto` |
+        | `qt5-desktop.pri` | Desktop Qt 5.15 | `desktop` |
+        | `qt6-desktop.pri` | Desktop Qt 6.8 | `desktop` |
+
+        Each helper sets variables used in `lib/qmake/mrs-sdk-qt/config.pri` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DQMAKE_TOOLCHAIN_FILE=lib/qmake/mrs-sdk-qt/toolchains/qt5-yocto.pri`.
+    </TabItem>
+</Tabs>
+
+In addition to configuring the helper script to use, you'll have to tell the kit which MRS product it targets.
+
+### MConn Yocto (Qt5)
+
+### MConn Buildroot (Qt5)
+
+### FUSION Buildroot (Qt5)
+
+### Desktop Qt6
+
+### Desktop Qt5
