@@ -22,6 +22,47 @@ Here are some of the most relevant pages:
 
 </Aside>
 
+## Install Qt Creator
+
+If you have never installed Qt before, use the **Qt Online Installer** steps. If you have installed Qt before, but didn't install Qt Creator or want to update it, use the **Qt Maintenance Tool** steps.
+
+<Tabs>
+  <TabItem label="Qt Online Installer">
+    **NOTE:** these steps are based on version `4.10.0` of the Qt Online Installer.
+
+    <Steps>
+
+    1. Create a new Qt account: https://login.qt.io/register
+    2. Download the Qt Online Installer from here: https://login.qt.io/register
+        - If you are using the standard MRS VM, use the `Linux x64` installer
+    3. Run the installer (make it executable if necessary). Log in with your Qt credentials and accept the licenses.
+    4. Choose a directory to install Qt. The default of `$HOME/Qt` is fine, or you can choose a different location.
+    5. You will be presented with a list of components available to be installed. Choose Qt Creator:
+
+        ![selecting-qt-creator-in-qt-online-installer](../../../assets/build-kit-setup/install-qt-creator-with-online-installer.png)
+
+    6. When you reach the "You are installing" screen, you should see only **Maintenance Tool** and **Qt Creator**.
+    7. Click **Install** to finish the installation.
+
+    </Steps>
+  </TabItem>
+  <TabItem label="Qt Maintenance Tool">
+    **NOTE:** these steps are based on version `4.10.0` of the Qt Maintenance Tool.
+
+    <Steps>
+
+    1. Run the Qt Maintenance Tool. It is located at the top level of your existing Qt installation.
+    2. Log in with your Qt credentials, then select **Update components** as the maintenance action.
+    3. You will be presented with a list of components available to install/update. Choose Qt Creator, CMake, Ninja, and SDKTool. Make sure Qt Design Studio is unavailable or deselected; you do not need it for developing with the MRS Qt SDK.
+
+        ![selecting-qt-creator-in-qt-maintenance-tool](../../../assets/build-kit-setup/install-qt-creator-with-maintenance-tool.png)
+
+    4. Click **Update** to finish the installation.
+
+    </Steps>
+  </TabItem>
+</Tabs>
+
 ## Which kits do I need?
 
 {/* TODO(#44): update this when NeuralPlex Yocto kit is integrated */}
@@ -38,7 +79,11 @@ The following table summarizes which kits you'll need:
 
 **NOTE:** any contributors to the [SDK project](https://github.com/mrs-electronics-inc/mrs-sdk-qt) will need to set up all kits in order to have full testing capabilities.
 
-## Kit Configurations
+## Configure Kits
+
+<Aside>
+Make sure you [install Qt Creator](#install-qt-creator) before trying to configure any kits.
+</Aside>
 
 <Tabs syncKey="buildtool">
     <TabItem label="CMake">
