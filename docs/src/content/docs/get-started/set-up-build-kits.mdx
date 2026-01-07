@@ -4,3 +4,18 @@ description: This page explains how to set up build kits in Qt Creator to target
 sidebar:
   order: 2
 ---
+
+The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt kit:
+
+| File | Qt version | Target Identifier |
+| --- | --- | --- |
+| `qt5-buildroot.cmake` | Buildroot Qt 5.9.1 | `buildroot` |
+| `qt5-yocto.cmake` | Yocto Qt 5.12.9 | `yocto` |
+| `qt5-desktop.cmake` | Desktop Qt 5.15 | `desktop` |
+| `qt6-desktop.cmake` | Desktop Qt 6.8 | `desktop` |
+
+Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` (or `lib/qmake/mrs-sdk-qt/config.pri`) to compute a consistent kit identity. When configuring the SDK kit in Qt Creator, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/desktop equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the configuration menu for each Qt kit.
+
+Assumes the toolchain helper was included as CMAKE_TOOLCHAIN_FILE in the kit configuration
+
+{/* TODO(#5): add everything */}
