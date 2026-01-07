@@ -1,6 +1,8 @@
 ---
 title: MVP Overview
 description: This page outlines the benefits, goals, and features required for the MVP.
+sidebar:
+  order: 1
 ---
 
 This document outlines the benefits, goals, and general technical requirements for the Minimum Viable Product (MVP) of the MRS Qt SDK.

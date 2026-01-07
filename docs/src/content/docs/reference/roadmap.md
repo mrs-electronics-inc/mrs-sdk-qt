@@ -1,6 +1,8 @@
 ---
 title: Roadmap
 description: This page outlines the long-term plan for development the SDK.
+sidebar:
+  order: 2
 ---
 
 This page outlines the roadmap for the long-term vision of the SDK.

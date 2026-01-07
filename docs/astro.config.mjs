@@ -14,8 +14,8 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/mrs-electronics-inc/mrs-sdk-qt' }],
 			sidebar: [
 				{
-					label: 'Guides',
-					autogenerate: { directory: 'guides' },
+					label: 'Get Started',
+					autogenerate: { directory: 'get-started' },
 				},
 				{
 					label: 'Reference',
