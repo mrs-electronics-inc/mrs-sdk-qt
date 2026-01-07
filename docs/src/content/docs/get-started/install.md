@@ -1,5 +1,5 @@
 ---
-title: Installation
+title: Install the SDK
 description: A guide on how to install the Qt SDK.
 sidebar:
   order: 1
