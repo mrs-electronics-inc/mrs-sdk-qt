@@ -1,13 +1,13 @@
 ---
-title: Installation Tree
-description: This page outlines the directory structure of the installed SDK.
+title: Installation Structure
+description: This page outlines the installation structure of the SDK.
 ---
 
 import { FileTree } from '@astrojs/starlight/components';
 
 This page details the installation tree of the SDK: where the installation is located, how multiple versions are managed, what is contained in each subdirectory, and so on.
 
-## Directory Layout
+## Directory layout
 
 <FileTree>
 
@@ -73,16 +73,44 @@ This symlink is controlled by the `mrs-sdk-manager` tool.
 
 {/* TODO(#51): link to the docs for the relevant mrs-sdk-manager subcommand */}
 
-### SDK components
+## SDK components
 
 Each independent SDK version contains its own versions of each component of the SDK; in other words, each installed version is self-contained.
 
-At a glance, this includes:
+Note that paths in this section are described relative to `MRS_SDK_QT_ROOT/<version>`, the top level of an installed SDK version.
 
-- Tool binaries
-- Documentation
-- Compiled static libraries for all cross-compilation targets
-- Header files
-- Demo apps
+### Qt libraries
 
-For more information on each component and its location in the installation tree, see the [SDK components reference](/reference/sdk-components).
+The `mrs-sdk-qt` Qt/C++ library is the centerpiece of the SDK.
+
+#### Headers
+
+**Location:** `include/`
+
+#### Build System
+
+The SDK has two sibling build systems: one runs on top of CMake and the other is for QMake.
+
+##### CMake
+
+**Location:** `lib/cmake/`
+
+##### QMake
+
+**Location:** `lib/qmake/`
+
+#### Compiled Libraries
+
+**Locations:** `lib/qt5`, `lib/qt6`
+
+### Tooling
+
+**Location:** `bin/`
+
+### Documentation
+
+**Location:** `docs/`
+
+### Demos
+
+**Location:** `demos/`

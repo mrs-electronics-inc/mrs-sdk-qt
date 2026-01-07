@@ -8,8 +8,7 @@ This table lists some important documentation pages for getting started:
 | --- | --- |
 | Installation | https://qt.mrs-electronics.dev/get-started/install/ |
 | Build from source | https://qt.mrs-electronics.dev/get-started/build-from-source/ |
-| Installation tree | https://qt.mrs-electronics.dev/reference/installation-tree/ |
-| SDK components | https://qt.mrs-electronics.dev/reference/sdk-components/ |
+| Installation tree | https://qt.mrs-electronics.dev/reference/installation-structure/ |
 | Configuring a project | https://qt.mrs-electronics.dev/get-started/configure-project/ |
 
 ### Shared Compile Definitions
