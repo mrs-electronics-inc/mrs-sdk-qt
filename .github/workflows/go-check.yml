@@ -3,13 +3,11 @@ name: Go Checks
 on:
   pull_request:
     paths:
-      - 'tools/mrs-sdk-manager/**/*.go'
-      - 'tools/mrs-sdk-manager/go.mod'
-      - 'tools/mrs-sdk-manager/go.sum'
+      - 'tools/**'
       - '.github/workflows/go-check.yml'
 
 jobs:
-  format:
+  format_check:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +22,7 @@ jobs:
       - name: Check Go formatting
         run: ./tools/format-go.sh --check
 
-  lint:
+  lint_check:
     runs-on: ubuntu-latest
 
     steps:
