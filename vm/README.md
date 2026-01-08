@@ -32,7 +32,7 @@ If you would like to build the VM image yourself, see the [build instructions](.
 
 ## First Boot
 
-After you have BLANK the VM image, create a new VM with it in your hypervisor of choice (VirtualBox, VMware, KVM, etc.).
+After you have obtained the VM image (either by downloading or building it), create a new VM with it in your hypervisor of choice (VirtualBox, VMware, KVM, etc.).
 
 The default username and password are `ubuntu`.
 
