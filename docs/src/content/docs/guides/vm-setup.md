@@ -3,17 +3,37 @@ title: Virtual Machine Setup
 description: Get started with the ready-to-use MRS SDK Qt virtual machine image
 ---
 
-The MRS SDK Qt project provides a ready-to-use virtual machine image with Qt Creator and pre-configured build kits. This guide walks you through obtaining, importing, and using the VM.
+The MRS SDK Qt project provides a pre-built Ubuntu 24.04 LTS Server virtual machine image with Qt Creator and pre-configured build kits. This guide walks you through obtaining, importing, and using the VM.
 
 ## Quick Start
 
-1. **Download** the VMDK image
+1. **Obtain** the VMDK image (download or build)
 2. **Import** it into your virtualization platform
-3. **Launch** and start developing
+3. **Launch** the VM and run provisioning
+4. **Start developing** with Qt Creator
+
+## Image Contents
+
+The VM includes:
+
+- Ubuntu 24.04 LTS Server with GNOME Desktop
+- Qt Creator IDE
+- Qt 5.15.0 LTS and Qt 6.8.0 LTS development kits with all modules
+- Build tools (gcc, g++, make, git)
+- MRS Qt SDK pre-cloned at `~/mrs-sdk-qt/`
+
+## Why Server ISO + ubuntu-desktop?
+
+This image uses Ubuntu Server ISO with the `ubuntu-desktop` metapackage installed, rather than the Desktop ISO. Here's why:
+
+- **Server ISO** uses Subiquity, which properly supports unattended autoinstall
+- **Desktop ISO** uses a Flutter-based GUI installer that doesn't handle autoinstall well
+- The end result is identical - both give you GNOME Desktop with the same applications
+- Using Server allows us to fully automate the build process with no interactive prompts
 
 ## Obtaining the VM Image
 
-### Option 1: Download from OneDrive
+### Option 1: Download Pre-built Image
 
 Pre-built VM images are available for download:
 
@@ -41,8 +61,6 @@ cd vm
 
 The VMDK file will be created in the `output/` directory.
 
-For detailed build instructions, see the [VM README](https://github.com/mrs-electronics-inc/mrs-sdk-qt/tree/main/docs/vm/README.md).
-
 ## Importing the VM
 
 Import the VMDK file using your preferred virtualization platform (VirtualBox, VMware, GNOME Boxes, etc.):
@@ -52,7 +70,9 @@ Import the VMDK file using your preferred virtualization platform (VirtualBox, V
 3. Configure settings (recommended: 6GB RAM, 2 CPUs, 60GB disk)
 4. Start the VM
 
-## First Login
+## First Boot and Provisioning
+
+After importing the VM, create a new virtual machine with the VMDK file in your hypervisor of choice (VirtualBox, VMware, KVM, etc.) and start the VM.
 
 **Default Credentials:**
 
@@ -64,6 +84,35 @@ Import the VMDK file using your preferred virtualization platform (VirtualBox, V
 ```bash
 passwd
 ```
+
+### Running the Provisioning Script
+
+After the VM boots, you will need to run the provisioning script to finish setting things up:
+
+```bash
+./provision.sh
+```
+
+This script installs:
+
+- GNOME Desktop (ubuntu-desktop)
+- Build tools (gcc, g++, make, git)
+- Qt Creator IDE
+- Qt 5.15.0 LTS and Qt 6.8.0 LTS via aqtinstall, with all their modules
+- MRS Qt SDK
+
+#### Provisioning Troubleshooting
+
+If you see apt errors about invalid release files, run:
+
+```bash
+sudo timedatectl set-ntp true
+sudo systemctl restart systemd-timesyncd
+```
+
+It should always be safe to try re-running the provisioning script if it exits with errors.
+
+If re-running the provisioning script fails, try rebooting the VM and re-running the script.
 
 ## Using the VM
 
