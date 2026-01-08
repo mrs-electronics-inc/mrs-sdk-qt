@@ -47,3 +47,5 @@ Three artifacts are automatically generated in the `output/` directory:
 1. **VMDK** (`mrs-sdk-qt.vmdk`) - For VirtualBox, VMware, GNOME Boxes
 2. **Raw** (`mrs-sdk-qt.img`) - For KVM, libvirt, QEMU
 3. **Manifest** (`manifest.json`) - Build metadata and artifact information
+
+You can also find the serial output in `output/vm-serial.log` (as mentioned [above](#monitoring-build-output)).
