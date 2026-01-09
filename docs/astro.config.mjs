@@ -30,7 +30,16 @@ export default defineConfig({
 						href: '/site.webmanifest'
 					}
 				}
-			]
+			],
+			expressiveCode: {
+				shiki: {
+					langAlias: {
+						// Make is the closest language to QMake supported by Shiki,
+						// so we'll just use that for syntax highlighting.
+						qmake: 'make',
+					}
+				}
+			}
 		}),
 	],
 });
