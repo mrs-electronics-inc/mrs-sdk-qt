@@ -114,6 +114,8 @@ Make sure you [install Qt Creator](#install-qt-creator) before trying to configu
 
 In addition to configuring the helper script to use, you'll have to tell the kit which MRS product it targets.
 
+---
+
 <details>
 <summary>
 ### MConn Yocto (Qt5)
@@ -142,4 +144,70 @@ In addition to configuring the helper script to use, you'll have to tell the kit
 <summary>
 ### Desktop Qt5
 </summary>
+
+**NOTE:** these steps are based on version `18.0.1` of Qt Creator.
+
+<Steps>
+
+1. Open Qt Creator and go to **Edit** > **Preferences** > **Kits**.
+2. There will be a few tabs across to the top of the window. Go to **Qt Versions**.
+3. Verify the Qt 5.15 installation was auto-detected:
+
+    ![Qt Creator Qt version config for desktop Qt5](../../../assets/build-kit-setup/desktop-qt5/qt-version.png)
+
+4. Go to **Compilers**. Verify the GCC/G++ compilers were auto-detected. There may be multiple compiler options on your system:
+
+    ![Qt Creator compiler config for desktop Qt5](../../../assets/build-kit-setup/desktop-qt5/compiler.png)
+
+    Look for paths like `/bin/gcc` or `/usr/lib/ccache/gcc`.
+
+5. Go to **Debuggers**. Verify a system GDB debugger was auto-detected:
+
+    ![Qt Creator debugger config for desktop Qt5](../../../assets/build-kit-setup/desktop-qt5/debugger.png)
+
+    Look for paths like `/usr/bin/gdb` or `/bin/gdb`. Run `apt install gdb` to install the GDB debugger if necessary.
+
+6. Navigate to the **CMake** section in the sidebar, then go to the **Tools** tab.
+7. Verify a system CMake tool was auto-detected:
+
+    ![Qt Creator CMake config](../../../assets/build-kit-setup/qt-creator-cmake-tools.png)
+
+    Look for paths like `/usr/bin/cmake`. Run `apt install cmake` to install CMake if necessary.
+
+8. Now that all the kit's components are verified, it's time to create the kit! Navigate back to **Kits**.
+9. The Qt 5.15 desktop kit should've been auto-detected. Edit the configuration as needed to match this:
+
+    ![Qt Creator debugger config for desktop Qt5](../../../assets/build-kit-setup/desktop-qt5/kit-full.png)
+
+    Make sure the proper compiler, debugger, and CMake tool are selected. They should all be system defaults.
+
+10. Next, you'll need to add some environment variables to configure the SDK. Click **Edit Build Environment** and add the following, inserting the path to your MRS SDK installation:
+
+    ```text
+    MRS_SDK_QT_TARGET_DEVICE=Desktop
+    QMAKE_TOOLCHAIN_FILE=<path-to-mrs-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt5-desktop.pri
+    ```
+
+    ![Qt Creator build environment config for desktop Qt5](../../../assets/build-kit-setup/desktop-qt5/kit-build-env.png)
+
+11. Finally, you need to verify CMake is configured for the SDK properly. Click the **Change...** button next to **CMake Configuration** and add the following, inserting the path to your MRS SDK installation:
+
+    ```text
+    -DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+    -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
+    -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+    -DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+    -DCMAKE_TOOLCHAIN_FILE:STRING=<path-to-mrs-sdk-installation>/current/lib/cmake/mrs-sdk-qt/toolchains/qt5-desktop.cmake
+    ```
+
+    ![Qt Creator CMake config for desktop Qt5](../../../assets/build-kit-setup/desktop-qt5/kit-cmake-config.png)
+
+12. Your Desktop Qt5 kit is now complete and ready to use with the MRS SDK! To make sure everything is working properly, [verify your kit setup](#verify-kits).
+
+</Steps>
+
 </details>
+
+## Verify Kits
+
+{/* TODO(#5): add steps for opening demo projects to verify QMake and CMake work for all kits */}
