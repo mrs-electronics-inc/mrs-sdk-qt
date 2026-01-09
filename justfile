@@ -19,6 +19,9 @@ libs: tools
 tools: deps
     go -C tools/mrs-sdk-manager install
 
+docs-dev:
+    cd docs && npm run dev
+
 # This uses the APT package manager, which means it only works on Debian-based systems.
 deps:
     @command -v cmake >/dev/null || sudo apt install cmake
