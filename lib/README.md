@@ -2,14 +2,17 @@
 
 The `mrs-sdk-qt` library is the centerpiece of the Qt SDK.
 
-This table lists some important documentation pages for getting started:
+## Quick Links
+
+Here are some guides for getting started with the SDK libraries:
 
 | Topic | Link |
 | --- | --- |
 | Installation | https://qt.mrs-electronics.dev/get-started/install/ |
+| Set up build kits | https://qt.mrs-electronics.dev/get-started/set-up-build-kits/ |
+| Configure a project | https://qt.mrs-electronics.dev/get-started/configure-project/ |
 | Build from source | https://qt.mrs-electronics.dev/get-started/build-from-source/ |
-| Installation tree | https://qt.mrs-electronics.dev/reference/installation-structure/ |
-| Configuring a project | https://qt.mrs-electronics.dev/get-started/configure-project/ |
+| SDK installation structure | https://qt.mrs-electronics.dev/reference/installation-structure/ |
 
 ### Shared Compile Definitions
 
