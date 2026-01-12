@@ -37,7 +37,7 @@ source "qemu" "ubuntu" {
   qemuargs = [
     ["-chardev", "stdio,id=char0,logfile=output/vm-serial.log"],
     ["-serial", "chardev:char0"],
-    ["-rtc", "base=utc,clock=vm"]
+    ["-rtc", "base=utc,clock=host"]
   ]
 
   # HTTP server for preseed data
