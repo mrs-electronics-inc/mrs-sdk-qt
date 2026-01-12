@@ -38,3 +38,4 @@ autoinstall:
     - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
     - 'curtin in-target -- systemctl enable ssh'
     - 'curtin in-target -- systemctl start ssh'
+    - 'curtin in-target -- timedatectl set-local-rtc 1'
