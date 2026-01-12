@@ -3,6 +3,7 @@ autoinstall:
   version: 1
   interactive-sections: []
   locale: en_US.UTF-8
+  timezone: UTC
   keyboard:
     layout: us
   network:
@@ -38,4 +39,3 @@ autoinstall:
     - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
     - 'curtin in-target -- systemctl enable ssh'
     - 'curtin in-target -- systemctl start ssh'
-    - 'curtin in-target -- timedatectl set-local-rtc 1'
