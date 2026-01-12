@@ -32,7 +32,6 @@ autoinstall:
     - curl
     - wget
   updates: security
-  timezone: UTC
   grub:
     install: true
   late-commands:

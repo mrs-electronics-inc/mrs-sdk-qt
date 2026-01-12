@@ -77,9 +77,11 @@ If your virtualization software tries to auto-detect the operating system, or pr
 We have found that this can break the network connection inside the VM.
 :::
 
-## First Boot and Provisioning
+:::caution
+Gnome Boxes will often show an error "Failed to start...", but this can be safely ignored. Wait a few minutes and the VM will start without problem.
+:::
 
-After importing the VM, create a new virtual machine with the VMDK file in your hypervisor of choice (VirtualBox, VMware, KVM, etc.) and start the VM.
+## First Boot and Provisioning
 
 **Default Credentials:**
 
@@ -102,7 +104,7 @@ After the VM boots, you will need to run the provisioning script to finish setti
 
 This script installs:
 
-- GNOME Desktop (ubuntu-desktop)
+- GNOME Desktop (ubuntu-desktop with minimal dependencies to reduce bloat)
 - Build tools (gcc, g++, make, git)
 - Qt Creator IDE
 - Qt 5.15.0 LTS and Qt 6.8.0 LTS via aqtinstall, with all their modules
@@ -110,10 +112,9 @@ This script installs:
 
 #### Provisioning Troubleshooting
 
-If you see apt errors about invalid release files, run:
+If you see apt errors about invalid release files, this is usually caused by incorrect system time. Try syncing time with:
 
 ```bash
-sudo timedatectl set-ntp true
 sudo systemctl restart systemd-timesyncd
 ```
 

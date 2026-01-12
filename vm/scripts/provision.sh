@@ -3,11 +3,6 @@ set -e
 
 echo "Starting MRS SDK Qt provisioning..."
 
-# Sync system time to ensure correct UTC
-echo "Syncing system time..."
-sudo systemctl restart systemd-timesyncd || true
-sleep 2
-
 # Install development tools and dependencies
 echo "Installing development tools..."
 sudo apt-get update
