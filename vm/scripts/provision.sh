@@ -3,6 +3,10 @@ set -e
 
 echo "Starting MRS SDK Qt provisioning..."
 
+# Suppress interactive prompts from needrestart
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
 # Install development tools and dependencies
 echo "Installing development tools..."
 sudo apt-get update
@@ -28,7 +32,7 @@ sudo apt-get autoclean -y
 sudo apt-get clean -y
 
 # Clone the mrs-sdk-qt repository
-mkdir ~/repos
+mkdir -p ~/repos
 echo "Cloning mrs-sdk-qt repository..."
 git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt ~/repos/mrs-sdk-qt
 

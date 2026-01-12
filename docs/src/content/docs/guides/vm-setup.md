@@ -81,6 +81,44 @@ We have found that this can break the network connection inside the VM.
 Gnome Boxes will often show an error "Failed to start...", but this can be safely ignored. Wait a few minutes and the VM will start without problem.
 :::
 
+## Configuring RTC in GNOME Boxes
+
+If you're using **GNOME Boxes**, you may notice the system time is incorrect on first boot. This happens because GNOME Boxes doesn't automatically apply the RTC (Real Time Clock) configuration when importing a VMDK file, even though the Packer build includes proper UTC-based RTC settings.
+
+### Why This Matters
+
+The VM's hardware clock is configured to sync with the host's UTC clock. Without proper RTC configuration in GNOME Boxes, the VM may show incorrect system time, which can cause issues with:
+
+- Package manager operations (apt)
+- SSL/TLS certificate validation
+- Build timestamps and caching
+
+### Fixing RTC Configuration
+
+To enable proper RTC in GNOME Boxes:
+
+1. Right-click the VM in GNOME Boxes → **Preferences** → **Resources** tab
+2. Click **Edit Configuration** (at the bottom of the Configuration section)
+3. Locate the opening `<domain>` tag and modify it to include the QEMU namespace:
+
+   ```xml
+   <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+   ```
+
+4. Add this XML block **immediately before the closing `</domain>` tag** at the end of the file:
+
+   ```xml
+   <qemu:commandline>
+     <qemu:arg value='-rtc'/>
+     <qemu:arg value='base=utc,clock=host'/>
+   </qemu:commandline>
+   ```
+
+5. Click **Save** to apply the changes
+6. **Restart** the VM
+
+After reboot, the system time will automatically sync with your host system's UTC clock.
+
 ## First Boot and Provisioning
 
 **Default Credentials:**
@@ -99,16 +137,17 @@ passwd
 After the VM boots, you will need to run the provisioning script to finish setting things up:
 
 ```bash
+cd ~
 ./provision.sh
 ```
 
 This script installs:
 
-- GNOME Desktop (ubuntu-desktop with minimal dependencies to reduce bloat)
+- GNOME Desktop with essential applications
 - Build tools (gcc, g++, make, git)
 - Qt Creator IDE
 - Qt 5.15.0 LTS and Qt 6.8.0 LTS via aqtinstall, with all their modules
-- MRS Qt SDK
+- MRS Qt SDK (pre-cloned at `~/repos/mrs-sdk-qt/`)
 
 #### Provisioning Troubleshooting
 
