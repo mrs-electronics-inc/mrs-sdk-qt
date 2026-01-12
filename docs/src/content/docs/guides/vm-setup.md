@@ -70,9 +70,10 @@ Import the VMDK file using your preferred virtualization platform (VirtualBox, V
 3. Configure settings (recommended: 6GB RAM, 2 CPUs, 60GB disk)
 4. Start the VM
 
-> [!WARNING]
-> If your virtualization platform tries to auto-detect the operating system, or prompts you to select the operating system, do not select one.
-> We have found that this can break the network connection inside the VM.
+:::caution
+If your virtualization software tries to auto-detect the operating system, or prompts you to select the operating system, do not select one.
+We have found that this can break the network connection inside the VM.
+:::
 
 ## First Boot and Provisioning
 
