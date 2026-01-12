@@ -61,6 +61,8 @@ cd vm
 
 The VMDK file will be created in the `output/` directory.
 
+More information is available [here](https://github.com/mrs-electronics-inc/mrs-sdk-qt/blob/main/vm/BUILD.md).
+
 ## Importing the VM
 
 Import the VMDK file using your preferred virtualization platform (VirtualBox, VMware, GNOME Boxes, etc.):
