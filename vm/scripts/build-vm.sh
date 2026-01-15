@@ -202,6 +202,19 @@ fi
 
 print_success "All required files found"
 
+# Validate cloud-init YAML syntax
+print_info "Validating cloud-init user-data YAML..."
+if command -v python3 &> /dev/null; then
+    if ! python3 -c "import yaml; yaml.safe_load(open('$VM_DIR/http/user-data'))" 2>/dev/null; then
+        print_error "user-data YAML syntax is invalid"
+        python3 -c "import yaml; yaml.safe_load(open('$VM_DIR/http/user-data'))"
+        exit 1
+    fi
+    print_success "user-data YAML syntax is valid"
+else
+    print_warning "python3 not found, skipping YAML validation"
+fi
+
 # Change to VM directory
 cd "$VM_DIR"
 

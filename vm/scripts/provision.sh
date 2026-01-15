@@ -11,7 +11,6 @@ export NEEDRESTART_MODE=a
 echo "Installing development tools..."
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends ubuntu-desktop
-sudo apt-get install -y build-essential qtcreator python3-pip pipx git
 
 # Install aqtinstall for Qt LTS versions
 echo "Installing aqtinstall..."
@@ -34,7 +33,12 @@ sudo apt-get clean -y
 # Clone the mrs-sdk-qt repository
 mkdir -p ~/repos
 echo "Cloning mrs-sdk-qt repository..."
-git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt ~/repos/mrs-sdk-qt
+if [ -d ~/repos/mrs-sdk-qt ]; then
+    echo "Repository already exists, pulling latest..."
+    git -C ~/repos/mrs-sdk-qt pull
+else
+    git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt ~/repos/mrs-sdk-qt
+fi
 
 # TODO: actually install the SDK
 

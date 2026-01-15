@@ -6,6 +6,9 @@ autoinstall:
   timezone: UTC
   keyboard:
     layout: us
+  apt:
+    conf: |
+      APT::Install-Recommends "false";
   network:
     version: 2
     ethernets:
@@ -32,6 +35,10 @@ autoinstall:
     - git
     - curl
     - wget
+    - build-essential
+    - python3-pip
+    - pipx
+    - qtcreator
   updates: security
   grub:
     install: true
