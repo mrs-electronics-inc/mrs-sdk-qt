@@ -1,0 +1,8 @@
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+.gitignore
+examples/
+output/
+build-vm.sh

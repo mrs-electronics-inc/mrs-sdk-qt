@@ -1,0 +1,18 @@
+services:
+  packer:
+    build: .
+    working_dir: /workspace
+    privileged: true
+    volumes:
+      - .:/workspace
+      - /dev/kvm:/dev/kvm
+      - packer-cache:/root/.cache/packer
+    network_mode: host
+    environment:
+      - PKR_VAR_vm_memory=${VM_MEMORY:-6144}
+      - PKR_VAR_vm_cpus=${VM_CPUS:-2}
+      - PKR_VAR_disk_size=${DISK_SIZE:-61440}
+      - PACKER_LOG=${PACKER_LOG:-0}
+
+volumes:
+  packer-cache:

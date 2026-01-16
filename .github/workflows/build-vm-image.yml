@@ -30,15 +30,15 @@ jobs:
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install QEMU
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils
+      # - name: Install QEMU
+        # run: |
+        #   sudo apt-get update
+        #   sudo apt-get install -y qemu-system-x86 qemu-utils
 
       - name: Build VMDK image
         working-directory: vm
         run: |
-          chmod +x scripts/build-vm.sh
+          chmod +x build-vm.sh
 
           BUILD_ARGS=()
 
@@ -50,7 +50,7 @@ jobs:
             BUILD_ARGS+=(--var "version=${{ steps.vars.outputs.version }}")
           fi
 
-          ./scripts/build-vm.sh "${BUILD_ARGS[@]}"
+          ./build-vm.sh "${BUILD_ARGS[@]}"
         timeout-minutes: 120
 
       - name: Upload VM artifacts

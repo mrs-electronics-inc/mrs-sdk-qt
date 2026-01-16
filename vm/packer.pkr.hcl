@@ -58,7 +58,7 @@ source "qemu" "ubuntu" {
 }
 
 build {
-  name    = "mrs-sdk-qt-dev"
+  name    = "mrs-sdk-qt"
   sources = ["source.qemu.ubuntu"]
 
   # Copy provisioning script to VM

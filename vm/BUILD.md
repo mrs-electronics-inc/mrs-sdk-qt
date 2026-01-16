@@ -8,7 +8,7 @@ Be sure that you have [Packer](https://developer.hashicorp.com/packer/install) i
 
 ```bash
 cd vm
-./scripts/build-vm.sh
+./build-vm.sh
 ```
 
 **Note:** Close unnecessary applications before building. The VM installation runs faster and VNC monitoring stays responsive when your system has available resources.
@@ -37,7 +37,7 @@ Default VM settings:
 Customize with script options:
 
 ```bash
-./scripts/build-vm.sh -m 8192 -c 4
+./build-vm.sh -m 8192 -c 4
 ```
 
 ## Output
