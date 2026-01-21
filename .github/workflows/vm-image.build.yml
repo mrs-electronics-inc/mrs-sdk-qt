@@ -43,7 +43,7 @@ jobs:
             BUILD_ARGS+=(--var "version=${{ steps.vars.outputs.version }}")
           fi
 
-          ./build-vm.sh "${BUILD_ARGS[@]}"
+          ./build-vm.sh "${BUILD_ARGS[@]}" --verbose
         timeout-minutes: 120
 
       - name: Upload VM artifacts
