@@ -2,17 +2,29 @@ services:
   packer:
     build: .
     working_dir: /workspace
+
+    # Required for QEMU to create/manage VMs inside the container
     privileged: true
+
     volumes:
+      # Mount current directory (vm/) as the Packer workspace
       - .:/workspace
+      # Pass through KVM device for hardware-accelerated virtualization
       - /dev/kvm:/dev/kvm
+      # Persist Packer plugin cache between runs (avoids re-downloading ISOs)
       - packer-cache:/root/.cache/packer
+
+    # Use host networking so QEMU VNC/SSH ports are directly accessible
     network_mode: host
+
     environment:
-      - PKR_VAR_vm_memory=${VM_MEMORY:-6144}
-      - PKR_VAR_vm_cpus=${VM_CPUS:-2}
-      - PKR_VAR_disk_size=${DISK_SIZE:-61440}
-      - PACKER_LOG=${PACKER_LOG:-0}
+      # PKR_VAR_* environment variables are automatically read by Packer as variable values
+      # (See variables.pkr.hcl for definitions)
+      - PKR_VAR_vm_memory=${VM_MEMORY:-6144}      # VM RAM in MB
+      - PKR_VAR_vm_cpus=${VM_CPUS:-2}             # VM CPU cores
+      - PKR_VAR_disk_size=${DISK_SIZE:-61440}     # Disk size in MB
+      - PACKER_LOG=${PACKER_LOG:-0}               # Enable verbose logging (1=enabled)
 
 volumes:
+  # Named volume for Packer plugin cache persistence
   packer-cache:

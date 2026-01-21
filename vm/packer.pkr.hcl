@@ -1,7 +1,10 @@
+# Packer configuration block
+# Specifies Packer version requirements and required plugins
 packer {
   required_version = ">= 1.8.0"
 
   required_plugins {
+    # QEMU plugin for building VM images using QEMU/KVM
     qemu = {
       version = ">= 1.0.0"
       source  = "github.com/hashicorp/qemu"
@@ -9,57 +12,70 @@ packer {
   }
 }
 
+# QEMU source block - defines the VM configuration for building
+# Documentation: https://developer.hashicorp.com/packer/integrations/hashicorp/qemu
 source "qemu" "ubuntu" {
-  # Instance settings
+  # Instance settings (see variables.pkr.hcl for definitions)
   vm_name   = var.vm_name
   memory    = var.vm_memory
   cpus      = var.vm_cpus
   disk_size = var.disk_size
 
-  # ISO configuration
-  iso_url      = "https://releases.ubuntu.com/noble/ubuntu-24.04.3-live-server-amd64.iso"
-  iso_checksum = "sha256:c3514bf0056180d09376462a7a1b4f213c1d6e8ea67fae5c25099c6fd3d8274b"
+  # Ubuntu Desktop 24.04.3 LTS (Noble Numbat) ISO
+  iso_url      = "https://releases.ubuntu.com/noble/ubuntu-24.04.3-desktop-amd64.iso"
+  iso_checksum = "file:https://releases.ubuntu.com/noble/SHA256SUMS"
 
-  # Boot settings for Ubuntu Server ISO with autoinstall
+  # GRUB boot commands to trigger Ubuntu autoinstall
+  # 1. Wait for GRUB, press 'c' to enter command line
+  # 2. Load kernel with autoinstall pointing to Packer's HTTP server
+  # 3. Load initrd and boot
   boot_command = [
     "<wait><wait><wait>c<wait>",
     "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{.HTTPIP}}:{{.HTTPPort}}/ console=ttyS0 loglevel=7 ---<enter><wait>",
     "initrd /casper/initrd<enter><wait>",
     "<wait>boot<enter>"
   ]
-  boot_wait = "5s"
+  boot_wait = "5s" # Wait for GRUB menu before sending keys
 
-  # QEMU specific settings
-  accelerator = var.accelerator
-  headless    = true
-  disk_image  = false
-  format      = "raw"
+  # QEMU virtualization settings
+  accelerator = var.accelerator # kvm (fast) or tcg (slow, no KVM needed)
+  headless    = true            # No GUI window (use VNC if needed)
+  disk_image  = false           # Create new disk, don't use existing image
+  format      = "raw"           # Output format (converted to VMDK in post-processor)
+
+  # Extra QEMU arguments for serial console logging and RTC config
   qemuargs = [
     ["-chardev", "stdio,id=char0,logfile=output/vm-serial.log"],
     ["-serial", "chardev:char0"],
     ["-rtc", "base=utc,clock=host"]
   ]
 
-  # HTTP server for preseed data
-  http_directory = "http"
+  # Packer serves cloud-init/user-data and cloud-init/meta-data via HTTP
+  http_directory = "cloud-init"
 
-  # SSH configuration for provisioning
+  # SSH settings for connecting to VM after install (matches cloud-init identity)
   ssh_username     = "ubuntu"
   ssh_password     = "ubuntu"
-  ssh_timeout      = "120m"
+  ssh_timeout      = "120m" # Max time to wait for SSH to become available
   ssh_wait_timeout = "120m"
 
-  # Shutdown command
+  # Graceful shutdown after provisioning completes
   shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"
   shutdown_timeout = "5m"
 
-  # QEMU specific output
   output_directory = "output"
 }
 
+# The configuration for the Packer builder to run.
+# Documentation: https://developer.hashicorp.com/packer/docs/templates/hcl_templates/blocks/build.
 build {
   name    = "mrs-sdk-qt"
   sources = ["source.qemu.ubuntu"]
+
+  # Run auto-provisioning script to set up VM for Qt/MRS SDK installations
+  provisioner "shell" {
+    script = "scripts/autoprovision.sh"
+  }
 
   # Copy provisioning script to VM
   provisioner "file" {

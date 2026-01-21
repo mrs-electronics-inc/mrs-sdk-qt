@@ -1,3 +1,7 @@
+# Packer variables for VM configuration
+# Override via CLI: packer build -var "vm_memory=8192" .
+# Override via env: PKR_VAR_vm_memory=8192 packer build .
+
 variable "vm_name" {
   type        = string
   default     = "mrs-sdk-qt"
@@ -22,14 +26,15 @@ variable "disk_size" {
   description = "Disk size in MB (default: 60GB)"
 }
 
-variable "version" {
-  type        = string
-  default     = "latest"
-  description = "Version tag for the VM image"
-}
-
 variable "accelerator" {
   type        = string
   default     = "kvm"
   description = "QEMU accelerator to use (kvm for local, tcg for CI/cloud)"
+}
+
+# NOTE: this variable is used only in CI. It is not relevant for local builds.
+variable "version" {
+  type        = string
+  default     = "latest"
+  description = "Version tag for the VM image"
 }

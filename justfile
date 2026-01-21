@@ -23,6 +23,18 @@ tools: deps
 deps:
 	@command -v cmake >/dev/null || sudo apt install cmake
 
-# Run docs locally at http://localhost:3000
+# Run docs locally at http://localhost:4321
 docs:
 	npm -C docs run dev
+
+# Build the VM image locally using Packer in Docker
+vm-build *args:
+	cd vm/ && ./build-vm.sh {{ args }}
+
+# Validate Packer config
+vm-validate:
+    cd vm/ && ./build-vm.sh --validate-only
+
+# Watch the QEMU serial output during a local VM build
+vm-serial:
+    [ -f vm/output/vm-serial.log ] && tail -f vm/output/vm-serial.log

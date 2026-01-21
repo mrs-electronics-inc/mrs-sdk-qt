@@ -6,14 +6,11 @@
 set -e
 
 # Color codes for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Script configuration
-VM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m'
 
 # Functions
 print_header() {
@@ -132,16 +129,16 @@ fi
 print_success "Docker Compose found"
 
 # Check for KVM access (warn if not available)
-if [ ! -w /dev/kvm ]; then
+if [[ ! -w /dev/kvm ]]; then
     print_warning "/dev/kvm not writable. Build will be slow without KVM."
     print_info "Use --var accelerator=tcg to suppress this warning, or fix KVM access."
 fi
 
 # Check required files exist
 print_info "Checking project structure..."
-for file in packer.pkr.hcl variables.pkr.hcl http/user-data http/meta-data; do
-    if [ ! -f "$file" ]; then
-        print_error "Required file not found: $file"
+for file in packer.pkr.hcl variables.pkr.hcl cloud-init/user-data cloud-init/meta-data scripts/autoprovision.sh scripts/provision.sh; do
+    if [[ ! -f "${file}" ]]; then
+        print_error "Required file not found: ${file}"
         exit 1
     fi
 done
@@ -155,9 +152,9 @@ print_success "Packer config is valid"
 # Validate cloud-init YAML syntax
 print_info "Validating cloud-init configuration..."
 if command -v python3 &> /dev/null; then
-    if ! python3 -c "import yaml; yaml.safe_load(open('http/user-data'))" 2>/dev/null; then
+    if ! python3 -c "import yaml; yaml.safe_load(open('cloud-init/user-data'))" 2>/dev/null; then
         print_error "cloud-init config syntax is invalid"
-        python3 -c "import yaml; yaml.safe_load(open('http/user-data'))"
+        python3 -c "import yaml; yaml.safe_load(open('cloud-init/user-data'))"
         exit 1
     fi
     print_success "cloud-init config syntax is valid"
@@ -166,7 +163,7 @@ else
 fi
 
 # Validate-only mode: exit after validation
-if $VALIDATE_ONLY; then
+if ${VALIDATE_ONLY}; then
 	print_success "Validation passed. Configuration is ready to build."
     exit 0
 fi
@@ -175,9 +172,9 @@ fi
 print_header "Building VM Image"
 
 print_info "Build parameters:"
-print_info "  VM Memory: $VM_MEMORY MB"
-print_info "  VM CPUs: $VM_CPUS"
-print_info "  Disk Size: $DISK_SIZE MB"
+print_info "  VM Memory: ${VM_MEMORY} MB"
+print_info "  VM CPUs: ${VM_CPUS}"
+print_info "  Disk Size: ${DISK_SIZE} MB"
 echo ""
 
 # Initialize packer plugins
@@ -189,12 +186,16 @@ print_success "Packer initialized"
 print_info "Starting build..."
 echo ""
 
+declare BUILD_START
 BUILD_START=$(date +%s)
+readonly BUILD_START
 
 docker compose run --rm packer build -color=false -timestamp-ui "${PACKER_VARS[@]}" .
 
+declare BUILD_END
 BUILD_END=$(date +%s)
-BUILD_DURATION=$((BUILD_END - BUILD_START))
+readonly BUILD_END
+readonly BUILD_DURATION=$((BUILD_END - BUILD_START))
 
 print_header "Build Complete"
 
@@ -202,14 +203,14 @@ print_success "VM image built successfully"
 print_info "Build time: $((BUILD_DURATION / 60)) minutes $((BUILD_DURATION % 60)) seconds"
 
 # Find output images
-if [ -f "output/mrs-sdk-qt.img" ]; then
-    RAW_SIZE=$(du -h "output/mrs-sdk-qt.img" | cut -f1)
-    print_success "Raw disk image: output/mrs-sdk-qt.img ($RAW_SIZE)"
+if [[ -f "output/mrs-sdk-qt.img" ]]; then
+    RAW_SIZE=$(du -h "output/mrs-sdk-qt.img" | cut -f1) || true
+    print_success "Raw disk image: output/mrs-sdk-qt.img (${RAW_SIZE})"
 fi
 
-if [ -f "output/mrs-sdk-qt.vmdk" ]; then
-    VMDK_SIZE=$(du -h "output/mrs-sdk-qt.vmdk" | cut -f1)
-    print_success "VMDK image: output/mrs-sdk-qt.vmdk ($VMDK_SIZE)"
+if [[ -f "output/mrs-sdk-qt.vmdk" ]]; then
+    VMDK_SIZE=$(du -h "output/mrs-sdk-qt.vmdk" | cut -f1) || true
+    print_success "VMDK image: output/mrs-sdk-qt.vmdk (${VMDK_SIZE})"
 fi
 
 echo ""

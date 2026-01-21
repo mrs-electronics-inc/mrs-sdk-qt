@@ -10,12 +10,13 @@ We provide a pre-built VM image optimized for developing applications with `mrs-
 
 ## Overview
 
-Ubuntu 24.04 LTS Server with GNOME Desktop and:
+Ubuntu 24.04 LTS Desktop (minimal) with:
 
 - Qt Creator IDE
-- Qt 5 and Qt 6 development kits
-- Build tools (gcc, g++, make)
+- Qt 5.15 and Qt 6.8 development kits
+- Build tools (`gcc`, `g++`, `make`, `cmake`, etc)
 - MRS Qt SDK
+  - WIP, coming soon
 
 ## Getting Started
 

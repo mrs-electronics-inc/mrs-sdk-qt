@@ -1,6 +1,7 @@
 name: Build MRS SDK Qt VM Image
 
 on:
+  pull_request: # DELETEME
   workflow_dispatch:
 
 concurrency:
@@ -17,8 +18,7 @@ jobs:
       actions: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Extract version tag if applicable
         id: vars
@@ -30,16 +30,9 @@ jobs:
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
-      # - name: Install QEMU
-        # run: |
-        #   sudo apt-get update
-        #   sudo apt-get install -y qemu-system-x86 qemu-utils
-
       - name: Build VMDK image
         working-directory: vm
         run: |
-          chmod +x build-vm.sh
-
           BUILD_ARGS=()
 
           # Use TCG accelerator in GitHub Actions (no KVM support)
@@ -59,7 +52,7 @@ jobs:
         with:
           name: mrs-sdk-qt-vm-images
           path: |
-            output/*.vmdk
-            output/manifest.json
+            vm/output/*.vmdk
+            vm/output/manifest.json
           retention-days: 30
           compression-level: 0

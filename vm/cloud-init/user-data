@@ -1,0 +1,101 @@
+#cloud-config
+
+# Ubuntu autoinstall configuration for unattended VM installation.
+# Documentation: https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
+autoinstall:
+  version: 1
+
+  # No interactive prompts - fully automated installation
+  interactive-sections: []
+
+  # Use minimal desktop image (smaller footprint than full desktop)
+  source:
+    id: ubuntu-desktop-minimal
+
+  # Default user account (password: ubuntu)
+  # Hash generated with: mkpasswd --method=sha-512
+  identity:
+    hostname: mrs-sdk-qt
+    username: ubuntu
+    password: $6$wXSWO.tB/0LFwxhf$HHDKH9ptNthCDMaNbX49SEEtt.Pj.sKRBFpKdDPTHcUDDD2IA2VrpDodh.iiCOrvnzVmDzFujP0Z.o6PLHH8R0
+    realname: Ubuntu User
+
+  # Network configuration (netplan format)
+  # Support both common QEMU NIC names for compatibility
+  network:
+    version: 2
+    ethernets:
+      ens3:
+        dhcp4: true
+      enp1s0:
+        dhcp4: true
+
+  # Disk layout - use entire disk, no swap (VM can use host swap if needed)
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+
+  # SSH server configuration - enable password auth for easy access
+  ssh:
+    install-server: true
+    allow-pw: true
+    enabled: true
+
+  # Localization settings
+  locale: en_US.UTF-8
+  timezone: UTC
+  keyboard:
+    layout: us
+
+  # Pre-installed packages for Qt SDK development
+  packages:
+    # --- General dev dependencies --- #
+    - openssh-client
+    - linux-generic
+    - git
+    - curl
+    - wget
+
+    # --- Basic build tools --- #
+    - build-essential   # GCC, make, etc. for compiling
+    - cmake             # Compiler tooling
+    - ninja-build       # CMake generator tooling
+
+    # --- Tools for installing and using Qt --- #
+    - python3-pip
+    - pipx              # For installing aqtinstall (Qt installer)
+    - qtcreator         # Qt IDE
+
+  # APT configuration - skip recommended packages to reduce image size
+  apt:
+    conf: |
+      APT::Install-Recommends "false";
+
+  # Only install security updates during installation
+  updates: security
+
+  # Install GRUB bootloader
+  grub:
+    install: true
+
+  # Post-installation commands (run in the installed system)
+  late-commands:
+    # Allow root SSH login (useful for Packer provisioning)
+    - 'sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/" /target/etc/ssh/sshd_config'
+    # Ensure SSH service is enabled and started
+    - 'curtin in-target -- systemctl enable ssh'
+    - 'curtin in-target -- systemctl start ssh'
+    # Clean up apt cache to reduce image size
+    - 'curtin in-target -- apt-get autoremove -y'
+    - 'curtin in-target -- apt-get clean'
+
+  # Reboot after installation completes.
+  # Necessary for Packer's provisioning process.
+  shutdown: reboot
+
+# NTP time synchronization (runs after first boot)
+ntp:
+  enabled: true
+  ntp_client: chrony

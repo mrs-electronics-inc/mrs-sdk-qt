@@ -2,50 +2,82 @@
 
 If you don't want to use our pre-built VM image, you can build it yourself.
 
-## Local Build
+## Prerequisites
 
-Be sure that you have [Packer](https://developer.hashicorp.com/packer/install) installed.
+- [Docker](https://docs.docker.com/get-docker/) with Docker Compose
+- KVM access (optional but recommended for faster builds)
+
+To check KVM access:
+
+```bash
+ls -la /dev/kvm
+```
+
+If you don't have KVM (e.g., in CI or on macOS), the build will use TCG emulation, which is significantly slower.
+
+## Build
 
 ```bash
 cd vm
-./build-vm.sh
+./build-vm.sh --verbose
 ```
 
-**Note:** Close unnecessary applications before building. The VM installation runs faster and VNC monitoring stays responsive when your system has available resources.
+The script will:
 
-### Monitoring Build Output
+1. Build a Docker image with Packer and QEMU
+2. Validate the Packer and cloud-init configuration
+3. Run the VM build inside a container
+4. Convert the output to VMDK format
 
-During the build, monitor the serial console output to see what's happening:
+**Note:** Close unnecessary applications before building. The VM installation runs faster when your system has available resources.
+
+## Monitoring Build Progress
+
+You can monitor the serial console output during the build to see what's happening. Run the following in separate terminal:
 
 ```bash
-# In another terminal:
 tail -f vm/output/vm-serial.log
 ```
 
-This captures all QEMU serial output including Ubuntu installation logs, cloud-init provisioning, and any errors that occur during the build. The log file is written to in real-time, so you can watch the installation progress without relying on VNC or SSH.
-
-See [examples/successful-build-serial.log](examples/successful-build-serial.log) for an example of a successful build's serial output.
+This captures all QEMU serial output including Ubuntu installation logs, cloud-init provisioning, and any errors. See [examples/successful-build-serial.log](examples/successful-build-serial.log) for an example.
 
 ## Configuration
 
 Default VM settings:
 
-- Memory: 6144 MB (6 GB)
-- CPUs: 2
-- Disk: 60 GB
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Memory  | 6144 MB | RAM allocated during build |
+| CPUs    | 2       | CPU cores for the VM |
+| Disk    | 60 GB   | Virtual disk size |
 
 Customize with script options:
 
 ```bash
+# More RAM and CPUs for faster builds
 ./build-vm.sh -m 8192 -c 4
+
+# Larger disk
+./build-vm.sh -s 122880
+
+# Use TCG emulation (no KVM required, slower)
+./build-vm.sh --var accelerator=tcg
+
+# Validate configuration without building
+./build-vm.sh --validate-only
+
+# Enable verbose Packer logging
+./build-vm.sh --verbose
 ```
 
 ## Output
 
-Three artifacts are automatically generated in the `output/` directory:
+Three artifacts are generated in the `output/` directory:
 
-1. **VMDK** (`mrs-sdk-qt.vmdk`) - For VirtualBox, VMware, GNOME Boxes
-2. **Raw** (`mrs-sdk-qt.img`) - For KVM, libvirt, QEMU
-3. **Manifest** (`manifest.json`) - Build metadata and artifact information
+| File | Format | Use Case |
+|------|--------|----------|
+| `mrs-sdk-qt.vmdk` | VMDK | VirtualBox, VMware, GNOME Boxes, virt-manager |
+| `mrs-sdk-qt.img` | Raw | KVM, libvirt, QEMU |
+| `manifest.json` | JSON | Build metadata and checksums |
 
-You can also find the serial output in `output/vm-serial.log` (as mentioned [above](#monitoring-build-output)).
+The serial console log is also saved to `output/vm-serial.log`.
