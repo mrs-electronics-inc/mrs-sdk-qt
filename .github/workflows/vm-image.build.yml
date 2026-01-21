@@ -44,7 +44,7 @@ jobs:
           fi
 
           ./build-vm.sh "${BUILD_ARGS[@]}" --verbose
-        timeout-minutes: 120
+        timeout-minutes: 240
 
       - name: Upload VM artifacts
         if: success()
