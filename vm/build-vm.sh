@@ -72,6 +72,7 @@ export DISK_SIZE=61440
 export PACKER_LOG=0
 declare -a PACKER_VARS
 VALIDATE_ONLY=false
+USING_KVM=true
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -102,6 +103,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --var)
             PACKER_VARS+=(-var "$2")
+            if [[ "$2" == accelerator=tcg ]]; then
+                USING_KVM=false
+            fi
             shift 2
             ;;
         *)
@@ -129,7 +133,7 @@ fi
 print_success "Docker Compose found"
 
 # Check for KVM access (warn if not available)
-if [[ ! -w /dev/kvm ]]; then
+if ${USING_KVM} && [[ ! -w /dev/kvm ]]; then
     print_warning "/dev/kvm not writable. Build will be slow without KVM."
     print_info "Use --var accelerator=tcg to suppress this warning, or fix KVM access."
 fi
