@@ -56,8 +56,8 @@ source "qemu" "ubuntu" {
   # SSH settings for connecting to VM after install (matches cloud-init identity)
   ssh_username     = "ubuntu"
   ssh_password     = "ubuntu"
-  ssh_timeout      = "120m" # Max time to wait for SSH to become available
-  ssh_wait_timeout = "120m"
+  ssh_timeout      = var.build_timeout # Max time to wait for SSH to become available
+  ssh_wait_timeout = var.build_timeout
 
   # Graceful shutdown after provisioning completes
   shutdown_command = "echo 'ubuntu' | sudo -S shutdown -P now"

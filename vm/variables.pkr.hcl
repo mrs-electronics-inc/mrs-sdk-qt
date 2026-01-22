@@ -32,6 +32,12 @@ variable "accelerator" {
   description = "QEMU accelerator to use (kvm for local, tcg for CI/cloud)"
 }
 
+variable "build_timeout" {
+  type        = string
+  default     = "60m"
+  description = "SSH timeout for Packer to wait for the VM to become available (e.g., 60m, 120m)"
+}
+
 # NOTE: this variable is used only in CI. It is not relevant for local builds.
 variable "version" {
   type        = string

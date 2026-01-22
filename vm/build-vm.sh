@@ -3,7 +3,7 @@
 # MRS SDK Qt VM Build Helper Script
 # This script automates local building of the VM image using Packer in Docker.
 
-set -e
+set -eo pipefail
 
 # Color codes for output
 readonly RED='\033[0;31m'
@@ -46,6 +46,7 @@ Options:
     -m, --memory MB         VM RAM in MB (default: 6144)
     -c, --cpus CORES        VM CPU cores (default: 2)
     -s, --disk-size MB      Disk size in MB (default: 61440)
+    --timeout MINUTES       Build timeout in minutes (default: 60 with KVM, 120 without)
     --var KEY=VALUE         Pass variable directly to Packer
     --validate-only         Only validate configuration (no build)
     --verbose               Enable Packer debug logging
@@ -58,7 +59,7 @@ Examples:
      $(basename "$0") -m 8192 -c 4
 
      # Use TCG emulation (slower, no KVM required)
-     $(basename "$0") --var accelerator=tcg
+     $(basename "$0") --var accelerator=tcg --timeout 240
 
      # Validate configuration only
      $(basename "$0") --validate-only
@@ -73,6 +74,7 @@ export PACKER_LOG=0
 declare -a PACKER_VARS
 VALIDATE_ONLY=false
 USING_KVM=true
+BUILD_TIMEOUT=""  # Empty means use default based on accelerator
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -91,6 +93,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -s|--disk-size)
             export DISK_SIZE="$2"
+            shift 2
+            ;;
+        --timeout)
+            BUILD_TIMEOUT="$2"
             shift 2
             ;;
         --validate-only)
@@ -138,6 +144,16 @@ if ${USING_KVM} && [[ ! -w /dev/kvm ]]; then
     print_info "Use --var accelerator=tcg to suppress this warning, or fix KVM access."
 fi
 
+# Set default timeout based on accelerator if not explicitly provided
+if [[ -z "${BUILD_TIMEOUT}" ]]; then
+    if ${USING_KVM}; then
+        BUILD_TIMEOUT=60
+    else
+        BUILD_TIMEOUT=120
+    fi
+fi
+PACKER_VARS+=(-var "build_timeout=${BUILD_TIMEOUT}m")
+
 # Check required files exist
 print_info "Checking project structure..."
 for file in packer.pkr.hcl variables.pkr.hcl cloud-init/user-data cloud-init/meta-data scripts/autoprovision.sh scripts/provision.sh; do
@@ -179,6 +195,7 @@ print_info "Build parameters:"
 print_info "  VM Memory: ${VM_MEMORY} MB"
 print_info "  VM CPUs: ${VM_CPUS}"
 print_info "  Disk Size: ${DISK_SIZE} MB"
+print_info "  Build Timeout: ${BUILD_TIMEOUT} minutes"
 echo ""
 
 # Initialize packer plugins
@@ -194,7 +211,9 @@ declare BUILD_START
 BUILD_START=$(date +%s)
 readonly BUILD_START
 
-docker compose run --rm packer build -color=false -timestamp-ui "${PACKER_VARS[@]}" .
+# Filter out noisy SSH retry messages from Packer output
+docker compose run --rm packer build -color=false -timestamp-ui "${PACKER_VARS[@]}" . 2>&1 \
+    | grep -v -E "Attempting SSH connection to|reconnecting to TCP connection for SSH|handshaking with SSH|SSH handshake err: ssh: handshake failed"
 
 declare BUILD_END
 BUILD_END=$(date +%s)

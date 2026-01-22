@@ -38,6 +38,9 @@ jobs:
           # Use TCG accelerator in GitHub Actions (no KVM support)
           BUILD_ARGS+=(--var "accelerator=tcg")
 
+          # Set longer timeout for slow TCG emulation (4 hours)
+          BUILD_ARGS+=(--timeout 240)
+
           # Add version tag if this is a tagged release
           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
             BUILD_ARGS+=(--var "version=${{ steps.vars.outputs.version }}")
