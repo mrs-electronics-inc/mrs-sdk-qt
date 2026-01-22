@@ -7,12 +7,12 @@ sidebar:
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Qt projects using the SDK need some additional configuration to pull in and use the SDK's build system, which takes care of defining a consistent build-kit identity and linking the correct compiled library for the project's specified device/OS target.
+Qt projects using the SDK need some additional configuration to incorporate the SDK's build system, which takes care of defining a consistent build-kit identity and linking the correct compiled library for the project's specified device/OS target.
 
 <Aside type="caution">
 Trying to configure a project with an incorrect build kit will cause errors that prevent compilation.
 
-Make sure you have followed all steps for [setting up build kits](/get-started/set-up-build-kits) before trying to configure a project.
+Make sure you have followed all the steps for [setting up build kits](/get-started/set-up-build-kits) before trying to configure a project.
 </Aside>
 
 ## Steps
@@ -23,7 +23,7 @@ The first step in setting up a project to use the Qt SDK is to tell the SDK's bu
 
 <Tabs syncKey="buildtool">
     <TabItem label="CMake">
-        For most projects, this will be equal to the name of the target declared in the `project` command:
+        For most projects, this will be the same as the name of the target declared in the `project` command:
 
         ```cmake
         project(spoke-zone-demo LANGUAGES CXX)
@@ -49,7 +49,7 @@ This step is only necessary for QMake-based projects. If your project is using C
 
 CMake has a feature that allows for setting a kit-level toolchain file that is applied before the project's `CMakeLists.txt` file is executed. The SDK uses this feature for bootstrapping from the Qt Creator kit settings.
 
-However, QMake does not have an equivalent feature, so QMake-based projects must bootstrap from the `.pro` file using the the `QMAKE_TOOLCHAIN_FILE` variable defined in the Qt Creator kit settings:
+However, QMake does not have an equivalent feature, so QMake-based projects must bootstrap from the `.pro` file using the `QMAKE_TOOLCHAIN_FILE` variable defined in the Qt Creator kit settings:
 
 {/* TODO(#5): link to relevant section of set-up-build-kits page */}
 
