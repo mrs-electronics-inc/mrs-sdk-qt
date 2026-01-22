@@ -3,12 +3,12 @@ title: Build from Source
 description: A guide on building and installing the SDK from source.
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
 
 This guide walks you through the steps of installing all of the SDK components from source, including the Qt libraries and tooling.
 
 <Aside type="tip">
-The preferred installation method is to follow [this installation guide](/guides/installation), which uses prebuilt releases.
+The preferred installation method is to follow [this installation guide](/get-started/install), which uses prebuilt releases.
 
 Building from source is rarely a necessary step. This guide is provided for a) power users and b) people having trouble with the normal installation process.
 </Aside>
@@ -32,36 +32,18 @@ Here are the steps for installing from source:
     cd mrs-sdk-qt
     ```
 
-2. Install the `just` command runner ([read the docs](https://just.systems/man/en/quick-start.html)):
-
-    <Tabs>
-        <TabItem label="Debian">
-            ```bash
-            apt install just
-            ```
-        </TabItem>
-        <TabItem label="NPM">
-            ```bash
-            npm install -g rust-just
-            ```
-        </TabItem>
-        <TabItem label="Pipx">
-            ```bash
-            pipx install rust-just
-            ```
-        </TabItem>
-    </Tabs>
-
+2. Install the `just` command runner ([instructions here](https://just.systems/man/en/packages.html))
+    - Quick start to `just`: https://just.systems/man/en/quick-start.html
 3. Compile and install the SDK tooling:
 
     ```bash
-    just tools
+    just install-tools
     ```
 
 4. Compile and install the SDK Qt libraries:
 
     ```bash
-    just libs
+    just install-libs
     ```
 
 </Steps>

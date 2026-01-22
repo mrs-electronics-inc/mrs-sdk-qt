@@ -10,13 +10,13 @@ format-go *args:
 lint-go *args:
     ./tools/lint-go.sh {{ args }}
 
-libs: tools
+install-libs: install-tools
     mrs-sdk-manager build-local --install
 
 # You may have to do some manual setup to get the Go bin directory in your path for using mrs-sdk-manager.
 # Here is a basic sample BASH command to add to your .bashrc:
 # [[ -n "$(go env GOPATH)" ]] && PATH="$(go env GOPATH)/bin:$PATH"
-tools: deps
+install-tools: deps
     go -C tools/mrs-sdk-manager install
 
 docs-dev:
