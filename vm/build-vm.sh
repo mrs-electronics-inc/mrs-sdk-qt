@@ -171,15 +171,15 @@ print_success "Packer config is valid"
 
 # Validate cloud-init YAML syntax
 print_info "Validating cloud-init configuration..."
-if command -v python3 &> /dev/null; then
-    if ! python3 -c "import yaml; yaml.safe_load(open('cloud-init/user-data'))" 2>/dev/null; then
+if command -v yq >/dev/null; then
+    if ! yq eval '.' cloud-init/* >/dev/null 2>&1; then
         print_error "cloud-init config syntax is invalid"
-        python3 -c "import yaml; yaml.safe_load(open('cloud-init/user-data'))"
+        yq eval '.' cloud-init/* >/dev/null
         exit 1
     fi
     print_success "cloud-init config syntax is valid"
 else
-    print_warning "python3 not found, skipping cloud-init validation"
+    print_warning "yq not found, skipping cloud-init validation"
 fi
 
 # Validate-only mode: exit after validation
