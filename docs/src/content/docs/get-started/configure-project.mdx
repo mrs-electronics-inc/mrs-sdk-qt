@@ -43,19 +43,26 @@ The first step in setting up a project to use the Qt SDK is to tell the SDK's bu
 
 ### Bootstrap the build system
 
-<Aside type="note">
-This step is only necessary for QMake-based projects. If your project is using CMake, skip down to [importing global config](#import-global-config).
-</Aside>
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        This step is only necessary for QMake-based projects. You can skip to the [next section](#import-sdk-global-config).
 
-CMake has a feature that allows for setting a kit-level toolchain file that is applied before the project's `CMakeLists.txt` file is executed. The SDK uses this feature for bootstrapping from the Qt Creator kit settings.
+        CMake has a feature that allows for setting a kit-level toolchain file that is applied before the project's `CMakeLists.txt` file is executed. The SDK uses this feature for bootstrapping from the Qt Creator kit settings.
+    </TabItem>
+    <TabItem label="QMake">
+        To set up the SDK's build system, QMake-based projects must bootstrap from the `.pro` file using the the `QMAKE_TOOLCHAIN_FILE` variable defined in the Qt Creator kit settings:
 
+<<<<<<< Updated upstream
 However, QMake does not have an equivalent feature, so QMake-based projects must bootstrap from the `.pro` file using the `QMAKE_TOOLCHAIN_FILE` variable defined in the Qt Creator kit settings:
+=======
+        {/* TODO(#5): link to relevant section of set-up-build-kits page */}
+>>>>>>> Stashed changes
 
-{/* TODO(#5): link to relevant section of set-up-build-kits page */}
-
-```qmake
-include("$$(QMAKE_TOOLCHAIN_FILE)")
-```
+        ```qmake
+        include("$$(QMAKE_TOOLCHAIN_FILE)")
+        ```
+    </TabItem>
+</Tabs>
 
 ### Import SDK global config
 
