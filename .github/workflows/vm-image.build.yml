@@ -11,13 +11,19 @@ concurrency:
 jobs:
   build-vm:
     name: Build VMDK Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
       actions: write
 
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          docker-images: false
+
       - uses: actions/checkout@v4
 
       - name: Extract version tag if applicable
