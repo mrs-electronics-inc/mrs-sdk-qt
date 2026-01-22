@@ -43,6 +43,8 @@ The first step in setting up a project to use the Qt SDK is to tell the SDK's bu
 
 ### Bootstrap the build system
 
+{/* TODO(#5): add link in QMake tab to relevant section of set-up-build-kits page */}
+
 <Tabs syncKey="buildtool">
     <TabItem label="CMake">
         This step is only necessary for QMake-based projects. You can skip to the [next section](#import-sdk-global-config).
@@ -51,8 +53,6 @@ The first step in setting up a project to use the Qt SDK is to tell the SDK's bu
     </TabItem>
     <TabItem label="QMake">
         To set up the SDK's build system, QMake-based projects must bootstrap from the `.pro` file using the the `QMAKE_TOOLCHAIN_FILE` variable defined in the Qt Creator kit settings:
-
-        {/* TODO(#5): link to relevant section of set-up-build-kits page */}
 
         ```qmake
         include("$$(QMAKE_TOOLCHAIN_FILE)")
