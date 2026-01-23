@@ -16,6 +16,3 @@ RUN apk add --no-cache \
     yq \
     # Used to run the builder script
     bash
-
-# Copy shared logging utilities
-COPY utils/logging.sh /usr/local/lib/logging.sh

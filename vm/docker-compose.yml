@@ -9,13 +9,16 @@ services:
     privileged: true
 
     volumes:
+      # Add scripts
       - ./docker-entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./utils/logging.sh:/usr/local/lib/logging.sh
       # Mount packer/ directory as the Packer workspace
       - ./packer:/workspace
       # Pass through KVM device for hardware-accelerated virtualization
       - /dev/kvm:/dev/kvm
-      # Persist Packer plugin cache between runs (avoids re-downloading ISOs)
+      # Persist Packer plugin caches between runs (avoids re-downloading ISOs and plugins)
       - packer-cache:/root/.cache/packer
+      - packer-config-cache:/root/.config/packer
 
     # Use host networking so QEMU VNC/SSH ports are directly accessible
     network_mode: host
@@ -36,9 +39,13 @@ services:
     entrypoint: entrypoint.sh
 
     volumes:
+      # Add scripts
       - ./docker-entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./utils/logging.sh:/usr/local/lib/logging.sh
       # Mount packer/ directory as the Packer workspace
       - ./packer:/workspace
+      # Persist Packer config cache between runs (avoids re-downloading plugins)
+      - packer-config-cache:/root/.config/packer
 
     # Tell the builder script to just validate the configuration.
     environment:
@@ -47,3 +54,5 @@ services:
 volumes:
   # Named volume for Packer plugin cache persistence
   packer-cache:
+  # Named volume for Packer config cache persistence (i.e. downloaded plugins)
+  packer-config-cache:

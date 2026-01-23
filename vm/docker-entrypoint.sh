@@ -9,9 +9,11 @@ source /usr/local/lib/logging.sh
 
 # Export Packer variables from plain environment variables
 # (Packer reads PKR_VAR_* prefixed environment variables)
-export PKR_VAR_vm_memory="${VM_MEMORY}"
-export PKR_VAR_vm_cpus="${VM_CPUS}"
-export PKR_VAR_disk_size="${DISK_SIZE}"
+if [[ "${VALIDATE_ONLY:-false}" == "false" ]]; then
+	export PKR_VAR_vm_memory="${VM_MEMORY}"
+	export PKR_VAR_vm_cpus="${VM_CPUS}"
+	export PKR_VAR_disk_size="${DISK_SIZE}"
+fi
 
 # Collect all -var arguments passed to packer build
 # Docker Compose will pass them as regular arguments if invoked properly
@@ -46,7 +48,7 @@ print_success "Packer initialized"
 
 # Validate Packer configuration
 print_info "Validating Packer configuration..."
-packer validate . >/dev/null
+packer validate .
 print_success "Packer config is valid"
 
 # Exit early if validate-only mode
