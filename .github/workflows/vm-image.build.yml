@@ -17,6 +17,10 @@ jobs:
       contents: read
       actions: write
 
+    defaults:
+      run:
+        working-directory: vm
+
     steps:
       # Clear out disk space to hopefully make the build run a little faster
       - name: Free Disk Space (Ubuntu)
@@ -50,7 +54,6 @@ jobs:
       # The timeout for the build is set at 1 hour to give the resource-constrained runners a little leeway,
       # but with KVM, builds rarely take more than 30 minutes.
       - name: Build VMDK image
-        working-directory: vm
         run: |
           BUILD_ARGS=()
           BUILD_ARGS+=(--var "accelerator=kvm")
@@ -71,7 +74,8 @@ jobs:
         with:
           name: mrs-sdk-qt-vm-images
           path: |
-            vm/output/*.vmdk
-            vm/output/manifest.json
+            vm/packer/output/*.vmdk
+            vm/packer/output/manifest.json
+          if-no-files-found: error
           retention-days: 30
           compression-level: 0
