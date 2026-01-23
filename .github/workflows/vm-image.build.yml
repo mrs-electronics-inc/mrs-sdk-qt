@@ -36,16 +36,21 @@ jobs:
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - name: Build VMDK image
         working-directory: vm
         run: |
           BUILD_ARGS=()
 
           # Use TCG accelerator in GitHub Actions (no KVM support)
-          BUILD_ARGS+=(--var "accelerator=tcg")
+          BUILD_ARGS+=(--var "accelerator=kvm")
 
           # Set longer timeout for slow TCG emulation (4 hours)
-          BUILD_ARGS+=(--timeout 240)
+          BUILD_ARGS+=(--timeout 480)
 
           # Add version tag if this is a tagged release
           if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
@@ -53,7 +58,7 @@ jobs:
           fi
 
           ./build-vm.sh "${BUILD_ARGS[@]}" --verbose
-        timeout-minutes: 240
+        timeout-minutes: 480
 
       - name: Upload VM artifacts
         if: success()
