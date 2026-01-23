@@ -2,38 +2,11 @@
 
 # MRS SDK Qt VM Build Helper Script
 # This script automates local building of the VM image using Packer in Docker.
+# All validation and build steps run inside the container for maximum portability.
 
 set -eo pipefail
 
-# Color codes for output
-readonly RED='\033[0;31m'
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[1;33m'
-readonly BLUE='\033[0;34m'
-readonly NC='\033[0m'
-
-# Functions
-print_header() {
-    echo -e "${BLUE}================================${NC}"
-    echo -e "${BLUE}$1${NC}"
-    echo -e "${BLUE}================================${NC}"
-}
-
-print_success() {
-    echo -e "${GREEN}✓ $1${NC}"
-}
-
-print_error() {
-    echo -e "${RED}✗ $1${NC}"
-}
-
-print_warning() {
-    echo -e "${YELLOW}⚠ $1${NC}"
-}
-
-print_info() {
-    echo -e "${BLUE}| $1${NC}"
-}
+source ./utils/logging.sh
 
 show_usage() {
     cat <<EOF
@@ -71,8 +44,8 @@ export VM_MEMORY=6144
 export VM_CPUS=2
 export DISK_SIZE=61440
 export PACKER_LOG=0
+export VALIDATE_ONLY=false
 declare -a PACKER_VARS
-VALIDATE_ONLY=false
 USING_KVM=true
 BUILD_TIMEOUT=""  # Empty means use default based on accelerator
 
@@ -100,7 +73,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --validate-only)
-            VALIDATE_ONLY=true
+            export VALIDATE_ONLY=true
             shift
             ;;
         --verbose)
@@ -122,7 +95,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-print_header "MRS SDK Qt VM Build Helper"
+print_header "MRS SDK Qt VM Builder"
 
 # Check for Docker
 if ! command -v docker &> /dev/null; then
@@ -152,90 +125,12 @@ if [[ -z "${BUILD_TIMEOUT}" ]]; then
         BUILD_TIMEOUT=120
     fi
 fi
-PACKER_VARS+=(-var "build_timeout=${BUILD_TIMEOUT}m")
+export BUILD_TIMEOUT="${BUILD_TIMEOUT}m"
 
-# Check required files exist
-print_info "Checking project structure..."
-for file in packer.pkr.hcl variables.pkr.hcl cloud-init/user-data cloud-init/meta-data scripts/autoprovision.sh scripts/provision.sh; do
-    if [[ ! -f "${file}" ]]; then
-        print_error "Required file not found: ${file}"
-        exit 1
-    fi
-done
-print_success "All required files found"
-
-# Validate Packer configuration
-print_info "Validating Packer configuration..."
-docker compose run --rm packer validate .
-print_success "Packer config is valid"
-
-# Validate cloud-init YAML syntax
-print_info "Validating cloud-init configuration..."
-if command -v yq >/dev/null; then
-    if ! yq eval '.' cloud-init/* >/dev/null 2>&1; then
-        print_error "cloud-init config syntax is invalid"
-        yq eval '.' cloud-init/* >/dev/null
-        exit 1
-    fi
-    print_success "cloud-init config syntax is valid"
-else
-    print_warning "yq not found, skipping cloud-init validation"
-fi
-
-# Validate-only mode: exit after validation
+# Run build or validation via Docker entrypoint
+# Pass PACKER_VARS as arguments only if not in validate-only mode
 if ${VALIDATE_ONLY}; then
-	print_success "Validation passed. Configuration is ready to build."
-    exit 0
+    docker compose run --rm packer-validate
+else
+    docker compose run --rm packer "${PACKER_VARS[@]}"
 fi
-
-# Build
-print_header "Building VM Image"
-
-print_info "Build parameters:"
-print_info "  VM Memory: ${VM_MEMORY} MB"
-print_info "  VM CPUs: ${VM_CPUS}"
-print_info "  Disk Size: ${DISK_SIZE} MB"
-print_info "  Build Timeout: ${BUILD_TIMEOUT} minutes"
-echo ""
-
-# Initialize packer plugins
-print_info "Initializing Packer plugins..."
-docker compose run --rm packer init .
-print_success "Packer initialized"
-
-# Run build
-print_info "Starting build..."
-echo ""
-
-declare BUILD_START
-BUILD_START=$(date +%s)
-readonly BUILD_START
-
-# Filter out noisy SSH retry messages from Packer output
-docker compose run --rm packer build -color=false -timestamp-ui "${PACKER_VARS[@]}" . 2>&1 \
-    | grep -v -E "Attempting SSH connection to|reconnecting to TCP connection for SSH|handshaking with SSH|SSH handshake err: ssh: handshake failed"
-
-declare BUILD_END
-BUILD_END=$(date +%s)
-readonly BUILD_END
-readonly BUILD_DURATION=$((BUILD_END - BUILD_START))
-
-print_header "Build Complete"
-
-print_success "VM image built successfully"
-print_info "Build time: $((BUILD_DURATION / 60)) minutes $((BUILD_DURATION % 60)) seconds"
-
-# Find output images
-if [[ -f "output/mrs-sdk-qt.img" ]]; then
-    RAW_SIZE=$(du -h "output/mrs-sdk-qt.img" | cut -f1) || true
-    print_success "Raw disk image: output/mrs-sdk-qt.img (${RAW_SIZE})"
-fi
-
-if [[ -f "output/mrs-sdk-qt.vmdk" ]]; then
-    VMDK_SIZE=$(du -h "output/mrs-sdk-qt.vmdk" | cut -f1) || true
-    print_success "VMDK image: output/mrs-sdk-qt.vmdk (${VMDK_SIZE})"
-fi
-
-echo ""
-print_info "Default login: ubuntu / ubuntu"
-print_info "For detailed instructions, see: vm/README.md"

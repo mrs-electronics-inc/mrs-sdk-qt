@@ -1,14 +1,17 @@
 services:
+  # Service for running full Packer builds
   packer:
     build: .
     working_dir: /workspace
+    entrypoint: entrypoint.sh
 
     # Required for QEMU to create/manage VMs inside the container
     privileged: true
 
     volumes:
-      # Mount current directory (vm/) as the Packer workspace
-      - .:/workspace
+      - ./docker-entrypoint.sh:/usr/local/bin/entrypoint.sh
+      # Mount packer/ directory as the Packer workspace
+      - ./packer:/workspace
       # Pass through KVM device for hardware-accelerated virtualization
       - /dev/kvm:/dev/kvm
       # Persist Packer plugin cache between runs (avoids re-downloading ISOs)
@@ -18,12 +21,28 @@ services:
     network_mode: host
 
     environment:
-      # PKR_VAR_* environment variables are automatically read by Packer as variable values
-      # (See variables.pkr.hcl for definitions)
-      - PKR_VAR_vm_memory=${VM_MEMORY:-6144}      # VM RAM in MB
-      - PKR_VAR_vm_cpus=${VM_CPUS:-2}             # VM CPU cores
-      - PKR_VAR_disk_size=${DISK_SIZE:-61440}     # Disk size in MB
+      # Environment variables passed from build-vm.sh
+      - VM_MEMORY=${VM_MEMORY:-6144}              # VM RAM in MB
+      - VM_CPUS=${VM_CPUS:-2}                     # VM CPU cores
+      - DISK_SIZE=${DISK_SIZE:-61440}             # Disk size in MB
+      - BUILD_TIMEOUT=${BUILD_TIMEOUT:-60m}       # Build timeout
       - PACKER_LOG=${PACKER_LOG:-0}               # Enable verbose logging (1=enabled)
+      - VALIDATE_ONLY=${VALIDATE_ONLY:-false}     # Validate-only mode
+
+  # Service for validating the Packer configuration and environment
+  packer-validate:
+    build: .
+    working_dir: /workspace
+    entrypoint: entrypoint.sh
+
+    volumes:
+      - ./docker-entrypoint.sh:/usr/local/bin/entrypoint.sh
+      # Mount packer/ directory as the Packer workspace
+      - ./packer:/workspace
+
+    # Tell the builder script to just validate the configuration.
+    environment:
+      - VALIDATE_ONLY=true
 
 volumes:
   # Named volume for Packer plugin cache persistence
