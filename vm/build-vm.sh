@@ -127,6 +127,15 @@ if [[ -z "${BUILD_TIMEOUT}" ]]; then
 fi
 export BUILD_TIMEOUT="${BUILD_TIMEOUT}m"
 
+# Make sure all old build artifacts are removed before starting a new build.
+# Packer will flag this on its own, but the error message is a bit hard to understand,
+# so this check makes it more obvious to the user what needs to happen.
+if [[ -d "packer/output" ]]; then
+	print_error "Please remove outdated build artifacts before starting a new build."
+	print_info "Run 'sudo rm -rf packer/output' or 'just clean' to clean out artifacts."
+	exit 1
+fi
+
 # Run build or validation via Docker entrypoint
 # Pass PACKER_VARS as arguments only if not in validate-only mode
 if ${VALIDATE_ONLY}; then
