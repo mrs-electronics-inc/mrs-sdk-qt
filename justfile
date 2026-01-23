@@ -21,4 +21,8 @@ tools: deps
 
 # This uses the APT package manager, which means it only works on Debian-based systems.
 deps:
-    @command -v cmake >/dev/null || sudo apt install cmake
+	@command -v cmake >/dev/null || sudo apt install cmake
+
+# Run docs locally at http://localhost:4321
+docs:
+	npm -C docs run dev

@@ -1,0 +1,58 @@
+services:
+  # Service for running full Packer builds
+  packer:
+    build: .
+    working_dir: /workspace
+    entrypoint: entrypoint.sh
+
+    # Required for QEMU to create/manage VMs inside the container
+    privileged: true
+
+    volumes:
+      # Add scripts
+      - ./docker-entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./utils/logging.sh:/usr/local/lib/logging.sh
+      # Mount packer/ directory as the Packer workspace
+      - ./packer:/workspace
+      # Pass through KVM device for hardware-accelerated virtualization
+      - /dev/kvm:/dev/kvm
+      # Persist Packer plugin caches between runs (avoids re-downloading ISOs and plugins)
+      - packer-cache:/root/.cache/packer
+      - packer-config-cache:/root/.config/packer
+
+    # Use host networking so QEMU VNC/SSH ports are directly accessible
+    network_mode: host
+
+    environment:
+      # Environment variables passed from build-vm.sh
+      - VM_MEMORY=${VM_MEMORY:-6144}              # VM RAM in MB
+      - VM_CPUS=${VM_CPUS:-2}                     # VM CPU cores
+      - DISK_SIZE=${DISK_SIZE:-61440}             # Disk size in MB
+      - BUILD_TIMEOUT=${BUILD_TIMEOUT:-60m}       # Build timeout
+      - PACKER_LOG=${PACKER_LOG:-0}               # Enable verbose logging (1=enabled)
+      - VALIDATE_ONLY=${VALIDATE_ONLY:-false}     # Validate-only mode
+
+  # Service for validating the Packer configuration and environment
+  packer-validate:
+    build: .
+    working_dir: /workspace
+    entrypoint: entrypoint.sh
+
+    volumes:
+      # Add scripts
+      - ./docker-entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./utils/logging.sh:/usr/local/lib/logging.sh
+      # Mount packer/ directory as the Packer workspace
+      - ./packer:/workspace
+      # Persist Packer config cache between runs (avoids re-downloading plugins)
+      - packer-config-cache:/root/.config/packer
+
+    # Tell the builder script to just validate the configuration.
+    environment:
+      - VALIDATE_ONLY=true
+
+volumes:
+  # Named volume for Packer plugin cache persistence
+  packer-cache:
+  # Named volume for Packer config cache persistence (i.e. downloaded plugins)
+  packer-config-cache:
