@@ -1,0 +1,19 @@
+# List available recipes
+default:
+    @just --list
+
+# Build the VM image locally using Packer in Docker
+build *args:
+	./build-vm.sh {{ args }}
+
+# Validate Packer config
+validate:
+    ./build-vm.sh --validate-only
+
+# Watch the QEMU serial output during a local VM build
+watch-serial:
+    [ -f packer/output/vm-serial.log ] && tail -f packer/output/vm-serial.log
+
+# Remove old build artifacts
+clean:
+    sudo rm -rf packer/output/
