@@ -130,7 +130,7 @@ export BUILD_TIMEOUT="${BUILD_TIMEOUT}m"
 # Run build or validation via Docker entrypoint
 # Pass PACKER_VARS as arguments only if not in validate-only mode
 if ${VALIDATE_ONLY}; then
-    docker compose run --rm packer-validate
+    docker compose run --build --rm packer-validate
 else
-    docker compose run --rm packer "${PACKER_VARS[@]}"
+    docker compose run --build --rm packer "${PACKER_VARS[@]}"
 fi
