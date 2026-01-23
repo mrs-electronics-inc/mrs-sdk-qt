@@ -1,7 +1,6 @@
 name: Build MRS SDK Qt VM Image
 
 on:
-  pull_request: # DELETEME
   workflow_dispatch:
 
 concurrency:
