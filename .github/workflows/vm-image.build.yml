@@ -27,6 +27,7 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: true
+          large-packages: false # This step takes a couple minutes...not sure it's worth it
           docker-images: false
 
       - uses: actions/checkout@v4
