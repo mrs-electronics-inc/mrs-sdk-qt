@@ -58,7 +58,7 @@ Examples:
      # Build with custom memory and CPU
      $(basename "$0") -m 8192 -c 4
 
-     # Use TCG emulation (slower, no KVM required)
+     # Use TCG emulation (much slower, no KVM required)
      $(basename "$0") --var accelerator=tcg --timeout 240
 
      # Validate configuration only
@@ -140,7 +140,7 @@ print_success "Docker Compose found"
 
 # Check for KVM access (warn if not available)
 if ${USING_KVM} && [[ ! -w /dev/kvm ]]; then
-    print_warning "/dev/kvm not writable. Build will be slow without KVM."
+    print_warning "/dev/kvm not writable. Build will be very slow without KVM."
     print_info "Use --var accelerator=tcg to suppress this warning, or fix KVM access."
 fi
 

@@ -29,7 +29,7 @@ variable "disk_size" {
 variable "accelerator" {
   type        = string
   default     = "kvm"
-  description = "QEMU accelerator to use (kvm for local, tcg for CI/cloud)"
+  description = "QEMU accelerator to use (kvm if available, tcg as fallback)"
 }
 
 variable "build_timeout" {
