@@ -18,6 +18,7 @@ jobs:
       actions: write
 
     steps:
+      # Clear out disk space to hopefully make the build run a little faster
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
@@ -26,30 +27,31 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      # Extract version tag if this is a tagged release
       - name: Extract version tag if applicable
         id: vars
         run: |
-          # Extract version tag if this is a tagged release
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             VERSION="${{ github.ref }}"
             VERSION="${VERSION#refs/tags/}"
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
 
+      # KVM is the best option for hardware acceleration. It's not enabled by default in Github-hosted runners, but it is supported,
+      # so we can manually enable it to speed up Packer/QEMU build times by adding the runner user to the KVM user group.
+      # See https://github.blog/changelog/2024-04-02-github-actions-hardware-accelerated-android-virtualization-now-available/
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+
       - name: Build VMDK image
         working-directory: vm
         run: |
           BUILD_ARGS=()
-
-          # Use TCG accelerator in GitHub Actions (no KVM support)
           BUILD_ARGS+=(--var "accelerator=kvm")
-
-          # Set longer timeout for slow TCG emulation (4 hours)
+          # Set longer timeout (8 hours) to account for resource-constrained runner
           BUILD_ARGS+=(--timeout 480)
 
           # Add version tag if this is a tagged release
