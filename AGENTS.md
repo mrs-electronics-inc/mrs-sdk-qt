@@ -22,7 +22,7 @@
 
 **Shebangs**: Always use `#!/usr/bin/env bash` (not `#!/bin/bash`) for shell scripts. NixOS requires this for portability.
 
-**Commits**: Use conventional commit format (feat:, fix:, docs:, etc.).
+**Commits**: Use conventional commit format (feat:, fix:, docs:, etc.). Always use Conventional Commits for all commits.
 
 ## Key Files
 
@@ -33,3 +33,5 @@
 ## Git Workflow
 
 Trunk-based: branch from `main` as `<issue-num>-<title>`, use conventional commits, create draft PRs early, squash-merge when approved.
+
+For full details on git workflow, issue management, and code review, see [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,0 +1,83 @@
+name: Build MRS SDK Qt VM Image
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: vm-build
+  cancel-in-progress: false
+
+jobs:
+  build-vm:
+    name: Build VMDK Image
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+      actions: write
+
+    defaults:
+      run:
+        working-directory: vm
+
+    steps:
+      # Clear out disk space to hopefully make the build run a little faster
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          docker-images: false
+          # This step, if enabled, takes a couple minutes to complete because of how many packages it attempts to remove.
+          # It doesn't seem worthwhile to run, since it only frees about 4GB of disk, so it's disabled.
+          large-packages: false
+
+      - uses: actions/checkout@v4
+
+      # Extract version tag if this is a tagged release
+      - name: Extract version tag if applicable
+        id: vars
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION="${{ github.ref }}"
+            VERSION="${VERSION#refs/tags/}"
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+      # KVM is the best option for hardware acceleration. It's not enabled by default in Github-hosted runners, but it is supported,
+      # so we can manually enable it to speed up Packer/QEMU build times by adding the runner user to the KVM user group.
+      # See https://github.blog/changelog/2024-04-02-github-actions-hardware-accelerated-android-virtualization-now-available/
+      - name: Enable KVM acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Build the VMDK! The builder script uses Packer with QEMU and KVM.
+      # The timeout for the build is set at 1 hour to give the resource-constrained runners a little leeway,
+      # but with KVM, builds rarely take more than 30 minutes.
+      - name: Build VMDK image
+        run: |
+          BUILD_ARGS=()
+          BUILD_ARGS+=(--var "accelerator=kvm")
+          BUILD_ARGS+=(--timeout 60)
+
+          # Add version tag if this is a tagged release
+          if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
+            BUILD_ARGS+=(--var "version=${{ steps.vars.outputs.version }}")
+          fi
+
+          ./build-vm.sh "${BUILD_ARGS[@]}" --verbose
+
+        timeout-minutes: 60
+
+      - name: Upload VM artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrs-sdk-qt-vm-images
+          path: |
+            vm/packer/output/*.vmdk
+            vm/packer/output/manifest.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
