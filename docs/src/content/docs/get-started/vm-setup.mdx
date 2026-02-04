@@ -13,7 +13,7 @@ The MRS SDK Qt project provides a pre-built Ubuntu 24.04 LTS Desktop virtual mac
 
 1. [**Install**](#install-virtualization-software) virtualization software for your host OS
 2. [**Obtain**](#obtaining-the-vm-image) the VMDK image (download or build locally)
-3. [**Import**](#importing-the-vm) it into your virtualization platform
+3. [**Import**](#import-the-vm) it into your virtualization platform
 4. **Launch** the VM and start developing with Qt Creator
 
 </Steps>
@@ -33,31 +33,31 @@ The VM includes:
 
 Here are our **recommended platforms** depending on your host operating system:
 
-| Host OS | Virtualization |
-| --- | --- |
+| Host OS | Virtualization     |
+| ------- | ------------------ |
 | Windows | VirtualBox, VMWare |
-| Linux | virt-manager |
+| Linux   | virt-manager       |
 
 <Tabs>
    <TabItem label="VirtualBox">
 
-   1. Download the VirtualBox platform: https://www.virtualbox.org/wiki/Downloads
-   2. Installation instructions: https://www.virtualbox.org/manual/topics/installation.html
+1.  Download the VirtualBox platform: https://www.virtualbox.org/wiki/Downloads
+2.  Installation instructions: https://www.virtualbox.org/manual/topics/installation.html
 
    </TabItem>
    <TabItem label="VMware">
 
-   You will have to create a free Broadcom account before you can download VMware.
+You will have to create a free Broadcom account before you can download VMware.
 
-   1. Create Broadcom account: https://profile.broadcom.com/web/registration
-   2. Download VMware Workstation Pro: https://support.broadcom.com/group/ecx/free-downloads
+1.  Create Broadcom account: https://profile.broadcom.com/web/registration
+2.  Download VMware Workstation Pro: https://support.broadcom.com/group/ecx/free-downloads
 
    </TabItem>
    <TabItem label="virt-manager">
 
-   **NOTE:** `virt-manager` is only available for Linux users.
+**NOTE:** `virt-manager` is only available for Linux users.
 
-   You can install it via your native package manager: https://virt-manager.org/
+You can install it via your native package manager: https://virt-manager.org/
 
    </TabItem>
    <TabItem label="GNOME Boxes">
@@ -65,12 +65,13 @@ Here are our **recommended platforms** depending on your host operating system:
    <Aside type="caution">
    GNOME Boxes is easily installed alongside the GNOME desktop environment in Ubuntu, and it is commonly used for basic VM setups in many Linux distros.
 
-   However, we **DO NOT** recommend using it for the MRS SDK Qt VM. There are a few [known issues](#known-issues) that we have encountered which do not occur on other virtualization platforms.
+However, we **DO NOT** recommend using it for the MRS SDK Qt VM. There are a few [known issues](#known-issues) that we have encountered which do not occur on other virtualization platforms.
+
    </Aside>
 
-   **NOTE:** GNOME Boxes is only available for Linux users.
+**NOTE:** GNOME Boxes is only available for Linux users.
 
-   Installation directions are here: https://snapcraft.io/gnome-boxes
+Installation directions are here: https://snapcraft.io/gnome-boxes
 
    </TabItem>
 </Tabs>
@@ -83,7 +84,7 @@ Pre-built VM images are available for download:
 
 1. Visit the <a href="https://mrselectronics-my.sharepoint.com/:f:/g/personal/addison_emig_mrs-electronics_com/EmT5AxglIxBJnDWp7DWMYTgBqBoZhU_oodHmsWTj_M0EEQ?e=SBnOGw" target="_blank">MRS SDK Qt VM Images OneDrive folder</a>
 2. Download the latest `mrs-sdk-qt.vmdk` file
-3. Follow the [import instructions](#importing-the-vm) below
+3. Follow the [import instructions](#import-the-vm) below
 
 ### Option 2: Build Locally
 
@@ -93,7 +94,7 @@ To build the VM image on your machine:
 
 - [Docker](https://docs.docker.com/get-docker/) with Docker Compose
 - KVM access (optional but recommended for faster builds)
-{/* The VM disk by default is 60GB. The 80GB number has a safe buffer. */}
+  {/_ The VM disk by default is 60GB. The 80GB number has a safe buffer. _/}
 - 80GB free disk space
 - 6+ GB available RAM
 
@@ -102,16 +103,16 @@ To build the VM image on your machine:
 <Tabs>
    <TabItem label="bash">
 
-   ```bash
-   cd vm && ./build-vm.sh
-   ```
+```bash
+cd vm && ./build-vm.sh
+```
 
    </TabItem>
    <TabItem label="just">
 
-   ```bash
-   just vm-build
-   ```
+```bash
+just vm-build
+```
 
    </TabItem>
 </Tabs>
