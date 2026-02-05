@@ -1,0 +1,11 @@
+# List docs recipes
+default:
+    @JUST_LIST_HEADING="" just --list --list-prefix "    docs/"
+
+# Build the docs site
+build:
+    npm run build
+
+# Run docs locally at http://localhost:4321
+dev:
+    npm run dev

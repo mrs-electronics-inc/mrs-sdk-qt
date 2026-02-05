@@ -1,5 +1,11 @@
+# List all recipes, including in subdirs
 default:
-    @just --list
+    @echo "Top-level recipes:"
+    @JUST_LIST_HEADING="" just --list
+    @echo "VM recipes:"
+    @cd vm/ && JUST_LIST_HEADING="" just --list --list-prefix "    vm/"
+    @echo "Docs recipes:"
+    @cd docs/ && JUST_LIST_HEADING="" just --list --list-prefix "    docs/"
 
 format-cpp *args:
     ./tools/format-cpp.sh {{ args }}
@@ -19,13 +25,6 @@ install-libs: install-tools
 install-tools: deps
     go -C tools/mrs-sdk-manager install
 
-docs-dev:
-    cd docs && npm run dev
-
 # This uses the APT package manager, which means it only works on Debian-based systems.
 deps:
 	@command -v cmake >/dev/null || sudo apt install cmake
-
-# Run docs locally at http://localhost:4321
-docs:
-	npm -C docs run dev
