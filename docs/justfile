@@ -2,6 +2,10 @@
 default:
     @JUST_LIST_HEADING="" just --list --list-prefix "    docs/"
 
+# Install the docs dependencies
+deps:
+    npm i
+
 # Build the docs site
 build:
     npm run build

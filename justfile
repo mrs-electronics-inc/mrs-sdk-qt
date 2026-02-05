@@ -28,3 +28,6 @@ install-tools: deps
 # This uses the APT package manager, which means it only works on Debian-based systems.
 deps:
 	@command -v cmake >/dev/null || sudo apt install cmake
+
+setup:
+    pre-commit install
