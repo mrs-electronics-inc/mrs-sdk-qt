@@ -1,0 +1,4 @@
+:root {
+  /* Make the content wider to make the default rendering for pictures a little clearer */
+  --sl-content-width: 64rem;
+}

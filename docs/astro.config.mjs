@@ -33,7 +33,7 @@ export default defineConfig({
 					}
 				}
 			],
-			customCss: ['./src/styles/collapsible.css'],
+			customCss: ['./src/styles/custom.css'],
 			expressiveCode: {
 				shiki: {
 					langAlias: {
