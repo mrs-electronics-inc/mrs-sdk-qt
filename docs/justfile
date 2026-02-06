@@ -4,7 +4,7 @@ default:
 
 # Install the docs dependencies
 deps:
-    npm i
+    npm i --no-fund --no-save
 
 # Build the docs site
 build:
