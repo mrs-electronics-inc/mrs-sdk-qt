@@ -45,7 +45,7 @@ You can view the SDK development roadmap here: https://qt.mrs-electronics.dev/re
 
 Coming soon!
 
-<!-- TODO(#5): add prequisites -->
+<!-- TODO(#4): add prequisites -->
 
 ### Installation
 
