@@ -28,7 +28,7 @@ Here are some of the most relevant pages:
 
 **NOTE:** Qt Creator is installed by default in the standard MRS SDK VM. If you are using the standard VM (and do not need to update Qt Creator), skip to [kit setup](#which-kits-do-i-need).
 
-If you have never installed Qt before, use the **Qt Online Installer** steps. If you have installed Qt before, but didn't install Qt Creator or want to update it, use the **Qt Maintenance Tool** steps.
+If you have never installed Qt before, or do not have the Qt Maintenance Tool, use the **Qt Online Installer** steps. If you have installed Qt before, but didn't install Qt Creator or want to update it, use the **Qt Maintenance Tool** steps.
 
 <Tabs>
   <TabItem label="Qt Online Installer">
@@ -37,7 +37,7 @@ If you have never installed Qt before, use the **Qt Online Installer** steps. If
     <Steps>
 
     1. Create a new Qt account: https://login.qt.io/register
-    2. Download the Qt Online Installer from here: https://login.qt.io/register
+    2. Download the Qt Online Installer from here: https://my.qt.io/download
         - If you are using an Ubuntu/Linux VM, use the `Linux x64` installer
     3. Run the installer (make it executable if on Linux). Log in with your Qt credentials and accept the licenses.
     4. Choose a directory to install Qt. The default of `$HOME/Qt` is fine, or you can choose a different location.
@@ -212,21 +212,21 @@ In addition to configuring the helper script to use, you'll have to tell the kit
 ### Desktop Qt5
 </summary>
 
-**NOTE:** these steps are based on version `18.0.1` of Qt Creator.
+**NOTE:** these steps are based on version `13.0.0` of Qt Creator, which is the version installed by default in the MRS SDK VM.
 
 <Steps>
 
 1. Open Qt Creator and go to **Edit** > **Preferences** > **Kits**.
 2. There will be a few tabs across the top of the window. Go to **Qt Versions**.
-3. Verify the Qt 5.15 installation was auto-detected:
+3. Add the Qt 5.15 version by selecting its `qmake` program, located at `/opt/Qt/5.15.0/gcc_64/bin/qmake`:
 
     ![Qt Creator Qt version config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/qt-version.png)
 
-4. Go to **Compilers**. Verify the GCC/G++ compilers were auto-detected. There may be multiple compiler options on your system:
+4. Go to **Compilers**. Verify the C/C++ compilers were auto-detected:
 
     ![Qt Creator compiler config for desktop Qt5](../../../assets/build-kit-setup/desktop/compilers.png)
 
-    Look for paths like `/bin/gcc` or `/usr/lib/ccache/gcc`. Run `apt install build-essential` to install the GNU compilers if necessary.
+    There may be multiple compiler options on your system even if only one was auto-detected. Look for paths like `/usr/bin/gcc`, `/bin/gcc`, or `/usr/lib/ccache/gcc`. Run `apt install build-essential` to install the GNU compilers if necessary.
 
 5. Go to **Debuggers**. Verify a system GDB debugger was auto-detected:
 
@@ -241,14 +241,14 @@ In addition to configuring the helper script to use, you'll have to tell the kit
 
     Look for the path `/usr/bin/cmake`. Run `apt install cmake` to install CMake if necessary.
 
-8. Now that all the kit's components are verified, it's time to create the kit! Navigate back to **Kits**.
-9. The Qt 5.15 desktop kit should have been auto-detected. Edit the configuration as needed to match this:
+8. Now that all the kit's components have been verified, it's time to create the kit! Navigate back to **Kits**.
+9. Click **Add** to add a new kit. Edit the configuration to match this:
 
     ![Qt Creator kit full config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/kit-full.png)
 
-    Make sure the proper compiler, debugger, and CMake tool are selected. They should all be system defaults.
+    Make sure the proper compiler, debugger, and CMake tool are selected.
 
-10. Next, you'll need to add some environment variables to configure the SDK. Click **Edit Build Environment** and add the following, inserting the path to your MRS SDK installation:
+10. Next, you'll need to add some environment variables to configure the SDK. Click the **Change...** button for the **Environment** configuration and add the following, inserting the path to your MRS SDK installation:
 
     ```text
     MRS_SDK_QT_TARGET_DEVICE=Desktop
@@ -269,7 +269,8 @@ In addition to configuring the helper script to use, you'll have to tell the kit
 
     ![Qt Creator kit CMake config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/kit-cmake-config.png)
 
-12. Your Desktop Qt5 kit is now complete and ready to use with the MRS SDK! To make sure everything is working properly, [verify your kit setup](#verify-kits).
+12. Your Desktop Qt5 kit is now complete and ready to use with the MRS SDK!
+{/* To make sure everything is working properly, [verify your kit setup](#verify-kits). */}
 
 </Steps>
 
