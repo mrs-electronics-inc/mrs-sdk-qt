@@ -153,21 +153,21 @@ Setup steps coming soon!
 ### Desktop Qt6
 </summary>
 
-**NOTE:** these steps are based on version `18.0.1` of Qt Creator.
+**NOTE:** these steps are based on version `13.0.0` of Qt Creator, which is the version installed by default in the MRS SDK VM.
 
 <Steps>
 
 1. Open Qt Creator and go to **Edit** > **Preferences** > **Kits**.
 2. There will be a few tabs across the top of the window. Go to **Qt Versions**.
-3. Verify the Qt 6.8 installation was auto-detected:
+3. Add the Qt 6.8 version by selecting its `qmake` program, located at `/opt/Qt/6.8.0/gcc_64/bin/qmake`:
 
     ![Qt Creator Qt version config for desktop Qt6](../../../assets/build-kit-setup/desktop/qt6/qt-version.png)
 
-4. Go to **Compilers**. Verify the GCC/G++ compilers were auto-detected. There may be multiple compiler options on your system:
+4. Go to **Compilers**. Verify the C/C++ compilers were auto-detected:
 
     ![Qt Creator compiler config for desktop Qt6](../../../assets/build-kit-setup/desktop/compilers.png)
 
-    Look for paths like `/bin/gcc` or `/usr/lib/ccache/gcc`. Run `apt install build-essential` to install the GNU compilers if necessary.
+    There may be multiple compiler options on your system even if only one was auto-detected. Look for paths like `/usr/bin/gcc`, `/bin/gcc`, or `/usr/lib/ccache/gcc`. Run `apt install build-essential` to install the GNU compilers if necessary.
 
 5. Go to **Debuggers**. Verify a system GDB debugger was auto-detected:
 
@@ -182,18 +182,18 @@ Setup steps coming soon!
 
     Look for the path `/usr/bin/cmake`. Run `apt install cmake` to install CMake if necessary.
 
-8. Now that all the kit's components are verified, it's time to create the kit! Navigate back to **Kits**.
-9. The Qt 6.8 desktop kit should have been auto-detected. Edit the configuration as needed to match this:
+8. Now that all the kit's components have been verified, it's time to create the kit! Navigate back to **Kits**.
+9. Click **Add** to add a new kit. Edit the configuration to match this:
 
     ![Qt Creator kit full config for desktop Qt6](../../../assets/build-kit-setup/desktop/qt6/kit-full.png)
 
-    Make sure the proper compiler, debugger, and CMake tool are selected. They should all be system defaults.
+    Make sure the proper compiler, debugger, and CMake tool are selected.
 
-10. Next, you'll need to add some environment variables to configure the SDK. Click **Edit Build Environment** and add the following, inserting the path to your MRS SDK installation:
+10. Next, you'll need to add some environment variables to configure the SDK. Click the **Change...** button for the **Environment** configuration and add the following, inserting the path to your MRS SDK installation:
 
     ```text
     MRS_SDK_QT_TARGET_DEVICE=Desktop
-    QMAKE_TOOLCHAIN_FILE=<path-to-mrs-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt6-desktop.pri
+    QMAKE_TOOLCHAIN_FILE=<path-to-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt6-desktop.pri
     ```
 
     ![Qt Creator kit build environment config for desktop Qt6](../../../assets/build-kit-setup/desktop/qt6/kit-build-env.png)
@@ -263,7 +263,7 @@ Setup steps coming soon!
 
     ```text
     MRS_SDK_QT_TARGET_DEVICE=Desktop
-    QMAKE_TOOLCHAIN_FILE=<path-to-mrs-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt5-desktop.pri
+    QMAKE_TOOLCHAIN_FILE=<path-to-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt5-desktop.pri
     ```
 
     ![Qt Creator kit build environment config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/kit-build-env.png)
