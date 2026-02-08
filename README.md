@@ -39,29 +39,21 @@ You can view the SDK development roadmap here: https://qt.mrs-electronics.dev/re
 
 <!-- TODO(#7): add demo applications in demos directory -->
 
-## Prerequisites
+## Get Started
+
+### Prerequisites
 
 Coming soon!
 
-<!-- TODO(#5): add prequisites -->
+<!-- TODO(#4): add prequisites -->
 
-## Installation
+### Installation
 
-### From Source
+To install a particular release: https://qt.mrs-electronics.dev/get-started/install/
 
-1. Clone the repository:
+To build from source: https://qt.mrs-electronics.dev/get-started/build-from-source/
 
-   ```bash
-   git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt.git
-   cd mrs-sdk-qt
-   ```
-
-2. Build the SDK:
-   TBD
-
-<!-- TODO(#5): Add build instructions once we have them -->
-
-## Getting Started
+### Create a New Project
 
 Coming soon!
 

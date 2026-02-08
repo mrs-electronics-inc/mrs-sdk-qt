@@ -1,0 +1,116 @@
+---
+title: Installation Structure
+description: This page outlines the installation structure of the SDK.
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+This page details the installation tree of the SDK: where the installation is located, how multiple versions are managed, what is contained in each subdirectory, and so on.
+
+## Directory layout
+
+<FileTree>
+
+- HOME/mrs-sdk-qt
+  - bin/            Top-level tools that aren't tied to SDK versions
+  - current/        Symlink to the SDK version currently in use
+  - \<version\>/    A specific installed version of the SDK
+    - bin/
+    - docs/
+    - demos/
+    - include/
+    - lib
+      - cmake
+        - mrs-sdk-qt
+          - toolchains/
+          - config.cmake
+      - qmake
+        - mrs-sdk-qt
+          - toolchains/
+          - config.pri
+      - qt5
+        - buildroot
+          - linux_arm_mconn
+            - libmrs-sdk-qt.a
+          - linux_arm_fusion
+            - libmrs-sdk-qt.a
+        - yocto
+          - linux_arm_mconn
+            - libmrs-sdk-qt.a
+        - desktop
+          - linux_x86_64_desktop
+            - libmrs-sdk-qt.a
+      - qt6
+        - yocto
+          - linux_arm_neuralplex
+            - libmrs-sdk-qt.a
+        - desktop
+          - linux_x86_64_desktop
+            - libmrs-sdk-qt.a
+</FileTree>
+
+### Versioning
+
+The SDK's structure allows you to have multiple versions installed simultaneously.
+
+When you install a new version, it will be located in `mrs-sdk-qt/<version>/`, where `<version>` is the exact version of the release.
+
+You can use the `mrs-sdk-manager` tool to select which version to activate.
+
+{/* TODO(#51): link to the docs for the relevant mrs-sdk-manager subcommand */}
+
+### Top-level tools
+
+The `mrs-sdk-qt/bin` directory contains tools that are managed/installed independently of the actual SDK installations.
+
+Right now, this list just includes `mrs-sdk-manager`, which is meant to be installed on its own and then used for downloading new SDK versions.
+
+### The `current` installation
+
+The `mrs-sdk-qt/current` symlink defines the "active" version of the SDK. It is useful for abstracting out SDK version numbers when writing CMake/QMake configurations for projects: instead of specifying the version number in the path, you can simply say `MRS_SDK_QT_ROOT/current/...`.
+
+This symlink is controlled by the `mrs-sdk-manager` tool.
+
+{/* TODO(#51): link to the docs for the relevant mrs-sdk-manager subcommand */}
+
+## SDK components
+
+Each independent SDK version contains its own versions of each component of the SDK; in other words, each installed version is self-contained.
+
+Note that paths in this section are described relative to `MRS_SDK_QT_ROOT/<version>`, the top level of an installed SDK version.
+
+### Qt libraries
+
+The `mrs-sdk-qt` Qt/C++ library is the centerpiece of the SDK.
+
+#### Headers
+
+**Location:** `include/`
+
+#### Build System
+
+The SDK has two sibling build systems: one runs on top of CMake and the other is for QMake.
+
+##### CMake
+
+**Location:** `lib/cmake/`
+
+##### QMake
+
+**Location:** `lib/qmake/`
+
+#### Compiled Libraries
+
+**Locations:** `lib/qt5`, `lib/qt6`
+
+### Tooling
+
+**Location:** `bin/`
+
+### Documentation
+
+**Location:** `docs/`
+
+### Demos
+
+**Location:** `demos/`

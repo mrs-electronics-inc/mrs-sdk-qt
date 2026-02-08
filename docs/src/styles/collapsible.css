@@ -1,0 +1,15 @@
+/* Class definitions come from @astrojs/starlight/style/markdown.css */
+
+/* By default, Starlight's collapsible marker is rendered to the left of the summary text.
+* This flips the order and spaces things out so the marker is all the way to the right. */
+.sl-markdown-content summary:not(:where(.not-content *)) {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+
+.sl-markdown-content summary:not(:where(.not-content *))::before {
+  /* Make the arrow a little bigger */
+  --sl-details-marker-size: 2rem;
+}

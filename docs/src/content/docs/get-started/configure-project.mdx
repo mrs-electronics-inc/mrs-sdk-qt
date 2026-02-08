@@ -1,0 +1,121 @@
+---
+title: Configure a Project
+description: This page explains how to configure a Qt project to use the MRS SDK.
+sidebar:
+  order: 4
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Qt projects using the SDK need some additional configuration to incorporate the SDK's build system, which takes care of defining a consistent build-kit identity and linking the correct compiled library for the project's specified device/OS target.
+
+<Aside type="caution">
+Trying to configure a project with an incorrect build kit will cause errors that prevent compilation.
+
+Make sure you have followed all the steps for [setting up build kits](/get-started/set-up-build-kits) before trying to configure a project.
+</Aside>
+
+## Steps
+
+### Set the consumer target
+
+The first step in setting up a project to use the Qt SDK is to tell the SDK's build system the name of the target that will consume the SDK.
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        For most projects, this will be the same as the name of the target declared in the `project` command:
+
+        ```cmake
+        project(spoke-zone-demo LANGUAGES CXX)
+        ... # Other code
+        set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-demo")
+        ```
+    </TabItem>
+    <TabItem label="QMake">
+        For most projects, this will be the same as the name of the `.pro` file:
+
+        ```qmake
+        # in can-simulator.pro
+        MRS_SDK_QT_CONSUMER_TARGET = "can-simulator"
+        ```
+    </TabItem>
+</Tabs>
+
+### Bootstrap the build system
+
+{/* TODO(#61): add link in QMake tab to relevant section of set-up-build-kits page. There will be a section about verifying kit config using the demo apps. */}
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        This step is only necessary for QMake-based projects. You can skip to the [next section](#import-sdk-global-config).
+
+        CMake has a feature that allows for setting a kit-level toolchain file that is applied before the project's `CMakeLists.txt` file is executed. The SDK uses this feature for bootstrapping from the Qt Creator kit settings.
+    </TabItem>
+    <TabItem label="QMake">
+        To set up the SDK's build system, QMake-based projects must bootstrap from the `.pro` file using the the `QMAKE_TOOLCHAIN_FILE` variable defined in the Qt Creator kit settings:
+
+        ```qmake
+        include("$$(QMAKE_TOOLCHAIN_FILE)")
+        ```
+    </TabItem>
+</Tabs>
+
+### Import SDK global config
+
+The next step is to import the SDK's global configuration helper, which has a constant location. This lets the build system know where to find the the SDK installation and which version is linked as the `current` version.
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        ```cmake
+        include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
+        ```
+    </TabItem>
+    <TabItem label="QMake">
+        ```qmake
+        include("$$(HOME)/.config/mrs-sdk-qt/global-config.pri")
+        ```
+    </TabItem>
+</Tabs>
+
+### Run SDK build system
+
+The final step is to run the SDK's custom build system, which comes in both CMake and QMake variants.
+
+The `MRS_SDK_QT_ROOT` variable is defined by the [global config helpers](#import-sdk-global-config).
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        ```cmake
+        include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
+        ```
+    </TabItem>
+    <TabItem label="QMake">
+        ```qmake
+        include("$$MRS_SDK_QT_ROOT/current/lib/qmake/mrs-sdk-qt/config.pri")
+        ```
+    </TabItem>
+</Tabs>
+
+For more information about the build system, see the [SDK component reference](/reference/installation-structure/#build-system).
+
+## Final configuration
+
+Here are some examples of what the final project configuration might look like:
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        ```cmake
+        set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-demo")
+        include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
+        include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
+        ```
+    </TabItem>
+    <TabItem label="QMake">
+        ```qmake
+        MRS_SDK_QT_CONSUMER_TARGET = "can-simulator"
+        include("$$(QMAKE_TOOLCHAIN_FILE)")
+        include("$$(HOME)/.config/mrs-sdk-qt/global-config.pri")
+        include("$$MRS_SDK_QT_ROOT/current/lib/qmake/mrs-sdk-qt/config.pri")
+        ```
+    </TabItem>
+</Tabs>

@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightImageZoom from 'starlight-image-zoom';
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,12 +11,13 @@ export default defineConfig({
 	publicDir: './public',
 	integrations: [
 		starlight({
+			plugins: [starlightImageZoom()],
 			title: 'MRS Qt SDK',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/mrs-electronics-inc/mrs-sdk-qt' }],
 			sidebar: [
 				{
-					label: 'Guides',
-					autogenerate: { directory: 'guides' },
+					label: 'Get Started',
+					autogenerate: { directory: 'get-started' },
 				},
 				{
 					label: 'Reference',
@@ -30,7 +32,17 @@ export default defineConfig({
 						href: '/site.webmanifest'
 					}
 				}
-			]
+			],
+			customCss: ['./src/styles/custom.css'],
+			expressiveCode: {
+				shiki: {
+					langAlias: {
+						// Make is the closest language to QMake supported by Shiki,
+						// so we'll just use that for syntax highlighting.
+						qmake: 'make',
+					}
+				}
+			}
 		}),
 	],
 });

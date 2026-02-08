@@ -37,8 +37,8 @@ echo "Installing Qt 5.15.0 LTS..."
 echo "Installing Qt 6.8.0 LTS..."
 ~/.local/bin/aqt install-qt linux desktop 6.8.0 -m all -O "${QT_PATH}"
 
-# TODO: install other necessary Qt toolchains
+# TODO(#62): install other necessary Qt toolchains
 
-# TODO: actually install the MRS SDK
+# TODO(#63): actually install the MRS SDK
 
 echo "Provisioning complete!"

@@ -1,89 +1,18 @@
 # The `mrs-sdk-qt` Library
 
-The `mrs-sdk-qt` library is the centerpiece of the SDK.
+The `mrs-sdk-qt` library is the centerpiece of the Qt SDK.
 
-## Installation
+## Quick Links
 
-Here are the steps for compiling and installing the library.
+Here are some guides for getting started with the SDK libraries:
 
-NOTE: You will need to have Qt5/Qt6 installed before you can compile.
-
-1. Install the `just` tool: `sudo apt install just`
-2. Compile the tooling: `just tools`
-3. Compile the SDK libraries: `just libs`
-4. The SDK will be installed in the following tree on your system:
-
-```
-HOME/mrs-sdk-qt/
-├── bin/            # Top-level tools: version/installation manager, anything else that's not version-specific
-|   └── mrs-sdk-manager
-├── current/        # Symlink to the SDK version currently in use
-└── <version>/      # A specific installed version of the SDK, including all libraries, headers, documentation, and other files necessary for use
-    ├── bin/
-    ├── docs/
-    ├── demos/
-    ├── include/
-    └── lib/
-        ├── cmake/                  # CMake configuration files for setting up toolchains and SDK libraries
-        |   └── mrs-sdk-qt/
-        |       ├── toolchains/
-        |       └── config.cmake
-        ├── qmake/                  # QMake configuration files for setting up toolchains and SDK libraries
-        |   └── mrs-sdk-qt/
-        |       └── config.pri
-        ├── qt5/
-        │   ├── buildroot/
-        │   │   ├── linux_arm_mconn/
-        │   │   │   └── libmrs-sdk-qt.a
-        │   │   └── linux_arm_fusion/
-        │   │       └── libmrs-sdk-qt.a
-        │   ├── yocto/
-        │   │   └── linux_arm_mconn/
-        │   │       └── libmrs-sdk-qt.a
-        │   └── desktop/
-        │       └── linux_x86_64_desktop/
-        │           └── libmrs-sdk-qt.a
-        └── qt6/
-            ├── yocto/
-            │   ├── linux_arm_neuralplex/
-            │   │   └── libmrs-sdk-qt.a
-            └── desktop/
-                └── linux_x86_64_desktop/
-                    └── libmrs-sdk-qt.a
-```
-
-## Usage
-
-Projects using the SDK need to set up their CMake/QMake configuration to use the library compiled for their specific device/OS target.
-
-The SDK exports a few helper files under `lib/cmake/mrs-sdk-qt/toolchains` for bootstrapping CMake with the right Qt kit:
-
-- `qt5-buildroot.cmake`: points to Qt 5.9.1 inside the Buildroot sysroot and marks the target as `buildroot`.
-- `qt5-yocto.cmake`: points to Qt 5.12.9 from the Yocto SDK and marks the kit as `yocto`.
-- `qt5-desktop.cmake`: uses a desktop Qt 5.15 installation and identifies itself as the `desktop` kit.
-- `qt6-desktop.cmake`: uses a desktop Qt 6.8 installation and identifies itself as the `desktop` kit.
-
-The QMake `.pri` versions of these helpers are located in `lib/qmake/mrs-sdk-qt/toolchains`.
-
-Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` (or `lib/qmake/mrs-sdk-qt/config.pri`) to compute a consistent kit identity. When configuring the SDK kit in Qt Creator, pass the helper via `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake` (or the Buildroot/desktop equivalent) so that the right Qt paths and ARM flags are applied. This is best done from the configuration menu for each Qt kit.
-
-Here is an **example CMake project configuration** for the SDK:
-
-```cmake
-# Assumes the toolchain helper was included as CMAKE_TOOLCHAIN_FILE in the kit configuration
-set(MRS_SDK_QT_CONSUMER_TARGET "spoke-zone-demo")
-include("$ENV{HOME}/.config/mrs-sdk-qt/global-config.cmake")
-include("${MRS_SDK_QT_ROOT}/current/lib/cmake/mrs-sdk-qt/config.cmake")
-```
-
-Here is an **example QMake project configuration** for the SDK:
-
-```qmake
-MRS_SDK_QT_CONSUMER_TARGET = "can-simulator"
-include("$$(QMAKE_TOOLCHAIN_FILE)")
-include("$$(HOME)/.config/mrs-sdk-qt/global-config.pri")
-include("$$MRS_SDK_QT_ROOT/current/lib/qmake/mrs-sdk-qt/config.pri")
-```
+| Topic | Link |
+| --- | --- |
+| Installation | https://qt.mrs-electronics.dev/get-started/install/ |
+| Set up build kits | https://qt.mrs-electronics.dev/get-started/set-up-build-kits/ |
+| Configure a project | https://qt.mrs-electronics.dev/get-started/configure-project/ |
+| Build from source | https://qt.mrs-electronics.dev/get-started/build-from-source/ |
+| SDK installation structure | https://qt.mrs-electronics.dev/reference/installation-structure/ |
 
 ### Shared Compile Definitions
 

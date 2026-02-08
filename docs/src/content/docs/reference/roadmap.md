@@ -1,6 +1,8 @@
 ---
 title: Roadmap
 description: This page outlines the long-term plan for development the SDK.
+sidebar:
+  order: 2
 ---
 
 This page outlines the roadmap for the long-term vision of the SDK.
@@ -9,7 +11,7 @@ This page outlines the roadmap for the long-term vision of the SDK.
 | --- | --- |
 | Add documentation site | ✅ **COMPLETED** |
 | Add design documents | ✅ **COMPLETED** |
-| Set up the Qt project and basic build system | **MVP REQUIREMENT** |
+| Set up the Qt project and basic build system | **IN PROGRESS** |
 | Basic general-purpose utilities | **MVP REQUIREMENT** |
 | Integrate with Spoke.Zone device token system | **MVP REQUIREMENT** |
 | Integrate with the [Spoke.Zone OTA API](https://docs.spoke.zone/developers/device-integration/ota-file-downloads/) | **MVP REQUIREMENT** |

@@ -1,0 +1,51 @@
+---
+title: Build from Source
+description: A guide on building and installing the SDK from source.
+sidebar:
+  order: 5
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+This guide walks you through the steps of installing all of the SDK components from source, including the Qt libraries and tooling.
+
+<Aside type="tip">
+The preferred installation method is to follow [this installation guide](/get-started/install), which uses prebuilt releases.
+
+Building from source is rarely a necessary step. This guide is provided for a) power users and b) people having trouble with the normal installation process.
+</Aside>
+
+## Install Dependencies
+
+You will need to install Qt5/Qt6 and some necessary build tools before you can compile the libraries.
+
+{/* TODO(#4): explain how to do this */}
+
+## Install the SDK
+
+Here are the steps for installing from source:
+
+<Steps>
+
+1. Clone the SDK repository:
+
+    ```bash
+    git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt.git
+    cd mrs-sdk-qt
+    ```
+
+2. Install the `just` command runner ([instructions here](https://just.systems/man/en/packages.html))
+    - Quick start to `just`: https://just.systems/man/en/quick-start.html
+3. Compile and install the SDK tooling:
+
+    ```bash
+    just install-tools
+    ```
+
+4. Compile and install the SDK Qt libraries:
+
+    ```bash
+    just install-libs
+    ```
+
+</Steps>

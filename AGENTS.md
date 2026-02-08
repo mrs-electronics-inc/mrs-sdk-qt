@@ -2,8 +2,8 @@
 
 ## Build & Development Commands
 
-- **Build tools**: `just tools` (installs mrs-sdk-manager to $GOPATH/bin)
-- **Build libs**: `just libs` (runs `mrs-sdk-manager build-local --install`)
+- **Build tools**: `just install-tools` (installs mrs-sdk-manager to $GOPATH/bin)
+- **Build libs**: `just install-libs` (runs `mrs-sdk-manager build-local --install`)
 - **Format C++**: `just format-cpp` (uses clang-format)
 - **Format Go**: `just format-go` (uses gofmt)
 
