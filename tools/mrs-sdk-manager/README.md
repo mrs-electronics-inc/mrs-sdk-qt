@@ -10,24 +10,29 @@ Compiles the SDK libraries from source for all device/OS targets. The built stat
 
 > NOTE: only `Debug` mode builds are created. We do not yet support `Release` builds because the point of building from source should mostly be for debug purposes.
 
-**Assumptions:**
+**Prerequisites:**
 
-- Desktop Qt 5.15.0 and 6.8.0 installations must be located in `$HOME/Qt` (the default location Qt puts things in)
-- Qt 5.12.9 toolchain for Yocto must be installed at `/home/cpa/yocto-5.12.9`
-- Qt 5.9.1 toolchain for Buildroot must be installed at `/home/cpa/buildroot`
+- Compiler and toolchain paths must be configured via `mrs-sdk-manager env -w` before building
 - `cmake` tool is already installed
-
-You can override these hardcoded paths by creating symlinks from the corresponding paths in your filesystem.
 
 #### `--install` flag
 
-Passing the `--install` flag will automatically create an installation tree in `$HOME/mrs-sdk-qt/0.0.0`. This "development" installation can be used in projects by running `mrs-sdk-manager setup 0.0.0`.
+Passing the `--install` flag will automatically create an installation tree in `$HOME/mrs-sdk-qt/0.0.0`. This "development" installation can be used in projects by running `mrs-sdk-manager use 0.0.0`.
 
-### `setup` subcommand
+### `env` subcommand
 
-Writes the global configuration files that tell consumer projects which version of the SDK to use.
+View or modify the MRS SDK environment configuration, similar to `go env`. Configuration is stored at `$HOME/.config/mrs-sdk-qt/env`.
+
+- `mrs-sdk-manager env` — print all configuration values
+- `mrs-sdk-manager env <key>` — print a single value
+- `mrs-sdk-manager env -w KEY=VALUE ...` — write one or more values
+
+### `use` subcommand
+
+Pin a specific SDK version for the current project. Generates project-local helper files (`mrs-sdk-qt.cmake` and/or `mrs-sdk-qt.pri`) that set the version and include the SDK configuration.
 
 **Assumptions:**
 
-- MRS SDK is [installed](#install-flag) at `$HOME/mrs-sdk-qt`
+- MRS SDK is installed at `$HOME/mrs-sdk-qt`
 - Specified version exists at `$HOME/mrs-sdk-qt/<version>`
+- Current directory contains a `CMakeLists.txt` and/or `.pro` file

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"mrs-sdk-manager/env"
 	"mrs-sdk-manager/utils"
 	"os"
 	"os/exec"
@@ -16,8 +17,9 @@ import (
 
 // BuildConfig represents a single build configuration
 type BuildConfig struct {
-	Target   BuildTarget
-	CmakeCmd []string
+	Target      BuildTarget
+	CmakeCmd    []string
+	EnvSetupCmd string
 }
 
 // Build builds the SDK library from source for all supported configurations
@@ -33,8 +35,35 @@ func Build() error {
 		return err
 	}
 
+	// Read environment config
+	envConfig, err := env.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read environment config: %w", err)
+	}
+
+	// Validate all required keys are set
+	requiredKeys := []env.EnvVar{
+		env.YOCTO_QT5_SYSROOT,
+		env.YOCTO_QT5_CXX_COMPILER,
+		env.YOCTO_QT5_ENV_SETUP_SCRIPT,
+		env.BUILDROOT_QT5_SYSROOT,
+		env.BUILDROOT_QT5_CXX_COMPILER,
+		env.DESKTOP_CXX_COMPILER,
+		env.DESKTOP_QT5_PREFIX,
+		env.DESKTOP_QT6_PREFIX,
+	}
+	var missingKeys []string
+	for _, k := range requiredKeys {
+		if envConfig[k.Key] == "" {
+			missingKeys = append(missingKeys, k.Key)
+		}
+	}
+	if len(missingKeys) > 0 {
+		return fmt.Errorf("missing required environment config: %s\nRun 'mrs-sdk-manager env -w KEY=VALUE' to set them", strings.Join(missingKeys, ", "))
+	}
+
 	utils.PrintTaskStart("Building MRS SDK libraries from source...")
-	configs := getBuildConfigs(sdkRoot)
+	configs := getBuildConfigs(sdkRoot, envConfig)
 	if err := runAllBuilds(sdkRoot, configs); err != nil {
 		return err
 	}
@@ -182,19 +211,16 @@ func runAllBuilds(sdkRoot string, configs []BuildConfig) error {
 
 // runBuild executes the CMake configure and build steps for a configuration
 func runBuild(sdkRoot string, config BuildConfig) error {
-	// Get the setup command if there is one.
-	envSetupCmd := config.getBuildEnvSetupCmd()
-
 	// Create the build command.
-	// Structure: [setup &&] cmake configure && cmake build
+	// Structure: [env-setup &&] cmake configure && cmake build
 	// The build directory is the value of -B flag (4th index in the cmake command array).
 	buildDirArg := config.CmakeCmd[4]
 	fullCmd := fmt.Sprintf("%s && /usr/bin/cmake --build %s --target all",
 		strings.Join(config.CmakeCmd, " "),
 		buildDirArg,
 	)
-	if len(envSetupCmd) > 0 {
-		fullCmd = fmt.Sprintf("%s && %s", envSetupCmd, fullCmd)
+	if config.EnvSetupCmd != "" {
+		fullCmd = fmt.Sprintf("%s && %s", config.EnvSetupCmd, fullCmd)
 	}
 
 	// Build!!
@@ -212,7 +238,7 @@ func runBuild(sdkRoot string, config BuildConfig) error {
 }
 
 // getBuildConfigs returns all build configurations
-func getBuildConfigs(sdkRoot string) []BuildConfig {
+func getBuildConfigs(sdkRoot string, envConfig map[string]string) []BuildConfig {
 	cmakeCmdBuilder := func(b BuildTarget) []string {
 		cmd := []string{
 			"/usr/bin/cmake",
@@ -222,23 +248,23 @@ func getBuildConfigs(sdkRoot string) []BuildConfig {
 		}
 		switch b.OS {
 		case "yocto":
-			cmd = append(cmd, "-DCMAKE_SYSROOT:PATH=/home/cpa/yocto-5.12.9/sysroots/cortexa9hf-neon-poky-linux-gnueabi",
-				"-DCMAKE_CXX_COMPILER:STRING=/home/cpa/yocto-5.12.9/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-g++",
+			cmd = append(cmd, "-DCMAKE_SYSROOT:PATH="+envConfig["YOCTO_QT5_SYSROOT"],
+				"-DCMAKE_CXX_COMPILER:STRING="+envConfig["YOCTO_QT5_CXX_COMPILER"],
 				"-DCMAKE_CXX_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi",
 				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake"),
 				"-DCMAKE_CXX_FLAGS_INIT:STRING=",
 				"-DCMAKE_C_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi")
 		case "buildroot":
-			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH=/home/cpa/buildroot/output/host/usr/bin/arm-buildroot-linux-gnueabihf-g++",
-				"-DCMAKE_PREFIX_PATH:PATH=/home/cpa/buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr",
+			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH="+envConfig["BUILDROOT_QT5_CXX_COMPILER"],
+				"-DCMAKE_PREFIX_PATH:PATH="+envConfig["BUILDROOT_QT5_SYSROOT"],
 				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-buildroot.cmake"))
 		case "desktop":
-			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH=/usr/lib/ccache/g++")
+			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH="+envConfig["DESKTOP_CXX_COMPILER"])
 			if b.QtVersion == "qt5" {
-				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH=$HOME/Qt/5.15.0/gcc_64",
+				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH="+envConfig["DESKTOP_QT5_PREFIX"],
 					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-desktop.cmake"))
 			} else {
-				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH=$HOME/Qt/6.8.0/gcc_64",
+				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH="+envConfig["DESKTOP_QT6_PREFIX"],
 					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt6-desktop.cmake"))
 			}
 			cmd = append(cmd, "-DCMAKE_CXX_FLAGS_INIT:STRING=-DQT_QML_DEBUG")
@@ -250,19 +276,15 @@ func getBuildConfigs(sdkRoot string) []BuildConfig {
 
 	var configs []BuildConfig
 	for _, target := range AllBuildTargets() {
-		configs = append(configs, BuildConfig{
+		config := BuildConfig{
 			Target:   target,
 			CmakeCmd: cmakeCmdBuilder(target),
-		})
+		}
+		if target.OS == "yocto" {
+			config.EnvSetupCmd = "source " + envConfig["YOCTO_QT5_ENV_SETUP_SCRIPT"]
+		}
+		configs = append(configs, config)
 	}
 
 	return configs
-}
-
-func (b *BuildConfig) getBuildEnvSetupCmd() string {
-	if b.Target.OS == "yocto" {
-		return "source /home/cpa/yocto-5.12.9/environment-setup-cortexa9hf-neon-poky-linux-gnueabi"
-	}
-
-	return ""
 }
