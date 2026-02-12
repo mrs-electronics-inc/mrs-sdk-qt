@@ -64,10 +64,12 @@ autoinstall:
     - ninja-build       # CMake generator tooling
     - ccache            # Advanced C/C++ compiler for faster build times
 
-    # --- Tools for installing and using Qt --- #
+    # --- Tools and libraries for installing and using Qt --- #
     - python3-pip
     - pipx              # For installing aqtinstall (Qt installer)
     - qtcreator         # Qt IDE
+    - libxcb-cursor0    # Required for Qt Online Installer app
+    - libxcb-cursor-dev
 
   # APT configuration - skip recommended packages to reduce image size
   apt:
