@@ -62,6 +62,7 @@ autoinstall:
     - build-essential   # GCC, make, etc. for compiling
     - cmake             # Compiler tooling
     - ninja-build       # CMake generator tooling
+    - ccache            # Advanced C/C++ compiler for faster build times
 
     # --- Tools for installing and using Qt --- #
     - python3-pip
