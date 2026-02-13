@@ -251,21 +251,21 @@ func getBuildConfigs(sdkRoot string, envConfig map[string]string) []BuildConfig 
 			cmd = append(cmd, "-DCMAKE_SYSROOT:PATH="+envConfig["YOCTO_QT5_SYSROOT"],
 				"-DCMAKE_CXX_COMPILER:STRING="+envConfig["YOCTO_QT5_CXX_COMPILER"],
 				"-DCMAKE_CXX_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi",
-				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake"),
+				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/yocto-qt5.cmake"),
 				"-DCMAKE_CXX_FLAGS_INIT:STRING=",
 				"-DCMAKE_C_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi")
 		case "buildroot":
 			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH="+envConfig["BUILDROOT_QT5_CXX_COMPILER"],
 				"-DCMAKE_PREFIX_PATH:PATH="+envConfig["BUILDROOT_QT5_SYSROOT"],
-				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-buildroot.cmake"))
+				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/buildroot-qt5.cmake"))
 		case "desktop":
 			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH="+envConfig["DESKTOP_CXX_COMPILER"])
 			if b.QtVersion == "qt5" {
 				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH="+envConfig["DESKTOP_QT5_PREFIX"],
-					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt5-desktop.cmake"))
+					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/desktop-qt5.cmake"))
 			} else {
 				cmd = append(cmd, "-DCMAKE_PREFIX_PATH:PATH="+envConfig["DESKTOP_QT6_PREFIX"],
-					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/qt6-desktop.cmake"))
+					"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/desktop-qt6.cmake"))
 			}
 			cmd = append(cmd, "-DCMAKE_CXX_FLAGS_INIT:STRING=-DQT_QML_DEBUG")
 		}

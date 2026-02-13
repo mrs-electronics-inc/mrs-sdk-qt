@@ -48,7 +48,7 @@ var validTargets = [...]BuildTarget{
 		QtVersion: "qt5",
 		OS:        "yocto",
 		System:    "linux",
-		Processor: "x86_64",
+		Processor: "arm",
 		Device:    "mconn",
 	},
 	{

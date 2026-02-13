@@ -95,24 +95,24 @@ Make sure you [install Qt Creator](#install-qt-creator) before trying to configu
 
         | File | Qt version | Target OS identifier |
         | --- | --- | --- |
-        | `qt5-buildroot.cmake` | Buildroot Qt 5.9.1 | `buildroot` |
-        | `qt5-yocto.cmake` | Yocto Qt 5.12.9 | `yocto` |
-        | `qt5-desktop.cmake` | Desktop Qt 5.15 | `desktop` |
-        | `qt6-desktop.cmake` | Desktop Qt 6.8 | `desktop` |
+        | `buildroot-qt5.cmake` | Buildroot Qt 5.9.1 | `buildroot` |
+        | `desktop-qt5.cmake` | Desktop Qt 5.15 | `desktop` |
+        | `desktop-qt6.cmake` | Desktop Qt 6.8 | `desktop` |
+        | `yocto-qt5.cmake` | Yocto Qt 5.12.9 | `yocto` |
 
-        Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/qt5-yocto.cmake`.
+        Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/yocto-qt5.cmake`.
     </TabItem>
     <TabItem label="QMake">
         The SDK exports a few helper scripts under `lib/qmake/mrs-sdk-qt/toolchains` for bootstrapping QMake with the right Qt version:
 
         | File | Qt version | Target OS identifier |
         | --- | --- | --- |
-        | `qt5-buildroot.pri` | Buildroot Qt 5.9.1 | `buildroot` |
-        | `qt5-yocto.pri` | Yocto Qt 5.12.9 | `yocto` |
-        | `qt5-desktop.pri` | Desktop Qt 5.15 | `desktop` |
-        | `qt6-desktop.pri` | Desktop Qt 6.8 | `desktop` |
+        | `buildroot-qt5.pri` | Buildroot Qt 5.9.1 | `buildroot` |
+        | `desktop-qt5.pri` | Desktop Qt 5.15 | `desktop` |
+        | `desktop-qt6.pri` | Desktop Qt 6.8 | `desktop` |
+        | `yocto-qt5.pri` | Yocto Qt 5.12.9 | `yocto` |
 
-        Each helper sets variables used in `lib/qmake/mrs-sdk-qt/config.pri` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DQMAKE_TOOLCHAIN_FILE=lib/qmake/mrs-sdk-qt/toolchains/qt5-yocto.pri`.
+        Each helper sets variables used in `lib/qmake/mrs-sdk-qt/config.pri` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DQMAKE_TOOLCHAIN_FILE=lib/qmake/mrs-sdk-qt/toolchains/yocto-qt5.pri`.
     </TabItem>
 </Tabs>
 
@@ -193,7 +193,7 @@ Setup steps coming soon!
 
     ```text
     MRS_SDK_QT_TARGET_DEVICE=Desktop
-    QMAKE_TOOLCHAIN_FILE=<path-to-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt6-desktop.pri
+    QMAKE_TOOLCHAIN_FILE=<path-to-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/desktop-qt6.pri
     ```
 
     ![Qt Creator kit build environment config for desktop Qt6](../../../assets/build-kit-setup/desktop/qt6/kit-build-env.png)
@@ -205,7 +205,7 @@ Setup steps coming soon!
     -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
     -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
     -DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
-    -DCMAKE_TOOLCHAIN_FILE:STRING=<path-to-mrs-sdk-installation>/current/lib/cmake/mrs-sdk-qt/toolchains/qt6-desktop.cmake
+    -DCMAKE_TOOLCHAIN_FILE:STRING=<path-to-mrs-sdk-installation>/current/lib/cmake/mrs-sdk-qt/toolchains/desktop-qt6.cmake
     ```
 
     ![Qt Creator kit CMake config for desktop Qt6](../../../assets/build-kit-setup/desktop/qt6/kit-cmake-config.png)
@@ -263,7 +263,7 @@ Setup steps coming soon!
 
     ```text
     MRS_SDK_QT_TARGET_DEVICE=Desktop
-    QMAKE_TOOLCHAIN_FILE=<path-to-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/qt5-desktop.pri
+    QMAKE_TOOLCHAIN_FILE=<path-to-sdk-installation>/current/lib/qmake/mrs-sdk-qt/toolchains/desktop-qt5.pri
     ```
 
     ![Qt Creator kit build environment config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/kit-build-env.png)
@@ -275,7 +275,7 @@ Setup steps coming soon!
     -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
     -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
     -DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
-    -DCMAKE_TOOLCHAIN_FILE:STRING=<path-to-mrs-sdk-installation>/current/lib/cmake/mrs-sdk-qt/toolchains/qt5-desktop.cmake
+    -DCMAKE_TOOLCHAIN_FILE:STRING=<path-to-mrs-sdk-installation>/current/lib/cmake/mrs-sdk-qt/toolchains/desktop-qt5.cmake
     ```
 
     ![Qt Creator kit CMake config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/kit-cmake-config.png)

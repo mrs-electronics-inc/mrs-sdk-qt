@@ -15,6 +15,11 @@ type EnvVar struct {
 
 // These are all of the valid environment variables for mrs-sdk-manager.
 var (
+	MRS_SDK_QT_ROOT = EnvVar{
+		Key:         "MRS_SDK_QT_ROOT",
+		Description: "Root directory of the MRS SDK installation",
+		Type:        DirPath,
+	}
 	YOCTO_QT5_SYSROOT = EnvVar{
 		Key:         "YOCTO_QT5_SYSROOT",
 		Description: "Path to the Yocto Qt5 sysroot",
@@ -57,6 +62,7 @@ var (
 	}
 )
 var allVars = []EnvVar{
+	MRS_SDK_QT_ROOT,
 	YOCTO_QT5_SYSROOT,
 	YOCTO_QT5_CXX_COMPILER,
 	YOCTO_QT5_ENV_SETUP_SCRIPT,

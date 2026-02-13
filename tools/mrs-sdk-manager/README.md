@@ -29,10 +29,10 @@ View or modify the MRS SDK environment configuration, similar to `go env`. Confi
 
 ### `use` subcommand
 
-Pin a specific SDK version for the current project. Generates project-local helper files (`mrs-sdk-qt.cmake` and/or `mrs-sdk-qt.pri`) that set the version and include the SDK configuration.
+Pin a specific SDK version for the current project. Generates project-local helper files for configuring the Qt toolchain, pinning an SDK version, and configuring the SDK.
 
 **Assumptions:**
 
-- MRS SDK is installed at `$HOME/mrs-sdk-qt`
-- Specified version exists at `$HOME/mrs-sdk-qt/<version>`
+- MRS SDK is installed at `$MRS_SDK_QT_ROOT`
+- Specified version exists at `$MRS_SDK_QT_ROOT/<version>`
 - Current directory contains a `CMakeLists.txt` and/or `.pro` file

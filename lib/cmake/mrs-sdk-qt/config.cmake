@@ -180,20 +180,12 @@ message(NOTICE "Environment: target OS: ${MRS_SDK_QT_TARGET_OS}")
 ###########################################################################################################################################
 if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     # Validate that required variables were set.
-    if(NOT DEFINED _mrs_sdk_qt_global_config_file)
-        message(FATAL_ERROR "ERROR: MRS SDK global config not found. Run mrs-sdk-manager to initialize.")
-    elseif(NOT EXISTS "${_mrs_sdk_qt_global_config_file}")
-        message(FATAL_ERROR "ERROR: MRS SDK global config not found at ${_mrs_sdk_qt_global_config_file}. Run mrs-sdk-manager to initialize.")
-    endif()
     if(NOT DEFINED MRS_SDK_QT_ROOT)
-        message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT not found in ${_mrs_sdk_qt_global_config_file}")
+        message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT not found. Run: mrs-sdk-manager env -w MRS_SDK_QT_ROOT=<path>")
     endif()
     if(NOT DEFINED MRS_SDK_QT_VERSION)
-        message(FATAL_ERROR "ERROR: MRS_SDK_QT_VERSION not found in ${_mrs_sdk_qt_global_config_file}")
+        message(FATAL_ERROR "ERROR: MRS_SDK_QT_VERSION not found. Run: mrs-sdk-manager use <version>")
     endif()
-
-    message(NOTICE "MRS SDK root: ${MRS_SDK_QT_ROOT}")
-    message(NOTICE "MRS SDK version: ${MRS_SDK_QT_VERSION}")
 
     # Export definitions that should only reach consumer targets via the imported target.
     set(MRS_SDK_QT_CONSUMER_ONLY_DEFINES "")
@@ -248,5 +240,7 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
             endif()
             target_link_libraries(${MRS_SDK_QT_CONSUMER_TARGET} PRIVATE ${MRS_SDK_QT_LIB_NAME})
         endif()
+
+        message(NOTICE "MRS SDK configuration complete.")
     endif()
 endif()

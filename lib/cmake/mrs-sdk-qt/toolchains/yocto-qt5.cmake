@@ -1,6 +1,6 @@
 # Qt5 Yocto toolchain helper.
 # NOTE: this helper is only meant to be used with the Qt5 Yocto kit for MConn/FUSION devices.
-# Use the qt6-yocto.cmake helper for the NeuralPlex Qt6 kit.
+# Use the yocto-qt6.cmake helper for the NeuralPlex Qt6 kit.
 
 # First, set CMake variables necessary for the Yocto-Qt toolchain.
 # We have to start from the included toolchain file and then add some extra stuff that it doesn't do correctly.
