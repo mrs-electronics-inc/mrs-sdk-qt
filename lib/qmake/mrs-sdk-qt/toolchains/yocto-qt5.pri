@@ -5,6 +5,8 @@
 # Automatically source the Yocto toolchain setup script if the environment is not already set up.
 OE_CMAKE_TOOLCHAIN_FILE = $$(OE_CMAKE_TOOLCHAIN_FILE)
 isEmpty(OE_CMAKE_TOOLCHAIN_FILE) {
+    message("Yocto environment not found. Auto-sourcing environment...")
+
     YOCTO_QT5_ENV_SETUP_SCRIPT = $$system($$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager env YOCTO_QT5_ENV_SETUP_SCRIPT)
     isEmpty(YOCTO_QT5_ENV_SETUP_SCRIPT) {
         error("Could not determine Yocto setup script path. Set it with: mrs-sdk-manager env -w YOCTO_QT5_ENV_SETUP_SCRIPT=/path/to/setup-script")
