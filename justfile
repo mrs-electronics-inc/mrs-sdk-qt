@@ -2,6 +2,8 @@
 default:
     @echo "Top-level recipes:"
     @JUST_LIST_HEADING="" just --list
+    @echo "Tools recipes:"
+    @cd tools/ && JUST_LIST_HEADING="" just --list --list-prefix "    tools/"
     @echo "VM recipes:"
     @cd vm/ && JUST_LIST_HEADING="" just --list --list-prefix "    vm/"
     @echo "Docs recipes:"
@@ -16,18 +18,12 @@ format-go *args:
 lint-go *args:
     ./tools/lint-go.sh {{ args }}
 
-install-libs: install-tools
+install-libs:
     mrs-sdk-manager build-local --install
 
-# You may have to do some manual setup to get the Go bin directory in your path for using mrs-sdk-manager.
-# Here is a basic sample BASH command to add to your .bashrc:
-# [[ -n "$(go env GOPATH)" ]] && PATH="$(go env GOPATH)/bin:$PATH"
-install-tools: deps
-    go -C tools/mrs-sdk-manager install
-
-# This uses the APT package manager, which means it only works on Debian-based systems.
-deps:
-	@command -v cmake >/dev/null || sudo apt install cmake
-
+# Set up the local dev environment
 setup:
+    # Install Git pre-commit hooks
     pre-commit install
+    # This uses the APT package manager, which means it only works on Debian-based systems.
+    @command -v cmake >/dev/null || sudo apt install cmake
