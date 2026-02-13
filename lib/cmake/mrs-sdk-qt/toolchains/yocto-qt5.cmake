@@ -35,13 +35,24 @@ if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
         message(FATAL_ERROR "Failed to source Yocto setup script: ${_yocto_qt5_env_setup_script}")
     endif()
 
-    # Parse and import each environment variable from the sourced output.
+    # Parse and import only the required environment variables.
     string(REPLACE "\n" ";" _yocto_qt5_env_lines "${_yocto_qt5_env_output}")
     foreach(_LINE IN LISTS _yocto_qt5_env_lines)
-        if (_LINE MATCHES "^([^=]+)=(.*)$")
+        if (_LINE MATCHES "^(OE_CMAKE_TOOLCHAIN_FILE|OECORE_TARGET_SYSROOT|OE_QMAKE_PATH_EXTERNAL_HOST_BINS)=(.*)$")
             set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
         endif()
     endforeach()
+
+    # Make sure all of the necessary environment variables were defined.
+    if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE} OR "$ENV{OE_CMAKE_TOOLCHAIN_FILE}" STREQUAL "")
+        message(FATAL_ERROR "Failed to read OE_CMAKE_TOOLCHAIN_FILE from Yocto setup script: ${_yocto_qt5_env_setup_script}")
+    endif()
+    if (NOT DEFINED ENV{OECORE_TARGET_SYSROOT} OR "$ENV{OECORE_TARGET_SYSROOT}" STREQUAL "")
+        message(FATAL_ERROR "Failed to read OECORE_TARGET_SYSROOT from Yocto setup script: ${_yocto_qt5_env_setup_script}")
+    endif()
+    if (NOT DEFINED ENV{OE_QMAKE_PATH_EXTERNAL_HOST_BINS} OR "$ENV{OE_QMAKE_PATH_EXTERNAL_HOST_BINS}" STREQUAL "")
+        message(FATAL_ERROR "Failed to read OE_QMAKE_PATH_EXTERNAL_HOST_BINS from Yocto setup script: ${_yocto_qt5_env_setup_script}")
+    endif()
 endif()
 
 # Run the kit's toolchain file.
