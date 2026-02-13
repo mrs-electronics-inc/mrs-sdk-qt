@@ -2,9 +2,18 @@
 default:
     @just --list
 
-# You may have to do some manual setup to get the Go bin directory in your path for using mrs-sdk-manager.
-# Here is a basic sample BASH command to add to your .bashrc:
-# [[ -n "$(go env GOPATH)" ]] && PATH="$(go env GOPATH)/bin:$PATH"
-# Install SDK tools
+# Install SDK tools to $MRS_SDK_QT_ROOT/tools/
 install:
-    go -C mrs-sdk-manager install
+    #!/usr/bin/env bash
+    set -euo pipefail
+    SDK_ROOT="$MRS_SDK_QT_ROOT"
+    if [ -z "$SDK_ROOT" ]; then
+        echo "error: MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>)." >&2
+        exit 1
+    fi
+    mkdir -p "$SDK_ROOT/tools"
+    echo "Building mrs-sdk-manager..."
+    go -C mrs-sdk-manager build -o "$SDK_ROOT/tools/mrs-sdk-manager" .
+    echo "Installed mrs-sdk-manager to $SDK_ROOT/tools/"
+    echo -e "\nAdd the following to your shell profile (.bashrc, .zshrc, etc.):"
+    echo "  export PATH=\"\$PATH:$SDK_ROOT/tools\""

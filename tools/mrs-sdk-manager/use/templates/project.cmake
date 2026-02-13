@@ -7,11 +7,11 @@
 file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.conf" _mrs_sdk_qt_version_line REGEX "^MRS_SDK_QT_VERSION=")
 string(REGEX REPLACE "^MRS_SDK_QT_VERSION=" "" MRS_SDK_QT_VERSION "${_mrs_sdk_qt_version_line}")
 
-# Resolve MRS_SDK_QT_ROOT from mrs-sdk-manager.
-execute_process(COMMAND mrs-sdk-manager env MRS_SDK_QT_ROOT OUTPUT_VARIABLE MRS_SDK_QT_ROOT OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE _mrs_sdk_qt_root_result)
-if(NOT _mrs_sdk_qt_root_result EQUAL 0 OR MRS_SDK_QT_ROOT STREQUAL "")
-    message(FATAL_ERROR "Failed to resolve MRS_SDK_QT_ROOT. Run: mrs-sdk-manager env -w MRS_SDK_QT_ROOT=<path>")
+# Resolve MRS_SDK_QT_ROOT from environment.
+if(NOT DEFINED ENV{MRS_SDK_QT_ROOT})
+    message(FATAL_ERROR "MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
 endif()
+set(MRS_SDK_QT_ROOT "$ENV{MRS_SDK_QT_ROOT}")
 
 # Validate that the SDK version is installed.
 set(_mrs_sdk_qt_version_dir "${MRS_SDK_QT_ROOT}/${MRS_SDK_QT_VERSION}")

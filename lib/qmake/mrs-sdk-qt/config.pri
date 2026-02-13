@@ -168,7 +168,7 @@ message("Environment: target OS: $$MRS_SDK_QT_TARGET_OS")
 !isEmpty(MRS_SDK_QT_CONSUMER_TARGET) {
     # Validate that required variables were set.
     isEmpty(MRS_SDK_QT_ROOT) {
-        error("ERROR: MRS_SDK_QT_ROOT not found. Run: mrs-sdk-manager env -w MRS_SDK_QT_ROOT=<path>")
+        error("ERROR: MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
     }
     isEmpty(MRS_SDK_QT_VERSION) {
         error("ERROR: MRS_SDK_QT_VERSION not found. Run: mrs-sdk-manager use <version>")

@@ -17,9 +17,8 @@ import (
 
 // BuildConfig represents a single build configuration
 type BuildConfig struct {
-	Target      BuildTarget
-	CmakeCmd    []string
-	EnvSetupCmd string
+	Target   BuildTarget
+	CmakeCmd []string
 }
 
 // Build builds the SDK library from source for all supported configurations
@@ -219,9 +218,6 @@ func runBuild(sdkRoot string, config BuildConfig) error {
 		strings.Join(config.CmakeCmd, " "),
 		buildDirArg,
 	)
-	if config.EnvSetupCmd != "" {
-		fullCmd = fmt.Sprintf("%s && %s", config.EnvSetupCmd, fullCmd)
-	}
 
 	// Build!!
 	cmd := exec.Command("/bin/bash", "-c", fullCmd)
@@ -269,7 +265,8 @@ func getBuildConfigs(sdkRoot string, envConfig map[string]string) []BuildConfig 
 			}
 			cmd = append(cmd, "-DCMAKE_CXX_FLAGS_INIT:STRING=-DQT_QML_DEBUG")
 		}
-		cmd = append(cmd, "-DMRS_SDK_QT_TARGET_DEVICE:STRING="+b.Device,
+		cmd = append(cmd, "-DMRS_SDK_QT_ROOT:STRING="+os.Getenv("MRS_SDK_QT_ROOT"),
+			"-DMRS_SDK_QT_TARGET_DEVICE:STRING="+b.Device,
 			"-DCMAKE_BUILD_TYPE:STRING="+b.BuildType)
 		return cmd
 	}
@@ -279,9 +276,6 @@ func getBuildConfigs(sdkRoot string, envConfig map[string]string) []BuildConfig 
 		config := BuildConfig{
 			Target:   target,
 			CmakeCmd: cmakeCmdBuilder(target),
-		}
-		if target.OS == "yocto" {
-			config.EnvSetupCmd = "source " + envConfig["YOCTO_QT5_ENV_SETUP_SCRIPT"]
 		}
 		configs = append(configs, config)
 	}

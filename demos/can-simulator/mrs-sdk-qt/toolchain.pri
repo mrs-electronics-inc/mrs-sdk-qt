@@ -9,10 +9,10 @@ message("Configuring MRS SDK Qt toolchain...")
 # Read the pinned SDK version.
 include($$PWD/version.conf)
 
-# Resolve MRS_SDK_QT_ROOT from mrs-sdk-manager.
-MRS_SDK_QT_ROOT = $$system(mrs-sdk-manager env MRS_SDK_QT_ROOT)
+# Resolve MRS_SDK_QT_ROOT from environment.
+MRS_SDK_QT_ROOT = $$(MRS_SDK_QT_ROOT)
 isEmpty(MRS_SDK_QT_ROOT) {
-    error("Failed to resolve MRS_SDK_QT_ROOT. Run: mrs-sdk-manager env -w MRS_SDK_QT_ROOT=<path>")
+    error("MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
 }
 
 # Read the toolchain ID from the environment.

@@ -5,14 +5,48 @@
 # First, set CMake variables necessary for the Yocto-Qt toolchain.
 # We have to start from the included toolchain file and then add some extra stuff that it doesn't do correctly.
 
-# Make sure the toolchain environment is set up.
-# There is a setup script in the base of the toolchain that does this.
+# Automatically source the Yocto toolchain setup script using mrs-sdk-manager.
 if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
-    message(FATAL_ERROR "Please run the Yocto toolchain setup script before configuring the SDK.")
-    return()
+    message(STATUS "MRS_SDK_QT_ROOT = ${MRS_SDK_QT_ROOT}")
+    message(STATUS "mrs-sdk-manager path = ${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager")
+
+    # Get the setup script path from mrs-sdk-manager.
+    execute_process(
+        COMMAND "${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager" env YOCTO_QT5_ENV_SETUP_SCRIPT
+        OUTPUT_VARIABLE _yocto_qt5_env_setup_script
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE _mrs_env_result
+    )
+    message(NOTICE "asoeifjoaisejf: ${_yocto_qt5_env_setup_script}")
+    if (NOT _mrs_env_result EQUAL 0 OR _yocto_qt5_env_setup_script STREQUAL "")
+        message(FATAL_ERROR
+            "Could not determine Yocto setup script path.\n"
+            "Set it with: mrs-sdk-manager env -w YOCTO_QT5_ENV_SETUP_SCRIPT=/path/to/setup-script"
+        )
+    endif()
+
+    # Source the setup script in a subshell and capture the resulting environment.
+    execute_process(
+        COMMAND bash -c "source \"${_yocto_qt5_env_setup_script}\" && env"
+        OUTPUT_VARIABLE _yocto_qt5_env_output
+        RESULT_VARIABLE _yocto_qt5_env_source_result
+    )
+    if (NOT _yocto_qt5_env_source_result EQUAL 0)
+        message(FATAL_ERROR "Failed to source Yocto setup script: ${YOCTO_QT5_ENV_SETUP_SCRIPT}")
+    endif()
+
+    # Parse and import each environment variable from the sourced output.
+    string(REPLACE "\n" ";" _yocto_qt5_env_lines "${_yocto_qt5_env_output}")
+    foreach(_LINE IN LISTS _yocto_qt5_env_lines)
+        if (_LINE MATCHES "^([^=]+)=(.*)$")
+            set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+        endif()
+    endforeach()
 endif()
+
 # Run the kit's toolchain file.
 include($ENV{OE_CMAKE_TOOLCHAIN_FILE})
+
 # These flags don't get set properly, so we do it manually here.
 set(CMAKE_C_FLAGS "$ENV{CFLAGS} -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9" CACHE STRING "" FORCE)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a9"  CACHE STRING "" FORCE)

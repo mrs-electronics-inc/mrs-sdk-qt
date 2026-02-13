@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"mrs-sdk-manager/env"
 	"mrs-sdk-manager/utils"
 	"os"
 	"path/filepath"
@@ -25,14 +24,10 @@ type templateData struct {
 func Use(version string) error {
 	utils.PrintTaskStart("Configuring project SDK version...")
 
-	// Resolve MRS_SDK_QT_ROOT from mrs-sdk-manager env.
-	envConfig, err := env.ReadAll()
-	if err != nil {
-		return fmt.Errorf("failed to read env config: %w", err)
-	}
-	sdkRoot := envConfig[env.MRS_SDK_QT_ROOT.Key]
+	// Resolve MRS_SDK_QT_ROOT from the environment.
+	sdkRoot := os.Getenv("MRS_SDK_QT_ROOT")
 	if sdkRoot == "" {
-		return fmt.Errorf("MRS_SDK_QT_ROOT is not set. Run: mrs-sdk-manager env -w MRS_SDK_QT_ROOT=<path>")
+		return fmt.Errorf("MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
 	}
 
 	// Validate version is installed
