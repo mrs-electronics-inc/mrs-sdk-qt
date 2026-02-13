@@ -3,6 +3,8 @@
 # Use the yocto-qt6.pri helper for the NeuralPlex Qt6 kit.
 
 # Automatically source the Yocto toolchain setup script if the environment is not already set up.
+# Auto-sourcing is not typically recommended, but it is desirable for our use case because
+# we don't want to put extra burden on less experienced users.
 OE_CMAKE_TOOLCHAIN_FILE = $$(OE_CMAKE_TOOLCHAIN_FILE)
 isEmpty(OE_CMAKE_TOOLCHAIN_FILE) {
     message("Yocto environment not found. Auto-sourcing environment...")

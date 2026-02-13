@@ -6,6 +6,8 @@
 # We have to start from the included toolchain file and then add some extra stuff that it doesn't do correctly.
 
 # Automatically source the Yocto toolchain setup script using mrs-sdk-manager.
+# Auto-sourcing is not typically recommended, but it is desirable for our use case because
+# we don't want to put extra burden on less experienced users.
 if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
     message(NOTICE "Yocto environment not found. Auto-sourcing environment...")
 
