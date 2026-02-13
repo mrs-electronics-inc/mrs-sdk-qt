@@ -128,9 +128,7 @@ func PrintKey(key string) error {
 
 func sortedValidKeys() []string {
 	keys := make([]string, 0, len(ValidEnvKeys))
-	for _, k := range ValidEnvKeys {
-		keys = append(keys, k)
-	}
+	keys = append(keys, ValidEnvKeys...)
 	sort.Strings(keys)
 	return keys
 }
