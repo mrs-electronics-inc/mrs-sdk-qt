@@ -7,17 +7,13 @@
 
 # Automatically source the Yocto toolchain setup script using mrs-sdk-manager.
 if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
-    message(STATUS "MRS_SDK_QT_ROOT = ${MRS_SDK_QT_ROOT}")
-    message(STATUS "mrs-sdk-manager path = ${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager")
-
     # Get the setup script path from mrs-sdk-manager.
     execute_process(
-        COMMAND "${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager" env YOCTO_QT5_ENV_SETUP_SCRIPT
+        COMMAND "${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager" "env" "YOCTO_QT5_ENV_SETUP_SCRIPT"
         OUTPUT_VARIABLE _yocto_qt5_env_setup_script
         OUTPUT_STRIP_TRAILING_WHITESPACE
         RESULT_VARIABLE _mrs_env_result
     )
-    message(NOTICE "asoeifjoaisejf: ${_yocto_qt5_env_setup_script}")
     if (NOT _mrs_env_result EQUAL 0 OR _yocto_qt5_env_setup_script STREQUAL "")
         message(FATAL_ERROR
             "Could not determine Yocto setup script path.\n"
@@ -32,7 +28,7 @@ if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
         RESULT_VARIABLE _yocto_qt5_env_source_result
     )
     if (NOT _yocto_qt5_env_source_result EQUAL 0)
-        message(FATAL_ERROR "Failed to source Yocto setup script: ${YOCTO_QT5_ENV_SETUP_SCRIPT}")
+        message(FATAL_ERROR "Failed to source Yocto setup script: ${_yocto_qt5_env_setup_script}")
     endif()
 
     # Parse and import each environment variable from the sourced output.
