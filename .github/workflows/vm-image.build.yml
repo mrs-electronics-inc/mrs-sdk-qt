@@ -2,6 +2,9 @@ name: Build MRS SDK Qt VM Image
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/vm-image.build.yml'
 
 concurrency:
   group: vm-build
