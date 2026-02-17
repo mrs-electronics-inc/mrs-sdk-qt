@@ -70,6 +70,17 @@ jobs:
 
         timeout-minutes: 60
 
+      - name: Create ZIP archive
+        if: success()
+        run: |
+          VERSION_TAG=""
+          if [[ -n "${{ steps.vars.outputs.version }}" ]]; then
+            VERSION_TAG="-${{ steps.vars.outputs.version }}"
+          fi
+
+          cd vm/packer/output
+          zip -r -9 "mrs-sdk-qt-vm${VERSION_TAG}.zip" *.vmdk manifest.json
+
       - name: Upload VM artifacts
         if: success()
         uses: actions/upload-artifact@v4
