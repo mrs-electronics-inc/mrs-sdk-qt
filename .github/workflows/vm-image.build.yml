@@ -86,9 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mrs-sdk-qt-vm-images
-          path: |
-            vm/packer/output/*.vmdk
-            vm/packer/output/manifest.json
+          path: vm/packer/output/*.zip
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
