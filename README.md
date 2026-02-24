@@ -1,6 +1,6 @@
 # MRS SDK - Qt
 
-Welcome to the official repository for the MRS Electronic Software Development Kit for Qt! This SDK provides developers with the tools, libraries, and documentation needed to create applications for MRS Electronics products using the Qt framework.
+Welcome to the official repository for the MRS Electronic Software Development Kit for Qt! This SDK provides developers with the tools, libraries, and documentation needed to create applications for MRS Electronic products using the Qt framework.
 
 ## Table of Contents
 
