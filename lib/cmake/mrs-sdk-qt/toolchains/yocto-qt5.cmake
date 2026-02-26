@@ -12,6 +12,9 @@ if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
     message(NOTICE "Yocto environment not found. Auto-sourcing environment...")
 
     # Get the setup script path from mrs-sdk-manager.
+    # Intentionally use the manager installed under MRS_SDK_QT_ROOT/tools:
+    # this is the canonical SDK layout for both local installs and packaged SDK installs,
+    # and avoids accidentally picking up a different manager binary from PATH.
     execute_process(
         COMMAND "${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager" "env" "YOCTO_QT5_ENV_SETUP_SCRIPT"
         OUTPUT_VARIABLE _yocto_qt5_env_setup_script
