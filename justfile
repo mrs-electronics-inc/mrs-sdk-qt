@@ -20,9 +20,12 @@ lint-go *args:
 
 # Install a locally built version of the SDK, including tooling
 install:
-    mkdir -p $HOME/mrs-sdk-qt
+    #!/usr/bin/env bash
+    set -euo pipefail
+    : "${MRS_SDK_QT_ROOT:?MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).}"
+    mkdir -p "$MRS_SDK_QT_ROOT"
     just tools/install
-    mrs-sdk-manager build-local --install
+    "$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager" build-local --install
 
 # Uninstall the SDK
 uninstall:
