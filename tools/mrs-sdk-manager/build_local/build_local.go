@@ -249,7 +249,8 @@ func getBuildConfigs(sdkRoot string, envConfig map[string]string) []BuildConfig 
 				"-DCMAKE_CXX_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi",
 				"-DCMAKE_TOOLCHAIN_FILE:STRING="+filepath.Join(sdkRoot, "lib/cmake/mrs-sdk-qt/toolchains/yocto-qt5.cmake"),
 				"-DCMAKE_CXX_FLAGS_INIT:STRING=",
-				"-DCMAKE_C_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi")
+				"-DCMAKE_C_COMPILER_TARGET:STRING=arm-poky-linux-gnueabi",
+				"-DYOCTO_QT5_ENV_SETUP_SCRIPT:FILEPATH="+envConfig["YOCTO_QT5_ENV_SETUP_SCRIPT"])
 		case "buildroot":
 			cmd = append(cmd, "-DCMAKE_CXX_COMPILER:FILEPATH="+envConfig["BUILDROOT_QT5_CXX_COMPILER"],
 				"-DCMAKE_PREFIX_PATH:PATH="+envConfig["BUILDROOT_QT5_SYSROOT"],

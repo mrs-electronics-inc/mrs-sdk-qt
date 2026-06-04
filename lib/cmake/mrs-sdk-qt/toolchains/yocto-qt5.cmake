@@ -5,26 +5,27 @@
 # First, set CMake variables necessary for the Yocto-Qt toolchain.
 # We have to start from the included toolchain file and then add some extra stuff that it doesn't do correctly.
 
-# Automatically source the Yocto toolchain setup script using mrs-sdk-manager.
+# Automatically source the Yocto toolchain setup script using a path provided
+# by the current configure invocation.
 # Auto-sourcing is not typically recommended, but it is desirable for our use case because
 # we don't want to put extra burden on less experienced users.
 if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
     message(NOTICE "Yocto environment not found. Auto-sourcing environment...")
 
-    # Get the setup script path from mrs-sdk-manager.
-    # Intentionally use the manager installed under MRS_SDK_QT_ROOT/tools:
-    # this is the canonical SDK layout for both local installs and packaged SDK installs,
-    # and avoids accidentally picking up a different manager binary from PATH.
-    execute_process(
-        COMMAND "${MRS_SDK_QT_ROOT}/tools/mrs-sdk-manager" "env" "YOCTO_QT5_ENV_SETUP_SCRIPT"
-        OUTPUT_VARIABLE _yocto_qt5_env_setup_script
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        RESULT_VARIABLE _mrs_env_result
-    )
-    if (NOT _mrs_env_result EQUAL 0 OR _yocto_qt5_env_setup_script STREQUAL "")
+    # Use values already provided by the current configure invocation.
+    # This keeps repo-local build-local workflows self-contained and avoids
+    # introducing a bootstrap dependency on an already-installed SDK manager.
+    set(_yocto_qt5_env_setup_script "")
+    if (DEFINED YOCTO_QT5_ENV_SETUP_SCRIPT AND NOT "${YOCTO_QT5_ENV_SETUP_SCRIPT}" STREQUAL "")
+        set(_yocto_qt5_env_setup_script "${YOCTO_QT5_ENV_SETUP_SCRIPT}")
+    elseif (DEFINED ENV{YOCTO_QT5_ENV_SETUP_SCRIPT} AND NOT "$ENV{YOCTO_QT5_ENV_SETUP_SCRIPT}" STREQUAL "")
+        set(_yocto_qt5_env_setup_script "$ENV{YOCTO_QT5_ENV_SETUP_SCRIPT}")
+    endif()
+
+    if (_yocto_qt5_env_setup_script STREQUAL "")
         message(FATAL_ERROR
             "Could not determine Yocto setup script path.\n"
-            "Set it with: mrs-sdk-manager env -w YOCTO_QT5_ENV_SETUP_SCRIPT=/path/to/setup-script"
+            "Pass -DYOCTO_QT5_ENV_SETUP_SCRIPT=/path/to/setup-script when configuring."
         )
     endif()
 
