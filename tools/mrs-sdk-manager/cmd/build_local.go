@@ -32,6 +32,6 @@ var buildLocalCmd = &cobra.Command{
 }
 
 func init() {
-	buildLocalCmd.Flags().BoolP("install", "i", false, "Install compiled libraries to ~/mrs-sdk-qt")
+	buildLocalCmd.Flags().BoolP("install", "i", false, "Install compiled libraries to $MRS_SDK_QT_ROOT")
 	rootCmd.AddCommand(buildLocalCmd)
 }
