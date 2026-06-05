@@ -40,9 +40,12 @@ if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
     endif()
 
     # Parse and import only the required environment variables.
+    # The base compiler flags exported by the Yocto setup script must be
+    # preserved here because the CMake flag cache entries below are rebuilt
+    # from CFLAGS and CXXFLAGS instead of inheriting them implicitly.
     string(REPLACE "\n" ";" _yocto_qt5_env_lines "${_yocto_qt5_env_output}")
     foreach(_LINE IN LISTS _yocto_qt5_env_lines)
-        if (_LINE MATCHES "^(OE_CMAKE_TOOLCHAIN_FILE|OECORE_TARGET_SYSROOT|OE_QMAKE_PATH_EXTERNAL_HOST_BINS)=(.*)$")
+        if (_LINE MATCHES "^(OE_CMAKE_TOOLCHAIN_FILE|OECORE_TARGET_SYSROOT|OE_QMAKE_PATH_EXTERNAL_HOST_BINS|CFLAGS|CXXFLAGS)=(.*)$")
             set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
         endif()
     endforeach()
@@ -56,6 +59,12 @@ if (NOT DEFINED ENV{OE_CMAKE_TOOLCHAIN_FILE})
     endif()
     if (NOT DEFINED ENV{OE_QMAKE_PATH_EXTERNAL_HOST_BINS} OR "$ENV{OE_QMAKE_PATH_EXTERNAL_HOST_BINS}" STREQUAL "")
         message(FATAL_ERROR "Failed to read OE_QMAKE_PATH_EXTERNAL_HOST_BINS from Yocto setup script: ${_yocto_qt5_env_setup_script}")
+    endif()
+    if (NOT DEFINED ENV{CFLAGS} OR "$ENV{CFLAGS}" STREQUAL "")
+        message(FATAL_ERROR "Failed to read CFLAGS from Yocto setup script: ${_yocto_qt5_env_setup_script}")
+    endif()
+    if (NOT DEFINED ENV{CXXFLAGS} OR "$ENV{CXXFLAGS}" STREQUAL "")
+        message(FATAL_ERROR "Failed to read CXXFLAGS from Yocto setup script: ${_yocto_qt5_env_setup_script}")
     endif()
 endif()
 
