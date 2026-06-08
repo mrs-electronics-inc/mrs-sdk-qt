@@ -17,7 +17,7 @@ Refer to [this page](https://qt.mrs-electronics.dev/guides/installation) on how 
 git clone https://github.com/mrs-electronics-inc/mrs-sdk-qt.git
 cd mrs-sdk-qt
 # Set up pre-commit hooks and local prerequisites
-moon run root:setup
+moon run setup
 ```
 
 ## Issue Workflow

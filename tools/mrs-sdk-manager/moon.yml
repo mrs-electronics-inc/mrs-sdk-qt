@@ -1,5 +1,6 @@
 layer: tool
 stack: frontend
+language: go
 toolchains:
   default: go
 

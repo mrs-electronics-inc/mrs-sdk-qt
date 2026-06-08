@@ -2,11 +2,11 @@
 
 ## Build & Development Commands
 
-- **Build tools**: `moon run tools:install` (builds `mrs-sdk-manager` into `$MRS_SDK_QT_ROOT/tools/`)
-- **Build libs**: `moon run root:install-libs` (runs `mrs-sdk-manager build-local --install`)
-- **Full local install**: `moon run root:install` (builds the tool and installs the SDK)
-- **Format C++**: `moon run root:format-cpp` (uses clang-format)
-- **Format Go**: `moon run root:format-go` (uses gofmt)
+- **Build tools**: `moon run install -- tools` (builds `mrs-sdk-manager` into `$MRS_SDK_QT_ROOT/tools/`)
+- **Build libs**: `moon run install -- libs` (runs `mrs-sdk-manager build-local --install`)
+- **Full local install**: `moon run install` (builds the tool and installs the SDK)
+- **Format C++**: `moon run :fix --query 'language=cpp'` (uses clang-format)
+- **Format Go**: `moon run :fix --query 'language=go'` (uses gofmt)
 
 ## Codebase Structure
 

@@ -2,6 +2,7 @@
 inheritedBy:
   toolchain: go
   layer: [application, tool]
+  language: go
 
 tasks:
   build:
@@ -24,6 +25,6 @@ tasks:
         gofmt -l .
         exit 1
       fi
-  format:
+  fix:
     description: Fix source code.
     command: gofmt -w .
