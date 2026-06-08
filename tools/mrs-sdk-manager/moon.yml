@@ -1,0 +1,7 @@
+layer: tool
+stack: frontend
+toolchains:
+  default: go
+
+tags:
+  - tools

@@ -1,6 +1,16 @@
 .aider*
 .vscode/
 
+build*/
+.moon/cache/
+
+# CMake stuff
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+generated_files/
+
 # -----------------------------------------------------------
 # EVERYTHING BELOW THIS LINE IS QT-SPECIFIC
 # -----------------------------------------------------------
@@ -83,12 +93,3 @@ CMakeLists.txt.user*
 .pch/
 .rcc/
 .uic/
-/build*/
-.moon/cache/
-
-# CMake stuff
-
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-generated_files/

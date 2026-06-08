@@ -1,9 +1,10 @@
 $schema: '../.moon/cache/schemas/project.json'
 
-# The VM builder is script-driven and Docker-backed, so these tasks stay on the
-# system toolchain and delegate to build-vm.sh.
 layer: 'tool'
 stack: 'infrastructure'
+
+# The VM builder is script-driven and Docker-backed, so these tasks stay on the
+# system toolchain and delegate to build-vm.sh.
 
 tasks:
   build:
@@ -20,7 +21,7 @@ tasks:
       cache: true
       runInCI: false
 
-  validate:
+  check:
     description: 'Validate the VM Packer config.'
     command: './build-vm.sh'
     args:

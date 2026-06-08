@@ -11,4 +11,7 @@ node: {}
 
 npm: {}
 
-go: {}
+go:
+  version: '1.26.4'
+  tidyOnChange: true
+  workspaces: false

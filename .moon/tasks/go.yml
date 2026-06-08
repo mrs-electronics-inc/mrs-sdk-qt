@@ -1,0 +1,27 @@
+# These tasks are inherited by Go-based projects.
+inheritedBy:
+  toolchain: go
+  layer: [application, tool]
+
+tasks:
+  build:
+    description: Build the project.
+    command: go build -v -o "build/$projectAlias" .
+
+  test:
+    description: Run tests.
+    command: go test ./...
+  check:
+    description: Run static analysis checks.
+    script: |
+      set -eu
+      go vet ./...
+      # Run in check-only mode.
+      if [ -n "$(gofmt -l .)" ]; then
+        echo "The following files are not formatted correctly:"
+        gofmt -l .
+        exit 1
+      fi
+  format:
+    description: Fix source code.
+    command: gofmt -w .

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Script to format all C++ source files using clang-format
-# Usage: ./format.sh [--check]
+# Usage: ./format_cpp.sh [--check]
 #   --check: perform a dry-run check instead of formatting
 
 set -e
@@ -15,8 +15,8 @@ if [[ "$1" == "--check" ]]; then
   CHECK_ONLY=1
 fi
 
-# Find all tracked C++ source files (respects .gitignore)
-SOURCES=$(git ls-files | grep -E '\.(cpp|hpp|h)$' || true)
+# Find all tracked C/C++ source files (respects .gitignore)
+SOURCES=$(git ls-files | grep -E '\.(h|hpp|c|cpp)$' || true)
 
 # Check if clang-format is available
 if ! command -v clang-format &> /dev/null; then
@@ -27,9 +27,9 @@ fi
 if [[ "${CHECK_ONLY}" -eq 1 ]]; then
   echo "Checking C++ formatting..."
   if echo "${SOURCES}" | xargs clang-format --dry-run -Werror; then
-    echo "✓ All files are properly formatted"
+    echo "✓ All files are properly formatted."
   else
-    echo "✗ Some files are not properly formatted. Run 'moon run root:format-cpp' to fix."
+    echo "✗ Some files are not properly formatted."
     exit 1
   fi
 else
