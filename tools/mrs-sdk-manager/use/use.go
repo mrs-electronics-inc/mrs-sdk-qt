@@ -24,10 +24,12 @@ type templateData struct {
 func Use(version string) error {
 	utils.PrintTaskStart("Configuring project SDK version...")
 
-	// Resolve MRS_SDK_QT_ROOT from the environment.
-	sdkRoot := os.Getenv("MRS_SDK_QT_ROOT")
-	if sdkRoot == "" {
-		return fmt.Errorf("MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
+	// Resolve the installation root from the same environment variable that
+	// consumer projects and moon tasks already use. This keeps tool and SDK
+	// installation paths consistent across local development workflows.
+	sdkRoot, err := utils.ResolveSDKInstallRoot()
+	if err != nil {
+		return err
 	}
 
 	// Validate version is installed
