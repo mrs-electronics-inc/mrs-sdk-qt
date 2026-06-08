@@ -13,8 +13,8 @@ import (
 // InstallBuilds copies all compiled libraries and configuration files to the SDK installation tree
 func InstallBuilds(sdkRepoRoot string) error {
 	// Resolve the installation root from the same environment variable that
-	// consumer projects and moon tasks already use. This keeps tool and SDK
-	// installation paths consistent across local development workflows.
+	// consumer projects already use. This keeps tool and SDK installation paths consistent
+	// across local development workflows.
 	sdkInstallRoot, err := utils.ResolveSDKInstallRoot()
 	if err != nil {
 		return err

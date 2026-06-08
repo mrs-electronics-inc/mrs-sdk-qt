@@ -25,8 +25,8 @@ func Use(version string) error {
 	utils.PrintTaskStart("Configuring project SDK version...")
 
 	// Resolve the installation root from the same environment variable that
-	// consumer projects and moon tasks already use. This keeps tool and SDK
-	// installation paths consistent across local development workflows.
+	// consumer projects already use. This keeps tool and SDK installation paths consistent
+	// across local development workflows.
 	sdkRoot, err := utils.ResolveSDKInstallRoot()
 	if err != nil {
 		return err
