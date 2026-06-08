@@ -100,7 +100,9 @@ Make sure you [install Qt Creator](#install-qt-creator) before trying to configu
         | `desktop-qt6.cmake` | Desktop Qt 6.8 | `desktop` |
         | `yocto-qt5.cmake` | Yocto Qt 5.12.9 | `yocto` |
 
-        Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DCMAKE_TOOLCHAIN_FILE=lib/cmake/mrs-sdk-qt/toolchains/yocto-qt5.cmake`.
+        Each helper sets cache variables used in `lib/cmake/mrs-sdk-qt/config.cmake` to compute a consistent kit identity.
+
+        The helpers are imported dynamically by the `mrs-sdk-qt/toolchain.cmake` file created your project's working directory. When creating SDK kits, you'll set `-DCMAKE_TOOLCHAIN_FILE:STRING=%{sourceDir}/mrs-sdk-qt/toolchain.cmake` to use the toolchain bootstrapper.
     </TabItem>
     <TabItem label="QMake">
         The SDK exports a few helper scripts under `lib/qmake/mrs-sdk-qt/toolchains` for bootstrapping QMake with the right Qt version:
@@ -112,7 +114,9 @@ Make sure you [install Qt Creator](#install-qt-creator) before trying to configu
         | `desktop-qt6.pri` | Desktop Qt 6.8 | `desktop` |
         | `yocto-qt5.pri` | Yocto Qt 5.12.9 | `yocto` |
 
-        Each helper sets variables used in `lib/qmake/mrs-sdk-qt/config.pri` to compute a consistent kit identity. When creating SDK kits, you'll pass the location of this helper with something like `-DQMAKE_TOOLCHAIN_FILE=lib/qmake/mrs-sdk-qt/toolchains/yocto-qt5.pri`.
+        Each helper sets variables used in `lib/qmake/mrs-sdk-qt/config.pri` to compute a consistent kit identity.
+
+        The helpers are imported dynamically by the `mrs-sdk-qt/toolchain.pri` file created in your project's working directory. When configuring your project, you'll call `include("mrs-sdk-qt/toolchain.pri")` to use the toolchain bootstrapper.
     </TabItem>
 </Tabs>
 
