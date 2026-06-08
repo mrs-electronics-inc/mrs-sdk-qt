@@ -1,0 +1,28 @@
+name: 'CI'
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+      - uses: 'moonrepo/setup-toolchain@v0'
+      - run: 'moon ci && git diff --exit-code'
+  golang-ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [tools/mrs-sdk-manager]
+
+    steps:
+      - uses: 'actions/checkout@v6'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          working-directory: ${{ matrix.project }}
