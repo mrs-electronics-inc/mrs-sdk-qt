@@ -4,6 +4,7 @@ defaultProject: 'root'
 
 projects:
   root: '.'
+  lib: 'lib'
   tools.mgr: 'tools/mrs-sdk-manager'
   demos.can: 'demos/can-simulator'
   demos.sz: 'demos/spoke-zone-demo'

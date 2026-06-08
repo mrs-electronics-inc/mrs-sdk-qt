@@ -5,7 +5,7 @@ inheritedBy:
 
 implicitInputs:
   # Invalidate the cache when analysis helper scripts change.
-  - '/scripts/format_cpp.sh'
+  - '/scripts/format_cpp.py'
   # Changes to formatting rules should also invalidate the cache.
   - '/.clang-format'
   - '**/.clang-format'
@@ -17,11 +17,11 @@ fileGroups:
 tasks:
   check:
     description: Run static analysis checks.
-    command: '"$workspaceRoot/scripts/format_cpp.sh" --check'
+    command: 'python3 "$workspaceRoot/scripts/format_cpp.py" --check .'
     inputs:
       - group: src
   fix:
     description: Fix source code.
-    command: '"$workspaceRoot/scripts/format_cpp.sh"'
+    command: 'python3 "$workspaceRoot/scripts/format_cpp.py" .'
     inputs:
       - group: src
