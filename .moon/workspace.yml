@@ -1,0 +1,16 @@
+$schema: './cache/schemas/workspace.json'
+
+defaultProject: 'root'
+
+projects:
+  root: '.'
+  lib: 'lib'
+  tools.mgr: 'tools/mrs-sdk-manager'
+  demos.can: 'demos/can-simulator'
+  demos.sz: 'demos/spoke-zone-demo'
+  docs: 'docs'
+  vm: 'vm'
+
+vcs:
+  client: 'git'
+  defaultBranch: 'main'

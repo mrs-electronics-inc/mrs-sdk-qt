@@ -1,0 +1,6 @@
+layer: application
+stack: frontend
+language: cpp
+
+tags:
+  - demos

@@ -1,0 +1,42 @@
+$schema: '../.moon/cache/schemas/project.json'
+
+# The docs site is an isolated JavaScript project. Keeping its tasks
+# local to docs/ ensures the Node.js boundary is explicit.
+language: 'javascript'
+layer: 'application'
+stack: 'frontend'
+
+fileGroups:
+  meta:
+    - 'package.json'
+    - 'package-lock.json'
+  src:
+    - 'astro.config.mjs'
+    - 'src/**/*'
+    - 'public/**/*'
+    - 'tsconfig.json'
+
+tasks:
+  deps:
+    description: 'Install dependencies.'
+    command: 'npm install --no-fund'
+    inputs:
+      - group: meta
+
+  build:
+    description: 'Build the docs site.'
+    command: 'npm run build'
+    deps: [deps]
+    inputs:
+      - group: meta
+      - group: src
+    outputs:
+      - 'dist'
+
+  dev:
+    description: 'Run the Astro development server.'
+    command: 'npm run dev'
+    inputs:
+      - group: meta
+      - group: src
+    preset: 'server'

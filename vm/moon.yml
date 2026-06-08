@@ -1,0 +1,58 @@
+$schema: '../.moon/cache/schemas/project.json'
+
+layer: 'tool'
+stack: 'infrastructure'
+
+# The VM builder is script-driven and Docker-backed, so these tasks stay on the
+# system toolchain and delegate to build-vm.sh.
+
+tasks:
+  build:
+    description: 'Build the VM image locally using Packer in Docker.'
+    command: './build-vm.sh'
+    toolchains: 'system'
+    inputs:
+      - 'build-vm.sh'
+      - 'docker-compose.yml'
+      - 'Dockerfile'
+      - 'packer/**/*'
+      - 'utils/**/*'
+    outputs:
+      - 'packer/output/**/*'
+    options:
+      cache: true
+      runInCI: false
+
+  check:
+    description: 'Validate the VM Packer config.'
+    command: './build-vm.sh'
+    args:
+      - '--validate-only'
+    toolchains: 'system'
+    inputs:
+      - 'build-vm.sh'
+      - 'docker-compose.yml'
+      - 'Dockerfile'
+      - 'packer/**/*'
+      - 'utils/**/*'
+    options:
+      cache: false
+      runInCI: false
+
+  watch-serial:
+    description: 'Watch the QEMU serial output during a local VM build.'
+    script: |
+      [ -f packer/output/vm-serial.log ] && tail -f packer/output/vm-serial.log
+    toolchains: 'system'
+    inputs:
+      - 'packer/output/vm-serial.log'
+    preset: 'server'
+
+  clean:
+    description: 'Remove local VM build artifacts.'
+    script: |
+      sudo rm -rf packer/output/
+    toolchains: 'system'
+    inputs:
+      - 'packer/output/**/*'
+    preset: 'utility'

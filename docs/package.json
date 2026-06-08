@@ -1,5 +1,5 @@
 {
-  "name": "mrs-sdk-qt-docs-site",
+  "name": "@mrs-electronics/mrs-sdk-qt-docs-site",
   "type": "module",
   "version": "0.0.1",
   "scripts": {

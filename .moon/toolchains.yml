@@ -1,0 +1,6 @@
+$schema: "./cache/schemas/toolchains.json"
+
+go:
+  version: '1.26.4'
+  tidyOnChange: true
+  workspaces: false

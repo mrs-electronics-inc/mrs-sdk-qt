@@ -1,0 +1,27 @@
+# These tasks are inherited by C++/Qt-based projects.
+inheritedBy:
+  layer: [application, library]
+  language: cpp
+
+implicitInputs:
+  # Invalidate the cache when analysis helper scripts change.
+  - '/scripts/format_cpp.py'
+  # Changes to formatting rules should also invalidate the cache.
+  - '/.clang-format'
+  - '**/.clang-format'
+
+fileGroups:
+  src:
+    - '**/*.{h,hpp,c,cpp}'
+
+tasks:
+  check:
+    description: Run static analysis checks.
+    command: 'python3 "$workspaceRoot/scripts/format_cpp.py" --check .'
+    inputs:
+      - group: src
+  fix:
+    description: Fix source code.
+    command: 'python3 "$workspaceRoot/scripts/format_cpp.py" .'
+    inputs:
+      - group: src

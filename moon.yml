@@ -1,0 +1,50 @@
+$schema: './.moon/cache/schemas/project.json'
+
+# The root project owns repository-wide maintenance tasks. Inputs are intentionally narrowed so
+# that moon does not treat the whole repository as relevant to every root task.
+layer: 'configuration'
+stack: 'infrastructure'
+
+workspace:
+  inheritedTasks:
+    include: []
+
+tasks:
+  install:
+    description: 'Build and install the SDK locally into MRS_SDK_QT_ROOT.'
+    command: './scripts/install_from_source.sh'
+    toolchains: 'system'
+    inputs:
+      - 'lib/**/*'
+      - 'tools/mrs-sdk-manager/**/*'
+    preset: 'utility'
+
+  uninstall:
+    description: 'Remove the local SDK installation rooted at MRS_SDK_QT_ROOT.'
+    script: |
+      ./scripts/check_local_env.sh && rm -rf "$MRS_SDK_QT_ROOT"
+    toolchains: 'system'
+    preset: 'utility'
+
+  dev:
+    description: 'Recreate a fresh local SDK installation by uninstalling then reinstalling.'
+    deps:
+      - uninstall
+      - install
+    preset: 'utility'
+    options:
+      runDepsInParallel: false
+
+  setup:
+    description: 'Check dependencies and install pre-commit hooks.'
+    script: |
+      set -eu
+      echo "Installing pre-commit hooks..."
+      pre-commit install
+      echo "Installing dev dependencies..."
+      command -v cmake >/dev/null || {
+        echo "ERROR: cmake is not installed." >&2
+        exit 1
+      }
+    toolchains: 'system'
+    preset: 'utility'

@@ -2,10 +2,11 @@
 
 ## Build & Development Commands
 
-- **Build tools**: `just install-tools` (installs mrs-sdk-manager to $GOPATH/bin)
-- **Build libs**: `just install-libs` (runs `mrs-sdk-manager build-local --install`)
-- **Format C++**: `just format-cpp` (uses clang-format)
-- **Format Go**: `just format-go` (uses gofmt)
+- **Build tools**: `moon run install -- tools` (builds `mrs-sdk-manager` into `$MRS_SDK_QT_ROOT/tools/`)
+- **Build libs**: `moon run install -- libs` (runs `mrs-sdk-manager build-local --install`)
+- **Full local install**: `moon run install` (builds the tool and installs the SDK)
+- **Format C++**: `moon run :fix --query 'language=cpp'` (uses clang-format)
+- **Format Go**: `moon run :fix --query 'language=go'` (uses gofmt)
 
 ## Codebase Structure
 
