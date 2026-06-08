@@ -3,8 +3,8 @@ $schema: './cache/schemas/workspace.json'
 defaultProject: 'root'
 
 projects:
-  root: "."
-  # docs: "docs"
+  root: '.'
+  docs: 'docs'
   tools.mgr: 'tools/mrs-sdk-manager'
   demos.can: 'demos/can-simulator'
   demos.sz: 'demos/spoke-zone-demo'

@@ -17,6 +17,8 @@ tasks:
       - 'Dockerfile'
       - 'packer/**/*'
       - 'utils/**/*'
+    outputs:
+      - 'packer/output/**/*'
     options:
       cache: true
       runInCI: false
@@ -53,6 +55,4 @@ tasks:
     toolchains: 'system'
     inputs:
       - 'packer/output/**/*'
-    options:
-      cache: false
-      runInCI: false
+    preset: 'utility'

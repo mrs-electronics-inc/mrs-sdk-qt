@@ -1,49 +1,42 @@
-$schema: "../.moon/cache/schemas/project.json"
+$schema: '../.moon/cache/schemas/project.json'
 
-# The documentation site is an isolated JavaScript project. Keeping its tasks
-# local to docs/ preserves the same working directory behavior as the old
-# docs/justfile while making the Node.js dependency boundary explicit.
-language: "javascript"
-layer: "application"
-stack: "frontend"
+# The docs site is an isolated JavaScript project. Keeping its tasks
+# local to docs/ ensures the Node.js boundary is explicit.
+language: 'javascript'
+layer: 'application'
+stack: 'frontend'
+
+fileGroups:
+  meta:
+    - 'package.json'
+    - 'package-lock.json'
+  src:
+    - 'astro.config.mjs'
+    - 'src/**/*'
+    - 'public/**/*'
+    - 'tsconfig.json'
 
 tasks:
   deps:
-    description: "Install docs site dependencies without mutating package.json."
-    command: "npm"
-    args:
-      - "i"
-      - "--no-fund"
-      - "--no-save"
+    description: 'Install dependencies.'
+    command: 'npm install --no-fund'
     inputs:
-      - "package.json"
-      - "package-lock.json"
-    options:
-      cache: false
+      - group: meta
 
   build:
-    description: "Build the Astro documentation site."
-    command: "npm"
-    args:
-      - "run"
-      - "build"
+    description: 'Build the docs site.'
+    command: 'npm run build'
+    deps: [deps]
     inputs:
-      - "package.json"
-      - "astro.config.mjs"
-      - "src/**/*"
-      - "public/**/*"
+      - group: meta
+      - group: src
     outputs:
-      - "dist"
+      - 'dist'
 
   dev:
-    description: "Run the Astro development server for the docs site."
-    command: "npm"
-    args:
-      - "run"
-      - "dev"
+    description: 'Run the Astro development server.'
+    command: 'npm run dev'
     inputs:
-      - "package.json"
-      - "astro.config.mjs"
-      - "src/**/*"
-      - "public/**/*"
-    preset: "server"
+      - group: meta
+      - group: src
+    preset: 'server'
