@@ -13,7 +13,7 @@ import (
 // InstallBuilds copies all compiled libraries and configuration files to the SDK installation tree
 func InstallBuilds(sdkRepoRoot string) error {
 	// Resolve the installation root from the same environment variable that
-	// consumer projects and just recipes already use. This keeps tool and SDK
+	// consumer projects and moon tasks already use. This keeps tool and SDK
 	// installation paths consistent across local development workflows.
 	sdkInstallRoot, err := resolveSDKInstallRoot()
 	if err != nil {
@@ -46,7 +46,7 @@ func InstallBuilds(sdkRepoRoot string) error {
 
 // resolveSDKInstallRoot validates the configured SDK installation root.
 // Local installs must honor MRS_SDK_QT_ROOT so that `build-local --install`,
-// `just install`, and generated project wrappers all agree on where the SDK
+// `moon run root:install`, and generated project wrappers all agree on where the SDK
 // lives on disk.
 func resolveSDKInstallRoot() (string, error) {
 	sdkInstallRoot := os.Getenv("MRS_SDK_QT_ROOT")

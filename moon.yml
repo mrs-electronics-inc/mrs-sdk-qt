@@ -1,0 +1,134 @@
+$schema: "./.moon/cache/schemas/project.json"
+
+# The root project owns repository-wide maintenance tasks that were previously
+# exposed through the top-level justfile. Inputs are intentionally narrowed so
+# that moon does not treat the whole repository as relevant to every root task.
+layer: "configuration"
+stack: "infrastructure"
+
+workspace:
+  inheritedTasks:
+    include: []
+
+tasks:
+  format-cpp:
+    description: "Format or check tracked C++ sources via the existing helper script."
+    command: "./tools/format-cpp.sh"
+    toolchains: "system"
+    inputs:
+      - ".clang-format"
+      - "lib/**/*"
+      - "demos/**/*"
+      - "tools/format-cpp.sh"
+    options:
+      cache: false
+      runInCI: false
+
+  format-go:
+    description: "Format or check Go sources under tools/ via the existing helper script."
+    command: "./tools/format-go.sh"
+    toolchains: "system"
+    inputs:
+      - "tools/**/*.go"
+      - "tools/format-go.sh"
+    options:
+      cache: false
+      runInCI: false
+
+  lint-go:
+    description: "Run go vet for the mrs-sdk-manager tool."
+    command: "./tools/lint-go.sh"
+    toolchains: "system"
+    inputs:
+      - "tools/**/*.go"
+      - "tools/mrs-sdk-manager/go.mod"
+      - "tools/mrs-sdk-manager/go.sum"
+      - "tools/lint-go.sh"
+    options:
+      cache: false
+
+  install:
+    description: "Build the SDK tool and install the locally built SDK into MRS_SDK_QT_ROOT."
+    script: |
+      set -euo pipefail
+      : "${MRS_SDK_QT_ROOT:?MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).}"
+      mkdir -p "$MRS_SDK_QT_ROOT"
+      "$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager" build-local --install
+    deps:
+      - "tools:install"
+    toolchains: "system"
+    inputs:
+      - "lib/**/*"
+      - "tools/mrs-sdk-manager/**/*"
+      - "moon.yml"
+      - "tools/moon.yml"
+    options:
+      cache: false
+      runInCI: false
+
+  install-libs:
+    description: "Install the Qt SDK libraries into an existing MRS_SDK_QT_ROOT tool installation."
+    script: |
+      set -euo pipefail
+      : "${MRS_SDK_QT_ROOT:?MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).}"
+      "$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager" build-local --install
+    deps:
+      - "tools:install"
+    toolchains: "system"
+    inputs:
+      - "lib/**/*"
+      - "tools/mrs-sdk-manager/**/*"
+      - "moon.yml"
+      - "tools/moon.yml"
+    options:
+      cache: false
+      runInCI: false
+
+  uninstall:
+    description: "Remove the local SDK installation rooted at MRS_SDK_QT_ROOT."
+    script: |
+      set -euo pipefail
+      : "${MRS_SDK_QT_ROOT:?MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).}"
+      rm -rf "$MRS_SDK_QT_ROOT"
+    toolchains: "system"
+    inputs:
+      - "moon.yml"
+    options:
+      cache: false
+      runInCI: false
+
+  dev:
+    description: "Recreate a fresh local SDK installation by uninstalling then reinstalling."
+    script: |
+      set -euo pipefail
+      : "${MRS_SDK_QT_ROOT:?MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).}"
+      rm -rf "$MRS_SDK_QT_ROOT"
+      mkdir -p "$MRS_SDK_QT_ROOT"
+      "$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager" build-local --install
+    deps:
+      - "tools:install"
+    toolchains: "system"
+    inputs:
+      - "lib/**/*"
+      - "tools/mrs-sdk-manager/**/*"
+      - "moon.yml"
+      - "tools/moon.yml"
+    options:
+      cache: false
+      runInCI: false
+
+  setup:
+    description: "Install pre-commit hooks and bootstrap local Debian-based dependencies."
+    script: |
+      set -euo pipefail
+      echo "Installing pre-commit hooks..."
+      pre-commit install
+      echo "Installing dev dependencies..."
+      command -v cmake >/dev/null || sudo apt install cmake
+    toolchains: "system"
+    inputs:
+      - ".pre-commit-config.yaml"
+      - "moon.yml"
+    options:
+      cache: false
+      runInCI: false

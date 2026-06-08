@@ -1,0 +1,58 @@
+$schema: "../.moon/cache/schemas/project.json"
+
+# The VM builder is script-driven and Docker-backed, so these tasks stay on the
+# system toolchain and continue delegating to build-vm.sh. Moon adds a stable
+# entry point without changing the underlying VM build implementation.
+layer: "tool"
+stack: "infrastructure"
+
+tasks:
+  build:
+    description: "Build the VM image locally through the existing Docker/Packer wrapper."
+    command: "./build-vm.sh"
+    toolchains: "system"
+    inputs:
+      - "build-vm.sh"
+      - "docker-compose.yml"
+      - "Dockerfile"
+      - "packer/**/*"
+      - "utils/**/*"
+    options:
+      cache: false
+      runInCI: false
+
+  validate:
+    description: "Validate the VM Packer configuration without performing a build."
+    command: "./build-vm.sh"
+    args:
+      - "--validate-only"
+    toolchains: "system"
+    inputs:
+      - "build-vm.sh"
+      - "docker-compose.yml"
+      - "Dockerfile"
+      - "packer/**/*"
+      - "utils/**/*"
+    options:
+      cache: false
+      runInCI: false
+
+  watch-serial:
+    description: "Tail the VM serial log if a local build has already produced one."
+    script: |
+      [ -f packer/output/vm-serial.log ] && tail -f packer/output/vm-serial.log
+    toolchains: "system"
+    inputs:
+      - "packer/output/vm-serial.log"
+    preset: "server"
+
+  clean:
+    description: "Remove local VM build artifacts from vm/packer/output."
+    script: |
+      sudo rm -rf packer/output/
+    toolchains: "system"
+    inputs:
+      - "packer/output/**/*"
+    options:
+      cache: false
+      runInCI: false

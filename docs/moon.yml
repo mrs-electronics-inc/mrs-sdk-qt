@@ -1,0 +1,49 @@
+$schema: "../.moon/cache/schemas/project.json"
+
+# The documentation site is an isolated JavaScript project. Keeping its tasks
+# local to docs/ preserves the same working directory behavior as the old
+# docs/justfile while making the Node.js dependency boundary explicit.
+language: "javascript"
+layer: "application"
+stack: "frontend"
+
+tasks:
+  deps:
+    description: "Install docs site dependencies without mutating package.json."
+    command: "npm"
+    args:
+      - "i"
+      - "--no-fund"
+      - "--no-save"
+    inputs:
+      - "package.json"
+      - "package-lock.json"
+    options:
+      cache: false
+
+  build:
+    description: "Build the Astro documentation site."
+    command: "npm"
+    args:
+      - "run"
+      - "build"
+    inputs:
+      - "package.json"
+      - "astro.config.mjs"
+      - "src/**/*"
+      - "public/**/*"
+    outputs:
+      - "dist"
+
+  dev:
+    description: "Run the Astro development server for the docs site."
+    command: "npm"
+    args:
+      - "run"
+      - "dev"
+    inputs:
+      - "package.json"
+      - "astro.config.mjs"
+      - "src/**/*"
+      - "public/**/*"
+    preset: "server"

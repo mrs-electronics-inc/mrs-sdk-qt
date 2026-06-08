@@ -27,7 +27,7 @@ if [[ "${CHECK_ONLY}" -eq 1 ]]; then
   if [[ -n "${UNFORMATTED}" ]]; then
     echo "Go formatting issues found:"
     gofmt -d tools/
-    echo "✗ Some files are not properly formatted. Run 'just format-go' to fix."
+    echo "✗ Some files are not properly formatted. Run 'moon run root:format-go' to fix."
     exit 1
   fi
   echo "✓ All Go files are properly formatted"

@@ -1,0 +1,14 @@
+$schema: "./cache/schemas/toolchains.json"
+
+# Enable the toolchains that map to the projects we expose through moon. We do
+# not pin versions here because the repository currently does not define shared
+# workspace versions for Node.js or Go outside the project files themselves.
+javascript:
+  packageManager: "npm"
+  inferTasksFromScripts: false
+
+node: {}
+
+npm: {}
+
+go: {}

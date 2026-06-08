@@ -29,7 +29,7 @@ if [[ "${CHECK_ONLY}" -eq 1 ]]; then
   if echo "${SOURCES}" | xargs clang-format --dry-run -Werror; then
     echo "✓ All files are properly formatted"
   else
-    echo "✗ Some files are not properly formatted. Run 'just format-cpp' to fix."
+    echo "✗ Some files are not properly formatted. Run 'moon run root:format-cpp' to fix."
     exit 1
   fi
 else

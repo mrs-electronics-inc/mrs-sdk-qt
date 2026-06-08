@@ -1,0 +1,33 @@
+$schema: "../.moon/cache/schemas/project.json"
+
+# The tools project currently exposes installation of the Go-based
+# mrs-sdk-manager binary. We keep the existing shell flow so environment checks
+# and user-facing guidance remain unchanged while moving orchestration to moon.
+language: "go"
+layer: "tool"
+stack: "systems"
+
+tasks:
+  install:
+    description: "Build mrs-sdk-manager into MRS_SDK_QT_ROOT/tools."
+    script: |
+      set -euo pipefail
+      SDK_ROOT="${MRS_SDK_QT_ROOT:-}"
+      if [ -z "$SDK_ROOT" ]; then
+          echo "error: MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>)." >&2
+          exit 1
+      fi
+      mkdir -p "$SDK_ROOT/tools"
+      echo "Building mrs-sdk-manager..."
+      go -C mrs-sdk-manager build -o "$SDK_ROOT/tools/mrs-sdk-manager" .
+      echo "Installed mrs-sdk-manager to $SDK_ROOT/tools/"
+      echo
+      echo "Add the following to your shell profile (.bashrc, .zshrc, etc.):"
+      echo "  export PATH=\"\$PATH:$SDK_ROOT/tools\""
+    inputs:
+      - "mrs-sdk-manager/**/*.go"
+      - "mrs-sdk-manager/go.mod"
+      - "mrs-sdk-manager/go.sum"
+    options:
+      cache: false
+      runInCI: false

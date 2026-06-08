@@ -84,6 +84,7 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+.moon/cache/
 
 # CMake stuff
 

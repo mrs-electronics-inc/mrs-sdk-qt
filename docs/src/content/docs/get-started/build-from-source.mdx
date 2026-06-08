@@ -34,18 +34,17 @@ Here are the steps for installing from source:
     cd mrs-sdk-qt
     ```
 
-2. Install the `just` command runner ([instructions here](https://just.systems/man/en/packages.html))
-    - Quick start to `just`: https://just.systems/man/en/quick-start.html
+2. Install `moon` by following the official setup guide: https://moonrepo.dev/docs/install
 3. Compile and install the SDK tooling:
 
     ```bash
-    just install-tools
+    moon run tools:install
     ```
 
 4. Compile and install the SDK Qt libraries:
 
     ```bash
-    just install-libs
+    moon run root:install-libs
     ```
 
 </Steps>

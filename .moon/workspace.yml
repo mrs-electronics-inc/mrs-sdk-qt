@@ -1,0 +1,17 @@
+$schema: "./cache/schemas/workspace.json"
+
+# Define a compact moon workspace that mirrors the existing task boundaries from
+# the repository's justfiles. Keeping these projects explicit makes task scopes
+# predictable for contributors and avoids pulling unrelated directories into the
+# task graph.
+defaultProject: "root"
+
+projects:
+  root: "."
+  docs: "docs"
+  tools: "tools"
+  vm: "vm"
+
+vcs:
+  client: "git"
+  defaultBranch: "main"
