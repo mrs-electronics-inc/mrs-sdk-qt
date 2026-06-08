@@ -2,6 +2,8 @@
 default:
     @echo "Top-level recipes:"
     @JUST_LIST_HEADING="" just --list
+    @echo "Tools recipes:"
+    @cd tools/ && JUST_LIST_HEADING="" just --list --list-prefix "    tools/"
     @echo "VM recipes:"
     @cd vm/ && JUST_LIST_HEADING="" just --list --list-prefix "    vm/"
     @echo "Docs recipes:"
@@ -16,18 +18,27 @@ format-go *args:
 lint-go *args:
     ./tools/lint-go.sh {{ args }}
 
-install-libs: install-tools
-    mrs-sdk-manager build-local --install
+# Install a locally built version of the SDK, including tooling
+install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    : "${MRS_SDK_QT_ROOT:?MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).}"
+    mkdir -p "$MRS_SDK_QT_ROOT"
+    just tools/install
+    "$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager" build-local --install
 
-# You may have to do some manual setup to get the Go bin directory in your path for using mrs-sdk-manager.
-# Here is a basic sample BASH command to add to your .bashrc:
-# [[ -n "$(go env GOPATH)" ]] && PATH="$(go env GOPATH)/bin:$PATH"
-install-tools: deps
-    go -C tools/mrs-sdk-manager install
+# Uninstall the SDK
+uninstall:
+    rm -rf "$MRS_SDK_QT_ROOT"
 
-# This uses the APT package manager, which means it only works on Debian-based systems.
-deps:
-	@command -v cmake >/dev/null || sudo apt install cmake
+# Create a fresh local SDK installation
+dev: uninstall install
 
+# Set up the local dev environment
 setup:
+    #!/usr/bin/env bash
+    echo "Installing pre-commit hooks..."
     pre-commit install
+    echo "Installing dev dependencies..."
+    # This uses the APT package manager, which means it only works on Debian-based systems.
+    command -v cmake >/dev/null || sudo apt install cmake

@@ -82,9 +82,11 @@ endif()
 # Load the proper Qt version based on which kits we are using. We only have to worry about Qt5 vs. Qt6;
 # everything else is taken care of by the toolchain helpers.
 ###########################################################################################################################################
+set(_mrs_sdk_qt_qt_core_target "")
 if("${MRS_SDK_QT_QT_MAJOR_VERSION}" STREQUAL "5")
     find_package(Qt5 REQUIRED COMPONENTS Core)
     if(Qt5Core_VERSION)
+        set(_mrs_sdk_qt_qt_core_target Qt5::Core)
         if(MRS_SDK_QT_OS_DESKTOP)
             # Desktop builds support LTS versions with patch flexibility
             string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" _ "${MRS_SDK_QT_EXPECTED_QT_VERSION}")
@@ -111,6 +113,7 @@ if("${MRS_SDK_QT_QT_MAJOR_VERSION}" STREQUAL "5")
 elseif("${MRS_SDK_QT_QT_MAJOR_VERSION}" STREQUAL "6")
     find_package(Qt6 REQUIRED COMPONENTS Core)
     if(Qt6Core_VERSION)
+        set(_mrs_sdk_qt_qt_core_target Qt6::Core)
         if(MRS_SDK_QT_OS_DESKTOP)
             # Desktop builds support LTS versions with patch flexibility
             string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" _ "${MRS_SDK_QT_EXPECTED_QT_VERSION}")
@@ -136,6 +139,9 @@ elseif("${MRS_SDK_QT_QT_MAJOR_VERSION}" STREQUAL "6")
     endif()
 else()
     message(FATAL_ERROR "ERROR: no Qt major version specified. Did you run the correct toolchain helper?")
+endif()
+if((NOT DEFINED _mrs_sdk_qt_qt_core_target) OR (_mrs_sdk_qt_qt_core_target STREQUAL ""))
+    message(FATAL_ERROR "ERROR: Qt Core target not resolved.")
 endif()
 set(_mrs_sdk_qt_qt_version ${MRS_SDK_QT_EXPECTED_QT_VERSION})
 
@@ -180,20 +186,12 @@ message(NOTICE "Environment: target OS: ${MRS_SDK_QT_TARGET_OS}")
 ###########################################################################################################################################
 if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     # Validate that required variables were set.
-    if(NOT DEFINED _mrs_sdk_qt_global_config_file)
-        message(FATAL_ERROR "ERROR: MRS SDK global config not found. Run mrs-sdk-manager to initialize.")
-    elseif(NOT EXISTS "${_mrs_sdk_qt_global_config_file}")
-        message(FATAL_ERROR "ERROR: MRS SDK global config not found at ${_mrs_sdk_qt_global_config_file}. Run mrs-sdk-manager to initialize.")
-    endif()
     if(NOT DEFINED MRS_SDK_QT_ROOT)
-        message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT not found in ${_mrs_sdk_qt_global_config_file}")
+        message(FATAL_ERROR "ERROR: MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
     endif()
     if(NOT DEFINED MRS_SDK_QT_VERSION)
-        message(FATAL_ERROR "ERROR: MRS_SDK_QT_VERSION not found in ${_mrs_sdk_qt_global_config_file}")
+        message(FATAL_ERROR "ERROR: MRS_SDK_QT_VERSION not found. Run: mrs-sdk-manager use <version>")
     endif()
-
-    message(NOTICE "MRS SDK root: ${MRS_SDK_QT_ROOT}")
-    message(NOTICE "MRS SDK version: ${MRS_SDK_QT_VERSION}")
 
     # Export definitions that should only reach consumer targets via the imported target.
     set(MRS_SDK_QT_CONSUMER_ONLY_DEFINES "")
@@ -212,13 +210,6 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
     set(MRS_SDK_QT_LIBRARY_DIR "${_lib_os_path}/${_lib_target_dirname}")
 
     if(TARGET ${MRS_SDK_QT_CONSUMER_TARGET})
-        message(NOTICE "Linking Qt libraries for target ${MRS_SDK_QT_CONSUMER_TARGET}...")
-        if(Qt5Core_VERSION)
-            target_link_libraries(${MRS_SDK_QT_CONSUMER_TARGET} PUBLIC Qt5::Core)
-        elseif(Qt6Core_VERSION)
-            target_link_libraries(${MRS_SDK_QT_CONSUMER_TARGET} PUBLIC Qt6::Core)
-        endif()
-
         message(NOTICE "Configuring MRS SDK for target ${MRS_SDK_QT_CONSUMER_TARGET}...")
 
         # Find the static library file in the specified location inside the SDK installation tree.
@@ -240,6 +231,8 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
                 IMPORTED_LOCATION ${MRS_SDK_QT_LIBS}
                 INTERFACE_INCLUDE_DIRECTORIES ${MRS_SDK_QT_INCLUDE_DIRS}
             )
+            # Ensure Qt Core links after the static SDK library to avoid --as-needed dropping symbols.
+            set_property(TARGET ${MRS_SDK_QT_LIB_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${_mrs_sdk_qt_qt_core_target})
             if(MRS_SDK_QT_SHARED_DEFINES)
                 set_property(TARGET ${MRS_SDK_QT_LIB_NAME} APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS ${MRS_SDK_QT_SHARED_DEFINES})
             endif()
@@ -248,5 +241,7 @@ if(DEFINED MRS_SDK_QT_CONSUMER_TARGET)
             endif()
             target_link_libraries(${MRS_SDK_QT_CONSUMER_TARGET} PRIVATE ${MRS_SDK_QT_LIB_NAME})
         endif()
+
+        message(NOTICE "MRS SDK configuration complete.")
     endif()
 endif()

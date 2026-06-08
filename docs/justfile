@@ -1,6 +1,6 @@
 # List docs recipes
 default:
-    @JUST_LIST_HEADING="" just --list --list-prefix "    docs/"
+    @just --list
 
 # Install the docs dependencies
 deps:

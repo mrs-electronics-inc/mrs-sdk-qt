@@ -167,20 +167,14 @@ message("Environment: target OS: $$MRS_SDK_QT_TARGET_OS")
 ###########################################################################################################################################
 !isEmpty(MRS_SDK_QT_CONSUMER_TARGET) {
     # Validate that required variables were set.
-    isEmpty(_mrs_sdk_qt_global_config_file) {
-        error("ERROR: MRS SDK global config not found. Run mrs-sdk-manager to initialize.")
-    } else:!exists($$_mrs_sdk_qt_global_config_file) {
-        error("ERROR: MRS SDK global config not found at $${_mrs_sdk_qt_global_config_file}. Run mrs-sdk-manager to initialize.")
-    }
     isEmpty(MRS_SDK_QT_ROOT) {
-        error("ERROR: MRS_SDK_QT_ROOT not found in $${_mrs_sdk_qt_global_config_file}")
+        error("ERROR: MRS_SDK_QT_ROOT is not set. Export it in your shell profile (e.g., export MRS_SDK_QT_ROOT=<path>).")
     }
     isEmpty(MRS_SDK_QT_VERSION) {
-        error("ERROR: MRS_SDK_QT_VERSION not found in $${_mrs_sdk_qt_global_config_file}")
+        error("ERROR: MRS_SDK_QT_VERSION not found. Run: mrs-sdk-manager use <version>")
     }
 
-    message("MRS SDK root: $${MRS_SDK_QT_ROOT}")
-    message("MRS SDK version: $${MRS_SDK_QT_VERSION}")
+    message("Configuring MRS SDK for target $${MRS_SDK_QT_CONSUMER_TARGET}...")
 
     # Resolve the canonical library and include paths for the installed SDK.
     MRS_SDK_QT_LIBRARY_DIR_BASE = $$MRS_SDK_QT_ROOT/$${MRS_SDK_QT_VERSION}/lib
@@ -201,5 +195,5 @@ message("Environment: target OS: $$MRS_SDK_QT_TARGET_OS")
     INCLUDEPATH += $$MRS_SDK_QT_INCLUDE_DIRS
     DEPENDPATH += $$MRS_SDK_QT_INCLUDE_DIRS
 
-    message("Configuring MRS SDK for target $${MRS_SDK_QT_CONSUMER_TARGET}...")
+    message("MRS SDK configuration complete.")
 }

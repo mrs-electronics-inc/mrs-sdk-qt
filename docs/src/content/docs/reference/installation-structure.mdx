@@ -12,8 +12,7 @@ This page details the installation tree of the SDK: where the installation is lo
 <FileTree>
 
 - HOME/mrs-sdk-qt
-  - bin/            Top-level tools that aren't tied to SDK versions
-  - current/        Symlink to the SDK version currently in use
+  - tools/          Top-level tools that aren't tied to SDK versions
   - \<version\>/    A specific installed version of the SDK
     - bin/
     - docs/
@@ -55,23 +54,15 @@ The SDK's structure allows you to have multiple versions installed simultaneousl
 
 When you install a new version, it will be located in `mrs-sdk-qt/<version>/`, where `<version>` is the exact version of the release.
 
-You can use the `mrs-sdk-manager` tool to select which version to activate.
+You can use the `mrs-sdk-manager` tool to select which version to activate for a particular project.
 
 {/* TODO(#51): link to the docs for the relevant mrs-sdk-manager subcommand */}
 
 ### Top-level tools
 
-The `mrs-sdk-qt/bin` directory contains tools that are managed/installed independently of the actual SDK installations.
+The `MRS_SDK_QT_ROOT/tools` directory contains tools that are managed/installed independently of the actual SDK installations.
 
 Right now, this list just includes `mrs-sdk-manager`, which is meant to be installed on its own and then used for downloading new SDK versions.
-
-### The `current` installation
-
-The `mrs-sdk-qt/current` symlink defines the "active" version of the SDK. It is useful for abstracting out SDK version numbers when writing CMake/QMake configurations for projects: instead of specifying the version number in the path, you can simply say `MRS_SDK_QT_ROOT/current/...`.
-
-This symlink is controlled by the `mrs-sdk-manager` tool.
-
-{/* TODO(#51): link to the docs for the relevant mrs-sdk-manager subcommand */}
 
 ## SDK components
 
