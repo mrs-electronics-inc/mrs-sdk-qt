@@ -33,7 +33,7 @@ tasks:
     outputs:
       - 'dist'
 
-  dev:
+  run:
     description: 'Run the Astro development server.'
     command: 'npm run dev'
     inputs:
