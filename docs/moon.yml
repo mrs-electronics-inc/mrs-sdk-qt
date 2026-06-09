@@ -19,7 +19,7 @@ fileGroups:
 tasks:
   deps:
     description: 'Install dependencies.'
-    command: 'npm install --no-fund'
+    command: 'npm install --no-fund --no-save'
     inputs:
       - group: meta
 
