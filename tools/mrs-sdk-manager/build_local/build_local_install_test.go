@@ -2,10 +2,42 @@ package buildlocal
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+// TestInstallDemoSourcesUsesTaggedVersion verifies that demo source installs
+// land under the same versioned SDK directory as the rest of the local install
+// tree when the repository has a release tag.
+func TestInstallDemoSourcesUsesTaggedVersion(t *testing.T) {
+	repoRoot := t.TempDir()
+	sdkRoot := filepath.Join(t.TempDir(), "custom-sdk-root")
+
+	t.Setenv("MRS_SDK_QT_ROOT", sdkRoot)
+
+	initTestRepo(t, repoRoot)
+	writeTestFile(t, filepath.Join(repoRoot, "README.md"), "initial")
+	runGit(t, repoRoot, "add", "README.md")
+	runGit(t, repoRoot, "commit", "-m", "initial commit")
+	runGit(t, repoRoot, "tag", "1.2.3")
+
+	createFakeDemoRepo(t, repoRoot)
+
+	if err := InstallDemoSources(repoRoot); err != nil {
+		t.Fatalf("InstallDemoSources returned error: %v", err)
+	}
+
+	demoRoot := filepath.Join(sdkRoot, "1.2.3", "demos")
+	assertFileExists(t, filepath.Join(demoRoot, "README.md"))
+	assertFileExists(t, filepath.Join(demoRoot, "can-simulator", "can-simulator.pro"))
+	assertFileExists(t, filepath.Join(demoRoot, "spoke-zone-demo", "CMakeLists.txt"))
+
+	assertFileMissing(t, filepath.Join(demoRoot, "can-simulator", "mrs-sdk-qt", "version.conf"))
+	assertFileMissing(t, filepath.Join(demoRoot, "spoke-zone-demo", ".qtcreator", "CMakeLists.txt.user"))
+	assertFileMissing(t, filepath.Join(demoRoot, "spoke-zone-demo", "build", "artifact"))
+}
 
 // TestInstallBuildsUsesConfiguredSDKRoot verifies that local installs honor
 // MRS_SDK_QT_ROOT instead of silently writing into the default home-directory
@@ -18,6 +50,7 @@ func TestInstallBuildsUsesConfiguredSDKRoot(t *testing.T) {
 	t.Setenv("HOME", homeDir)
 	t.Setenv("MRS_SDK_QT_ROOT", sdkRoot)
 
+	initTestRepo(t, repoRoot)
 	createFakeSDKRepo(t, repoRoot)
 
 	if err := InstallBuilds(repoRoot); err != nil {
@@ -39,6 +72,17 @@ func TestInstallBuildsUsesConfiguredSDKRoot(t *testing.T) {
 	}
 }
 
+// initTestRepo creates a minimal Git repository fixture with a deterministic
+// identity so tests can exercise Git-aware install logic without depending on
+// any global user configuration.
+func initTestRepo(t *testing.T, repoRoot string) {
+	t.Helper()
+
+	runGit(t, repoRoot, "init")
+	runGit(t, repoRoot, "config", "user.name", "Test User")
+	runGit(t, repoRoot, "config", "user.email", "test@example.com")
+}
+
 // TestInstallBuildsRequiresSDKRoot verifies that install commands fail fast
 // when the configured SDK root is missing instead of guessing a default path.
 func TestInstallBuildsRequiresSDKRoot(t *testing.T) {
@@ -53,6 +97,21 @@ func TestInstallBuildsRequiresSDKRoot(t *testing.T) {
 	}
 }
 
+// runGit executes a Git command in the test repository and fails the test with
+// the full command output if Git refuses the operation. Keeping the helper here
+// avoids repetitive boilerplate in individual version-resolution tests while
+// still surfacing the exact failing subprocess invocation.
+func runGit(t *testing.T, repoRoot string, args ...string) {
+	t.Helper()
+
+	cmd := exec.Command("git", args...)
+	cmd.Dir = repoRoot
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("git %s failed: %v\n%s", strings.Join(args, " "), err, output)
+	}
+}
+
 // createFakeSDKRepo builds the minimal repository layout that InstallBuilds
 // expects so the test can validate copy destinations without running the full
 // native and cross-compilation toolchains.
@@ -62,10 +121,32 @@ func createFakeSDKRepo(t *testing.T, repoRoot string) {
 	writeTestFile(t, filepath.Join(repoRoot, "lib", "include", "mrs-sdk-qt", "sdk.hpp"), "header")
 	writeTestFile(t, filepath.Join(repoRoot, "lib", "cmake", "mrs-sdk-qt", "config.cmake"), "cmake")
 	writeTestFile(t, filepath.Join(repoRoot, "lib", "qmake", "mrs-sdk-qt", "config.pri"), "qmake")
+	runGit(t, repoRoot, "add", "lib")
 
 	for _, target := range AllBuildTargets() {
 		writeTestFile(t, filepath.Join(repoRoot, "build", target.BuildDir(), "artifacts", "libmrs-sdk-qt.a"), target.BuildDir())
 	}
+}
+
+// createFakeDemoRepo builds the minimal demo tree expected by the demo-source
+// installer, including generated and editor-specific directories that must be
+// excluded from the copied SDK installation.
+func createFakeDemoRepo(t *testing.T, repoRoot string) {
+	t.Helper()
+
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "README.md"), "demo docs")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "can-simulator", "can-simulator.pro"), "TEMPLATE = app")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "can-simulator", "main.cpp"), "int main() {}")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "can-simulator", "mrs-sdk-qt", "version.conf"), "MRS_SDK_QT_VERSION=0.0.0")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "spoke-zone-demo", "CMakeLists.txt"), "cmake_minimum_required(VERSION 3.16)")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "spoke-zone-demo", "main.cpp"), "int main() {}")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "spoke-zone-demo", ".qtcreator", "CMakeLists.txt.user"), "qtcreator state")
+	writeTestFile(t, filepath.Join(repoRoot, "demos", "spoke-zone-demo", "build", "artifact"), "generated")
+	runGit(t, repoRoot, "add", filepath.Join("demos", "README.md"))
+	runGit(t, repoRoot, "add", filepath.Join("demos", "can-simulator", "can-simulator.pro"))
+	runGit(t, repoRoot, "add", filepath.Join("demos", "can-simulator", "main.cpp"))
+	runGit(t, repoRoot, "add", filepath.Join("demos", "spoke-zone-demo", "CMakeLists.txt"))
+	runGit(t, repoRoot, "add", filepath.Join("demos", "spoke-zone-demo", "main.cpp"))
 }
 
 // writeTestFile creates a file and any missing parent directories so the test
@@ -87,5 +168,15 @@ func assertFileExists(t *testing.T, path string) {
 
 	if _, err := os.Stat(path); err != nil {
 		t.Fatalf("expected file %s to exist: %v", path, err)
+	}
+}
+
+// assertFileMissing reports a focused failure if generated files leak into the
+// installed SDK demo tree when they should have been filtered out.
+func assertFileMissing(t *testing.T, path string) {
+	t.Helper()
+
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		t.Fatalf("expected file %s to be absent, stat error: %v", path, err)
 	}
 }
