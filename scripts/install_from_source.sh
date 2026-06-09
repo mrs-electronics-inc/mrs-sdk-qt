@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # This script performs all the steps required for building and install the SDK from source.
-# Usage: install_from_source.sh [all|tools|libs]
+# Usage: install_from_source.sh [all|tools|libs|demos]
 
 set -euo pipefail
 
@@ -81,10 +81,10 @@ case "$target" in
 		install_demos
 		;;
 	"--help")
-		echo "Usage: $0 [all|tools|libs]"
+		echo "Usage: $0 [all|tools|libs|demos]"
 		;;
 	*)
-		echo "Usage: $0 [all|tools|libs]" >&2
+		echo "Usage: $0 [all|tools|libs|demos]" >&2
 		exit 1
 		;;
 esac
