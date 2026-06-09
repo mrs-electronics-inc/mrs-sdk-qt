@@ -2,32 +2,32 @@ package cmd
 
 import (
 	buildLocal "mrs-sdk-manager/build_local"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var buildLocalCmd = &cobra.Command{
-	Use:   "build-local",
-	Short: "Build the SDK library from source",
-	Long:  "Build the SDK library from source for all supported configurations (MConn/FUSION/desktop across Yocto/Buildroot/desktop OSes)",
-	Args:  cobra.NoArgs,
+	Use:   "build-local [TARGET]",
+	Short: "Build SDK libraries and/or demo projects from source",
+	Long:  "Build SDK libraries and/or demo projects from source. TARGET may be one of: all, libs, demos. Defaults to all.",
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := buildLocal.Build(); err != nil {
+		targetArg := ""
+		if len(args) == 1 {
+			targetArg = args[0]
+		}
+
+		scope, err := buildLocal.ParseBuildScope(targetArg)
+		if err != nil {
 			return err
 		}
+
 		installFlag, err := cmd.Flags().GetBool("install")
 		if err != nil {
 			return err
 		}
-		if installFlag {
-			sdkRoot, err := os.Getwd()
-			if err != nil {
-				return err
-			}
-			return buildLocal.InstallBuilds(sdkRoot)
-		}
-		return nil
+
+		return buildLocal.Run(scope, installFlag)
 	},
 }
 

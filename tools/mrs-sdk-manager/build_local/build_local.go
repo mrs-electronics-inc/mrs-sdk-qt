@@ -21,8 +21,9 @@ type BuildConfig struct {
 	CmakeCmd []string
 }
 
-// Build builds the SDK library from source for all supported configurations
-func Build() error {
+// Run executes the requested local build scope, optionally installing the
+// compiled SDK libraries before demo builds consume them.
+func Run(scope BuildScope, installFlag bool) error {
 	// Get the current working directory (SDK root)
 	sdkRoot, err := os.Getwd()
 	if err != nil {
@@ -34,14 +35,76 @@ func Build() error {
 		return err
 	}
 
+	envConfig, err := readBuildEnvironment(scope)
+	if err != nil {
+		return err
+	}
+
+	if scope.IncludesLibs() {
+		if err := buildLibraries(sdkRoot, envConfig); err != nil {
+			return err
+		}
+
+		if installFlag {
+			if err := InstallBuilds(sdkRoot); err != nil {
+				return err
+			}
+		}
+	}
+
+	if scope.IncludesDemos() {
+		if installFlag {
+			if err := InstallDemoSources(sdkRoot); err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("--install must be passed when TARGET is all or demos")
+		}
+	}
+
+	return nil
+}
+
+// buildLibraries builds the SDK library from source for all supported
+// configurations.
+func buildLibraries(sdkRoot string, envConfig map[string]string) error {
+	utils.PrintTaskStart("Building MRS SDK libraries from source...")
+	configs := getBuildConfigs(sdkRoot, envConfig)
+	if err := runAllBuilds(sdkRoot, configs); err != nil {
+		return err
+	}
+
+	utils.PrintSuccess("All builds completed successfully")
+	return nil
+}
+
+func readBuildEnvironment(scope BuildScope) (map[string]string, error) {
 	// Read environment config
 	envConfig, err := env.ReadAll()
 	if err != nil {
-		return fmt.Errorf("failed to read environment config: %w", err)
+		return nil, fmt.Errorf("failed to read environment config: %w", err)
 	}
 
-	// Validate all required keys are set
-	requiredKeys := []env.EnvVar{
+	requiredKeys := requiredEnvVarsForScope(scope)
+	var missingKeys []string
+	for _, k := range requiredKeys {
+		if envConfig[k.Key] == "" {
+			missingKeys = append(missingKeys, k.Key)
+		}
+	}
+	if len(missingKeys) > 0 {
+		return nil, fmt.Errorf("missing required environment config: %s\nRun 'mrs-sdk-manager env -w KEY=VALUE' to set them", strings.Join(missingKeys, ", "))
+	}
+
+	return envConfig, nil
+}
+
+func requiredEnvVarsForScope(scope BuildScope) []env.EnvVar {
+	if scope == BuildScopeDemos {
+		return nil
+	}
+
+	return []env.EnvVar{
 		env.YOCTO_QT5_SYSROOT,
 		env.YOCTO_QT5_CXX_COMPILER,
 		env.YOCTO_QT5_ENV_SETUP_SCRIPT,
@@ -51,24 +114,6 @@ func Build() error {
 		env.DESKTOP_QT5_PREFIX,
 		env.DESKTOP_QT6_PREFIX,
 	}
-	var missingKeys []string
-	for _, k := range requiredKeys {
-		if envConfig[k.Key] == "" {
-			missingKeys = append(missingKeys, k.Key)
-		}
-	}
-	if len(missingKeys) > 0 {
-		return fmt.Errorf("missing required environment config: %s\nRun 'mrs-sdk-manager env -w KEY=VALUE' to set them", strings.Join(missingKeys, ", "))
-	}
-
-	utils.PrintTaskStart("Building MRS SDK libraries from source...")
-	configs := getBuildConfigs(sdkRoot, envConfig)
-	if err := runAllBuilds(sdkRoot, configs); err != nil {
-		return err
-	}
-
-	utils.PrintSuccess("All builds completed successfully")
-	return nil
 }
 
 // verifyRepoRoot verifies that we're in the mrs-sdk-qt repository root

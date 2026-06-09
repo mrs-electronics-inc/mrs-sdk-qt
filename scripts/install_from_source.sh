@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # This script performs all the steps required for building and install the SDK from source.
-# Usage: install_from_source.sh [all|tools|libs]
+# Usage: install_from_source.sh [all|tools|libs|demos]
 
 set -euo pipefail
 
@@ -39,7 +39,19 @@ install_libs() {
 		return 1
 	}
 
-	"$mgr" build-local --install
+	"$mgr" build-local libs --install
+}
+
+# Install source code for the demo apps.
+# This is useful for allowing customers to verify kit setups and test out hardware.
+install_demos() {
+	local -r mgr="$MRS_SDK_QT_ROOT/tools/mrs-sdk-manager"
+	command -v "$mgr" >/dev/null || {
+		echo "ERROR: could not find mrs-sdk-manager at $mgr." >&2
+		return 1
+	}
+
+	"$mgr" build-local demos --install
 }
 
 # Parse out the installation target.
@@ -54,23 +66,25 @@ case "$target" in
 		# Install tooling first because it is used for installing libs.
 		install_tooling
 		install_libs
-		echo "INSTALLATION COMPLETE."
+		install_demos
 		;;
 	"tools")
 		check_env
 		install_tooling
-		echo "INSTALLATION COMPLETE."
 		;;
 	"libs")
 		check_env
 		install_libs
-		echo "INSTALLATION COMPLETE."
+		;;
+	"demos")
+		check_env
+		install_demos
 		;;
 	"--help")
-		echo "Usage: $0 [all|tools|libs]"
+		echo "Usage: $0 [all|tools|libs|demos]"
 		;;
 	*)
-		echo "Usage: $0 [all|tools|libs]" >&2
+		echo "Usage: $0 [all|tools|libs|demos]" >&2
 		exit 1
 		;;
 esac
