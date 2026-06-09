@@ -43,11 +43,9 @@ The first step in setting up a project to use the Qt SDK is to tell the SDK's bu
 
 ### Bootstrap the build system
 
-{/* TODO(#61): add link in QMake tab to relevant section of set-up-build-kits page. There will be a section about verifying kit config using the demo apps. */}
-
 <Tabs syncKey="buildtool">
     <TabItem label="CMake">
-        This step is only necessary for QMake-based projects. You can skip to the [next section](#import-sdk-global-config).
+        This step is only necessary for QMake-based projects. You can skip to the [next section](#run-sdk-build-system).
 
         CMake has a feature that allows for setting a kit-level toolchain file that is applied before the project's `CMakeLists.txt` file is executed. The SDK uses this feature for bootstrapping from the Qt Creator kit settings.
     </TabItem>
@@ -57,6 +55,8 @@ The first step in setting up a project to use the Qt SDK is to tell the SDK's bu
         ```qmake
         include("mrs-sdk-qt/toolchain.pri")
         ```
+
+        Follow [this guide](/get-started/set-up-build-kits#verify-kits) to verify your configuration.
     </TabItem>
 </Tabs>
 
