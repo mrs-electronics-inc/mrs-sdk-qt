@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Code, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 The MRS SDK for Qt leverages Qt Creator <a href="https://doc.qt.io/qtcreator/creator-preferences-kits.html" target="_blank">kits</a> to cross-compile projects for various MRS products.
 
@@ -216,10 +216,7 @@ Setup steps coming soon!
 
     ![Qt Creator kit CMake config for desktop Qt6](../../../assets/build-kit-setup/desktop/qt6/kit-cmake-config.png)
 
-12. Your Desktop Qt6 kit is now complete and ready to use with the MRS SDK!
-
-{/* TODO(#61): add this:
-    To make sure everything is working properly, [verify your kit setup](#verify-kits). */}
+12. Your Desktop Qt6 kit is now complete and ready to use with the MRS SDK! To make sure everything is working properly, [verify your kit setup](#verify-kits).
 
 </Steps>
 
@@ -289,13 +286,94 @@ Setup steps coming soon!
 
     ![Qt Creator kit CMake config for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/kit-cmake-config.png)
 
-12. Your Desktop Qt5 kit is now complete and ready to use with the MRS SDK!
-{/* TODO(#61): add this:
-    To make sure everything is working properly, [verify your kit setup](#verify-kits). */}
+12. Your Desktop Qt5 kit is now complete and ready to use with the MRS SDK! To make sure everything is working properly, [verify your kit setup](#verify-kits).
 
 </Steps>
 
 </details>
 
 {/* TODO(#61): add steps for opening demo projects to verify QMake and CMake work for all kits */}
-{/* ## Verify Kits */}
+## Verify Kits
+
+**NOTE:** these steps are based on version `13.0.0` of Qt Creator, which is the version installed by default in the MRS SDK VM.
+
+You can use the demo applications included in the SDK to test out your kit configurations.
+
+We ship demos for both CMake and QMake so that you can test with whichever build tool you're using. For this guide, we will use the `spoke-zone-demo` application for testing CMake and the `can-simulator` application for testing QMake.
+
+
+<Tabs syncKey="buildtool">
+    <TabItem label="CMake">
+        <Steps>
+
+        1. Open a terminal in the directory `$MRS_SDK_QT_ROOT/<sdk-version>/demos/spoke-zone-demo`. (You will need to define `MRS_SDK_QT_ROOT` in your environment if you have not already done so.)
+        2. Pin the SDK version to use. This should be the same as the installed version of the SDK.
+
+            ```bash
+            mrs-sdk-manager use <sdk-version>
+            ```
+
+            Example output:
+
+            <Code code={`$ mrs-sdk-manager use 0.0.0
+            \u001b[1;96m===== Configuring project SDK version...\u001b[0m
+            Created mrs-sdk-qt/ configuration directory
+
+            CMake usage:
+                1. Set in Qt Creator kit: CMAKE_TOOLCHAIN_FILE = %%{sourceDir}/mrs-sdk-qt/toolchain.cmake
+                2. Set in Qt Creator kit: MRS_SDK_QT_TOOLCHAIN_ID = desktop-qt6 (or yocto-qt5, etc.)
+                3. In CMakeLists.txt, add:
+                   \u001b[0;36minclude("mrs-sdk-qt/project.cmake")\u001b[0m
+
+            \u001b[1;92m===== ✓ Project configured to use SDK version 0.0.0\u001b[0m`} lang="ansi" />
+
+        3. Open the demo project in Qt Creator (docs [here](https://doc.qt.io/qtcreator/creator-project-opening.html)). CMake will be run automatically when you do so. Example output for `desktop-qt5`:
+
+            ![Qt Creator running CMake configure for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/verify-cmake-configure.png)
+
+        4. Click the **Run** button in the lower left-hand corner (or press **Ctrl + R**) to build and run the project. You should see successful compilation followed by a successful run of the demo app. Example output for `desktop-qt5`:
+
+            ![Qt Creator building and running the `spoke-zone-demo` application](../../../assets/build-kit-setup/desktop/qt5/verify-cmake-demo-build-run.png)
+
+        5. Your kit is ready to go!
+
+        </Steps>
+    </TabItem>
+    <TabItem label="QMake">
+        <Steps>
+
+        1. Open a terminal in the directory `$MRS_SDK_QT_ROOT/<sdk-version>/demos/can-simulator`. (You will need to define `MRS_SDK_QT_ROOT` in your environment if you have not already done so.)
+
+        2. Pin the SDK version to use. This should be the same as the installed version of the SDK.
+
+            ```bash
+            mrs-sdk-manager use <sdk-version>
+            ```
+
+            Example output:
+
+            <Code code={`$ mrs-sdk-manager use 0.0.0
+            \u001b[1;96m===== Configuring project SDK version...\u001b[0m
+            Created mrs-sdk-qt/ configuration directory
+
+            QMake usage:
+                1. Set in Qt Creator kit: MRS_SDK_QT_TOOLCHAIN_ID = desktop-qt6 (or yocto-qt5, etc.)
+                2. In your .pro file, add:
+                   \u001b[0;36minclude("mrs-sdk-qt/toolchain.pri")\u001b[0m
+                   \u001b[0;36minclude("mrs-sdk-qt/project.pri")\u001b[0m
+
+            \u001b[1;92m===== ✓ Project configured to use SDK version 0.0.0\u001b[0m`} lang="ansi" />
+
+        3. Open the demo project in Qt Creator (docs [here](https://doc.qt.io/qtcreator/creator-project-opening.html)). QMake will be run automatically when you do so. Example output for `desktop-qt5`:
+
+            ![Qt Creator running QMake for desktop Qt5](../../../assets/build-kit-setup/desktop/qt5/verify-qmake-run.png)
+
+        4. Click the **Run** button in the lower left-hand corner (or press **Ctrl + R**) to build and run the project. You should see successful compilation followed by a successful run of the demo app. Example output for `desktop-qt5`:
+
+            ![Qt Creator building and running the `can-simulator` application](../../../assets/build-kit-setup/desktop/qt5/verify-qmake-demo-build-run.png)
+
+        5. Your kit is ready to go!
+
+        </Steps>
+    </TabItem>
+</Tabs>
