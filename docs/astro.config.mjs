@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightImageZoom from 'starlight-image-zoom';
+import starlightLinksValidator from 'starlight-links-validator';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,17 +12,17 @@ export default defineConfig({
 	publicDir: './public',
 	integrations: [
 		starlight({
-			plugins: [starlightImageZoom()],
+			plugins: [starlightImageZoom(), starlightLinksValidator()],
 			title: 'MRS Qt SDK',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/mrs-electronics-inc/mrs-sdk-qt' }],
 			sidebar: [
 				{
 					label: 'Get Started',
-					autogenerate: { directory: 'get-started' },
+					items: [{autogenerate: { directory: 'get-started' }}],
 				},
 				{
 					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					items: [{autogenerate: { directory: 'reference' }}],
 				},
 			],
 			head: [
