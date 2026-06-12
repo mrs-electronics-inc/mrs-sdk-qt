@@ -1,5 +1,9 @@
 # MRS SDK - Qt
 
+> This project is archived and no longer actively developed in this repository.
+>
+> Development has moved to this repo: https://gitlab.com/mrs-electronics/sdk/qt
+
 Welcome to the official repository for the MRS Electronic Software Development Kit for Qt! This SDK provides developers with the tools, libraries, and documentation needed to create applications for MRS Electronic products using the Qt framework.
 
 ## Table of Contents
